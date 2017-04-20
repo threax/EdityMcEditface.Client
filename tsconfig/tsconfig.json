@@ -42,7 +42,8 @@
   "exclude": [
     "../**/*.js",
     "../**/Build/*.ts",
-    "../../jsns"
+    "../../jsns",
+    "../node_modules/**/*"
   ],
   "files": [
     "../../jsns/jsns.ts",
