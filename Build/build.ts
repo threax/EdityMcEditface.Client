@@ -19,7 +19,7 @@ export function build(outDir, iconOutPath, moduleDir): Promise<any> {
     promises.push(copy.glob(filesDir + "/diff_match_patch/**/*", filesDir, libDir));
 
     promises.push(tsc({
-        projectFolder: __dirname
+        projectFolder: filesDir + '/tsconfig'
     }));
 
     //Return composite promise
