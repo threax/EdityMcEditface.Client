@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var copy = require('threax-npm-tk/copy');
 var less = require('threax-npm-tk/less');
 function build(outDir, iconOutPath, moduleDir, filesDir) {

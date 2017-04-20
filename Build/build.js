@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var clientBuild = require("./clientbuild");
 var copy = require('threax-npm-tk/copy');
 var less = require('threax-npm-tk/less');
