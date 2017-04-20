@@ -39,18 +39,13 @@
     "edityLoading": {
       "css": [ "~/lib/edity/css/loading.css" ]
     },
-    "tsBin": {
+    "edityBin": {
       "js": [
-        {
-          "file": "~/lib/tsbin.js",
-          "async": false
-        },
         {
           "file": "~/lib/editybin.js",
           "async": false
         }
-      ],
-      "hasMin": false
+      ]
     }
   },
   "vars": {
