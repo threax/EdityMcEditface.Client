@@ -5,7 +5,7 @@
       "css": [ "~/lib/edity/css/fade.css" ]
     },
     "bootstrap": {
-      "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ],
+      "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
     },
     "diff_match_patch": {
       "js": [ { "file": "~/edity/lib/diff_match_patch/diff_match_patch.js" } ]
@@ -43,6 +43,10 @@
       "js": [
         {
           "file": "~/lib/tsbin.js",
+          "async": false
+        },
+        {
+          "file": "~/lib/editybin.js",
           "async": false
         }
       ],
