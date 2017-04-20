@@ -1,3 +1,6 @@
+//This file and the others in this directory are built by the tsconfig.json in this folder.
+//The compiled javascript is also included and kept up to date, so there is no reason to build
+//the contents of this folder unless you are working on the build scripts.
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var clientBuild = require("./clientbuild");
