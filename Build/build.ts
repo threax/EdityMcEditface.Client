@@ -7,7 +7,6 @@ import * as clientBuild from './clientbuild';
 
 var copy = require('threax-npm-tk/copy');
 var less = require('threax-npm-tk/less');
-var tsc = require('threax-npm-tk/typescript').tsc;
 
 var filesDir = __dirname + "/..";
 
@@ -21,10 +20,6 @@ export function build(outDir, iconOutPath, moduleDir): Promise<any> {
     promises.push(buildCodemirror(libDir, moduleDir));
     promises.push(buildBootstrap(outDir + '/lib', moduleDir));
     promises.push(copy.glob(filesDir + "/diff_match_patch/**/*", filesDir, libDir));
-
-    promises.push(tsc({
-        projectFolder: filesDir + '/tsconfig'
-    }));
 
     //Return composite promise
     return Promise.all(promises);
