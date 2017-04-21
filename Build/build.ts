@@ -7,7 +7,7 @@ import * as clientBuild from './clientbuild';
 
 var copy = require('threax-npm-tk/copy');
 var less = require('threax-npm-tk/less');
-var tsc = require('threax-npm-tk/typescript');
+var tsc = require('threax-npm-tk/typescript').tsc;
 
 var filesDir = __dirname + "/..";
 

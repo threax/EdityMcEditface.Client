@@ -2,11 +2,10 @@
 //The compiled javascript is also included and kept up to date, so there is no reason to build
 //the contents of this folder unless you are working on the build scripts.
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var clientBuild = require("./clientbuild");
 var copy = require('threax-npm-tk/copy');
 var less = require('threax-npm-tk/less');
-var tsc = require('threax-npm-tk/typescript');
+var tsc = require('threax-npm-tk/typescript').tsc;
 var filesDir = __dirname + "/..";
 function build(outDir, iconOutPath, moduleDir) {
     var promises = [];
