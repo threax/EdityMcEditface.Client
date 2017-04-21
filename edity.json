@@ -1,51 +1,39 @@
 ﻿{
   "$schema": "../../../SchemaGenerator/Schema/EdityProject.json",
   "contentMap": {
+    "bootstrap": {
+      "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
+    },
     "transitions": {
       "css": [ "~/lib/edity/css/fade.css" ]
     },
-    "bootstrap": {
-      "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
+    "edityLoading": {
+      "css": [ "~/lib/edity/css/loading.css" ]
     },
     "diff_match_patch": {
       "js": [ { "file": "~/edity/lib/diff_match_patch/diff_match_patch.js" } ]
     },
     "codemirror": {
       "js": [
-        { "file": "~/edity/lib/codemirror/lib/codemirror.js" }
-      ],
-      "css": [ "~/edity/lib/codemirror/lib/codemirror.css" ]
-    },
-    "codemirror-html": {
-      "js": [
+        { "file": "~/edity/lib/codemirror/lib/codemirror.js" },
         { "file": "~/edity/lib/codemirror/mode/xml/xml.js" },
         { "file": "~/edity/lib/codemirror/mode/css/css.js" },
         { "file": "~/edity/lib/codemirror/mode/javascript/javascript.js" },
-        { "file": "~/edity/lib/codemirror/mode/htmlmixed/htmlmixed.js" }
-      ],
-      "css": [ "~/edity/lib/codemirror/theme/edity.css" ],
-      "dependencies": [ "codemirror" ]
-    },
-    "codemirror-merge": {
-      "js": [
+        { "file": "~/edity/lib/codemirror/mode/htmlmixed/htmlmixed.js" },
         { "file": "~/edity/lib/codemirror/addon/merge/merge.js" }
       ],
-      "css": [ "~/edity/lib/codemirror/addon/merge/merge.css" ],
-      "dependencies": [ "codemirror-html", "diff_match_patch" ]
+      "css": [
+        "~/edity/lib/codemirror/lib/codemirror.css",
+        "~/edity/lib/codemirror/theme/edity.css",
+        "~/edity/lib/codemirror/addon/merge/merge.css"
+      ],
+      "dependencies": [ "diff_match_patch" ]
     },
     "ckeditor": {
       "js": [ { "file": "~/edity/lib/ckeditor/ckeditor.js" } ]
     },
-    "edityLoading": {
-      "css": [ "~/lib/edity/css/loading.css" ]
-    },
-    "edityBin": {
-      "js": [
-        {
-          "file": "~/lib/editybin.js",
-          "async": false
-        }
-      ]
+    "editorCore": {
+      "dependencies": [ "transitions", "edityLoading", "codemirror" ]
     }
   },
   "vars": {
