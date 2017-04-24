@@ -7,8 +7,7 @@
     "allowJs": true,
     "target": "es5",
     "module": "commonjs",
-    "baseUrl": ".",
-    "typeRoots": [ "../../@types" ]
+    "baseUrl": "."
   },
   "include": [
     "./*.ts"

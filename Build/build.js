@@ -55,6 +55,7 @@ function buildCkEditor(outDir, moduleDir) {
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/notificationaggregator/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/filetools/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/widget/**/*", moduleDir, outDir));
+    promises.push(copy.glob(moduleDir + "/ckeditor/plugins/widgetselection/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/lineutils/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/notification/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/image/**/*", moduleDir, outDir));
