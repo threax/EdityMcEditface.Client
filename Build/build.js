@@ -38,7 +38,7 @@ function buildCkEditor(outDir, moduleDir) {
     //ckeditor
     promises.push(copy.glob(moduleDir + "/ckeditor/ckeditor.js", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/contents.css", moduleDir, outDir));
-    promises.push(copy.glob(moduleDir + "/ckeditor/skins/moono/**/*", moduleDir, outDir));
+    promises.push(copy.glob(moduleDir + "/ckeditor/skins/moono-lisa/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/lang/en.js", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/*.png", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/magicline/**/*", moduleDir, outDir));
@@ -59,6 +59,8 @@ function buildCkEditor(outDir, moduleDir) {
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/lineutils/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/notification/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/image/**/*", moduleDir, outDir));
+    promises.push(copy.glob(moduleDir + "/ckeditor/plugins/scayt/**/*", moduleDir, outDir));
+    promises.push(copy.glob(moduleDir + "/ckeditor/plugins/wsc/**/*", moduleDir, outDir));
     //External plugins
     promises.push(copy.glob(moduleDir + "/ckeditor-youtube-plugin/youtube/**/*", moduleDir + '/ckeditor-youtube-plugin', outDir + "/ckeditor/plugins/"));
     //Our customizations
