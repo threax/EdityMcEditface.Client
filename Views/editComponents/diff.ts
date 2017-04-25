@@ -146,7 +146,7 @@ class DiffController {
 }
 
 var builder = new controller.InjectedControllerBuilder();
-git.addServices(builder.Services);
+git.addServices(controller.InjectedControllerBuilder.GlobalServices);
 builder.Services.tryAddTransient(DiffRow, DiffRow);
 builder.Services.tryAddShared(ConfirmRevertController, ConfirmRevertController);
 builder.Services.tryAddShared(DiffController, DiffController);

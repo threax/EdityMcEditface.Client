@@ -111,7 +111,7 @@ class SyncController {
 }
 
 var builder = new controller.InjectedControllerBuilder();
-git.addServices(builder.Services);
+git.addServices(controller.InjectedControllerBuilder.GlobalServices);
 builder.Services.tryAddShared(SyncController, SyncController);
 
 builder.create("sync", SyncController);

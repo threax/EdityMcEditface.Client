@@ -98,7 +98,7 @@ class MergeController {
 }
 
 var builder = new controller.InjectedControllerBuilder();
-git.addServices(builder.Services);
+git.addServices(controller.InjectedControllerBuilder.GlobalServices);
 builder.Services.tryAddShared(MergeController, MergeController);
 
 builder.create("merge", MergeController);
