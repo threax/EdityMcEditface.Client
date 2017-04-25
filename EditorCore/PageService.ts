@@ -2,44 +2,63 @@
 
 import * as edityClient from 'edity.editorcore.EdityClient';
 import * as saveService from 'edity.editorcore.SaveService';
-import * as pageStart from 'edity.editorcore.EditorPageStart';
+import { Fetcher } from 'hr.fetcher';
+import * as editorServices from 'edity.editorcore.EditorServices';
+import * as di from 'hr.di';
+import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
-var sourceAccessor;
-var needsSave = false;
-var client: edityClient.PageClient;
+export class PageService {
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [edityClient.PageClient];
+    }
 
-export function setHtml(value) {
-    sourceAccessor.setHtml(value);
-    sourceUpdated();
-}
+    private sourceAccessor;
+    private needsSave = false;
 
-export function getHtml() {
-    return sourceAccessor.getHtml();
-}
+    constructor(private client: edityClient.PageClient) {
+        saveService.saveEvent.add(() => this.doSave());
+    }
 
-export function setSourceAccessor(value) {
-    sourceAccessor = value;
-}
+    setHtml(value) {
+        this.sourceAccessor.setHtml(value);
+        this.sourceUpdated();
+    }
 
-export function sourceUpdated() {
-    saveService.requestSave();
-    needsSave = true;
-}
+    getHtml() {
+        return this.sourceAccessor.getHtml();
+    }
 
-function doSave() {
-    if (needsSave) {
-        needsSave = false;
-        var content = getHtml();
-        var blob = new Blob([content], { type: "text/html" });
-        return client.save(window.location.pathname, { fileName: window.location.pathname, data: blob }, null)
-            .catch(function (err) {
-                needsSave = true;
+    setSourceAccessor(value) {
+        this.sourceAccessor = value;
+    }
+
+    sourceUpdated() {
+        saveService.requestSave();
+        this.needsSave = true;
+    }
+
+    private async doSave() {
+        if (this.needsSave) {
+            this.needsSave = false;
+            var content = this.getHtml();
+            var blob = new Blob([content], { type: "text/html" });
+            try {
+                return await this.client.save(window.location.pathname, { fileName: window.location.pathname, data: blob }, null)
+            }
+            catch (err) {
+                this.needsSave = true;
                 throw err;
-            });
+            }
+        }
     }
 }
 
-pageStart.init().then((config) => {
-    client = new edityClient.PageClient(config.BaseUrl, config.Fetcher);
-    saveService.saveEvent.add(doSave);
-});
+export function addServices(services: di.ServiceCollection) {
+    editorServices.addServices(services);
+    services.tryAddShared(edityClient.PageClient, s => {
+        var fetcher = s.getRequiredService(Fetcher);
+        var shim = s.getRequiredService(IBaseUrlInjector);
+        return new edityClient.PageClient(shim.BaseUrl, fetcher);
+    });
+    services.tryAddShared(PageService, PageService);
+}
