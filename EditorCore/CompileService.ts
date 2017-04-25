@@ -1,7 +1,10 @@
 ﻿import * as EdityClient from 'edity.editorcore.EdityClient';
 import * as event from 'hr.eventdispatcher';
 import { ExternalPromise } from 'hr.externalpromise';
-import * as fetcher from 'hr.fetcher';
+import { Fetcher } from 'hr.fetcher';
+import * as editorServices from 'edity.editorcore.EditorServices';
+import * as di from 'hr.di';
+import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 export class CompilerServiceEventArgs {
     service: CompilerService;
@@ -38,10 +41,12 @@ export interface CompilerPhase {
 }
 
 class PrimaryCompilePhase implements CompilerPhase {
-    private compileClient: EdityClient.CompileClient;
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [EdityClient.CompileClient];
+    }
 
-    constructor(compilerBaseUrl: string, fetcher: fetcher.Fetcher) {
-        this.compileClient = new EdityClient.CompileClient(compilerBaseUrl, fetcher);
+    constructor(private compileClient: EdityClient.CompileClient) {
+        
     }
 
     execute(arg: CompilerServiceEventArgs) {
@@ -55,6 +60,10 @@ class PrimaryCompilePhase implements CompilerPhase {
 }
 
 export class CompilerService {
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [PrimaryCompilePhase];
+    }
+
     private startedEvent = new event.ActionEventDispatcher<CompilerServiceEventArgs>();
     private statusUpdatedEvent = new event.ActionEventDispatcher<CompilerServiceStatusEventArgs>();
     private successEvent = new event.ActionEventDispatcher<CompilerServiceEventArgs>();
@@ -64,8 +73,8 @@ export class CompilerService {
 
     private phases: CompilerPhase[] = [];
 
-    constructor(compilerBaseUrl: string, fetcher: fetcher.Fetcher) {
-        this.phases.push(new PrimaryCompilePhase(compilerBaseUrl, fetcher));
+    constructor(primaryPhase: PrimaryCompilePhase) {
+        this.phases.push(primaryPhase);
     }
 
     public compile(): Promise<any> {
@@ -127,4 +136,15 @@ export class CompilerService {
     public get onFailed() {
         return this.failedEvent.modifier;
     }
+}
+
+export function addServices(services: di.ServiceCollection) {
+    editorServices.addServices(services);
+    services.tryAddShared(EdityClient.CompileClient, s => {
+        var fetcher = s.getRequiredService(Fetcher);
+        var shim = s.getRequiredService(IBaseUrlInjector);
+        return new EdityClient.CompileClient(shim.BaseUrl, fetcher);
+    });
+    services.tryAddShared(PrimaryCompilePhase, PrimaryCompilePhase);
+    services.tryAddShared(CompilerService, CompilerService);
 }

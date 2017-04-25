@@ -11,9 +11,13 @@ import * as PageStart from 'edity.editorcore.EditorPageStart';
 import * as CompileService from 'edity.editorcore.CompileService';
 
 class NavButtonController {
+    constructor(bindings: controller.BindingCollection, private controller: CompileController) {
+
+    }
+
     compile(evt) {
         evt.preventDefault();
-        compileController.startCompile();
+        this.controller.startCompile();
     }
 }
 
@@ -21,10 +25,11 @@ interface StatusMessage {
     message: string;
 }
 
-var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.add("CompileNavItem", NavButtonController);
-
 class CompileController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, CompileService.CompilerService, EdityClient.CompileClient];
+    }
+
     private start;
     private success;
     private fail;
@@ -34,11 +39,9 @@ class CompileController {
     private changesModel;
     private infoModel;
     private dialogToggle;
-    private compileClient: EdityClient.CompileClient;
-    private compileService: CompileService.CompilerService;
     private statusModel: controller.Model<StatusMessage>;
 
-    constructor(bindings: controller.BindingCollection, context: PageStart.EditorPageStart) {
+    constructor(bindings: controller.BindingCollection, private compileService: CompileService.CompilerService, private compileClient: EdityClient.CompileClient) {
         this.start = bindings.getToggle("start");
         this.success = bindings.getToggle("success");
         this.fail = bindings.getToggle("fail");
@@ -48,13 +51,14 @@ class CompileController {
         this.changesModel = bindings.getModel("changes");
         this.infoModel = bindings.getModel('info');
         this.dialogToggle = bindings.getToggle('dialog');
-        this.compileClient = new EdityClient.CompileClient(context.BaseUrl, context.Fetcher);
-        this.compileService = context.CompilerService;
         this.compileService.onStarted.add(a => this.compileStarted(a));
         this.compileService.onStatusUpdated.add(a => this.statusUpdated(a));
         this.compileService.onFailed.add(a => this.toggleGroup.activate(this.fail));
         this.compileService.onSuccess.add(a => this.toggleGroup.activate(this.success));
         this.statusModel = bindings.getModel<StatusMessage>("status");
+
+        var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
+        editMenu.add("CompileNavItem", NavButtonController, this);
     }
 
     runCompiler(evt) {
@@ -87,8 +91,8 @@ class CompileController {
     }
 }
 
-var compileController;
+var builder = new controller.InjectedControllerBuilder();
+CompileService.addServices(controller.InjectedControllerBuilder.GlobalServices);
+builder.Services.tryAddTransient(CompileController, CompileController);
 
-PageStart.init().then((config) => {
-    compileController = controller.create<CompileController, PageStart.EditorPageStart, void>('compile', CompileController, config)[0];
-});
+builder.create("compile", CompileController);

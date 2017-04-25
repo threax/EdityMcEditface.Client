@@ -13,13 +13,11 @@ interface PageSettings {
 export class EditorPageStart {
     //Configuration
     private fetcher: Fetcher;
-    private compilerService: CompilerService;
 
     //Page Start
     constructor() {
         bootstrap.activate();
         this.fetcher = new WithCredentialsFetcher(new CacheBuster(new WindowFetch()));
-        this.compilerService = new CompilerService(this.BaseUrl, this.Fetcher);
     }
 
     get Fetcher(): Fetcher {
@@ -32,10 +30,6 @@ export class EditorPageStart {
             return pageSettings.baseUrl;
         }
         return "";
-    }
-
-    get CompilerService(): CompilerService {
-        return this.compilerService;
     }
 }
 
