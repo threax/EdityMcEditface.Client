@@ -14,8 +14,8 @@ interface PageSettings {
 export function addServices(services: di.ServiceCollection) {
     bootstrap.activate();
 
-    services.tryAddSingleton(Fetcher, s => new WithCredentialsFetcher(new CacheBuster(new WindowFetch())));
-    services.tryAddSingleton(IBackwardCompatPageStart, EditorPageStart);
+    services.tryAddShared(Fetcher, s => new WithCredentialsFetcher(new CacheBuster(new WindowFetch())));
+    services.tryAddShared(IBackwardCompatPageStart, EditorPageStart);
 }
 
 /**

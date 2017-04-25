@@ -8,9 +8,24 @@ import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as toggles from "hr.toggles";
 import * as Iterable from "hr.iterable";
-import * as GitService from "edity.editorcore.GitService";
+import * as git from "edity.editorcore.GitService";
+
+class NavButtonController {
+    constructor(private syncInstance: SyncController) {
+
+    }
+
+    sync(evt) {
+        evt.preventDefault();
+        this.syncInstance.startSync();
+    }
+}
 
 class SyncController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, git.GitService];
+    }
+
     private commitModel;
     private dialog;
 
@@ -25,7 +40,7 @@ class SyncController {
     private behindHistory;
     private aheadHistory;
 
-    constructor(bindings: controller.BindingCollection) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
         this.commitModel = bindings.getModel('commit');
         this.dialog = bindings.getToggle('dialog');
 
@@ -39,13 +54,16 @@ class SyncController {
         this.changesModel = bindings.getModel('changes');
         this.behindHistory = bindings.getModel('behindHistory');
         this.aheadHistory = bindings.getModel('aheadHistory');
+
+        var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
+        editMenu.add("SyncNavItem", NavButtonController, this);
     }
 
     push(evt) {
         evt.preventDefault();
         this.group.activate(this.load);
-        GitService.push()
-            .then((data) => GitService.syncInfo())
+        this.GitService.push()
+            .then((data) => this.GitService.syncInfo())
             .then((data) => this.setupSyncInfo(data))
             .catch((data) => this.group.activate(this.error));
     }
@@ -53,8 +71,8 @@ class SyncController {
     pull(evt) {
         evt.preventDefault();
         this.group.activate(this.load);
-        GitService.pull()
-            .then((data) => GitService.syncInfo())
+        this.GitService.pull()
+            .then((data) => this.GitService.syncInfo())
             .then((data) => this.setupSyncInfo(data))
             .catch((data) => this.group.activate(this.error));
     }
@@ -80,7 +98,7 @@ class SyncController {
         this.group.activate(this.load);
         this.dialog.on();
 
-        GitService.syncInfo()
+        this.GitService.syncInfo()
             .then((data) => this.setupSyncInfo(data))
             .catch((err) => this.group.activate(this.error));
     }
@@ -92,14 +110,8 @@ class SyncController {
     }
 }
 
-var syncInstance = controller.create<SyncController, void, void>("sync", SyncController)[0];
+var builder = new controller.InjectedControllerBuilder();
+git.addServices(builder.Services);
+builder.Services.tryAddShared(SyncController, SyncController);
 
-class NavButtonController {
-    sync(evt) {
-        evt.preventDefault();
-        syncInstance.startSync();
-    }
-}
-
-var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.add("SyncNavItem", NavButtonController);
+builder.create("sync", SyncController);

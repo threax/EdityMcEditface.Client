@@ -6,26 +6,27 @@ import * as storage from "hr.storage";
 import * as uploader from "edity.editorcore.uploader";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
-import * as GitService from "edity.editorcore.GitService";
+import * as git from "edity.editorcore.GitService";
 
-var revertConfirmation;
 var CodeMirror = (<any>window).CodeMirror;
 
 class ConfirmRevertController{
-    private revertConfirmation = this;
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, git.GitService];
+    }
+
     private targetFile;
     private dialog;
     private info;
 
-    constructor(bindings: controller.BindingCollection) {
-        this.revertConfirmation = this;
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
         this.targetFile;
         this.dialog = bindings.getToggle('dialog');
         this.info = bindings.getModel('info');
     }
 
     revert() {
-        GitService.revert(this.targetFile)
+        this.GitService.revert(this.targetFile)
         .then((data) => {
             this.dialog.off();
         });
@@ -38,23 +39,26 @@ class ConfirmRevertController{
         this.dialog.on();
     }
 }
-revertConfirmation = controller.create("diff-revertFileConfirmation", ConfirmRevertController, null)[0];
 
 class DiffRow {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, controller.InjectControllerData, DiffController, git.GitService, ConfirmRevertController];
+    }
+
     private data;
 
-    constructor(bindings, data) {
+    constructor(bindings, data, private diffControllerInstance: DiffController, private GitService: git.GitService, private revertConfirmation: ConfirmRevertController) {
         this.data = data;
         bindings.setListener(this);
     }
 
     diff(evt) {
         evt.preventDefault();
-        diffControllerInstance.openDialog();
+        this.diffControllerInstance.openDialog();
 
-        GitService.uncommittedDiff(this.data.filePath)
+        this.GitService.uncommittedDiff(this.data.filePath)
             .then((successData) => {
-                diffControllerInstance.initUI(this.data.filePath, successData);
+                this.diffControllerInstance.initUI(this.data.filePath, successData);
             })
             .catch((failData) => {
                 alert("Cannot read diff data, please try again later");
@@ -64,18 +68,22 @@ class DiffRow {
     revert(evt) {
         evt.preventDefault();
 
-        revertConfirmation.confirm(this.data.filePath);
+        this.revertConfirmation.confirm(this.data.filePath);
     }
 }
 
 class DiffController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder];
+    }
+
     private dialog;
     private diffModel;
     private dv;
     private config;
     private savePath;
 
-    constructor(bindings) {
+    constructor(bindings, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder) {
         GitService.determineCommitVariantEvent.add((d) => this.diffVariant(d))
 
         this.dialog = bindings.getToggle('dialog');
@@ -85,9 +93,10 @@ class DiffController {
 
     private diffVariant(data) {
         if (data.state === "Modified") {
+            var creator = builder.createOnCallback(DiffRow);
             return {
                 variant: "ModifiedWithDiff",
-                rowCreated: (bindings, data) => new DiffRow(bindings, data)
+                rowCreated: (bindings, data) => creator(bindings, data)
             };
         }
     }
@@ -136,4 +145,11 @@ class DiffController {
     }
 }
 
-var diffControllerInstance = controller.create<DiffController, void, void>("diff", DiffController)[0];
+var builder = new controller.InjectedControllerBuilder();
+git.addServices(builder.Services);
+builder.Services.tryAddTransient(DiffRow, DiffRow);
+builder.Services.tryAddShared(ConfirmRevertController, ConfirmRevertController);
+builder.Services.tryAddShared(DiffController, DiffController);
+
+builder.create("diff-revertFileConfirmation", ConfirmRevertController);
+builder.create("diff", DiffController);

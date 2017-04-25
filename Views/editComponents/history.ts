@@ -103,5 +103,6 @@ class HistoryController {
 
 var builder = new controller.InjectedControllerBuilder();
 git.addServices(builder.Services);
+builder.Services.tryAddTransient(HistoryController, HistoryController);
 
-controller.create<HistoryController, void, void>("history", HistoryController, null);
+builder.create("history", HistoryController);

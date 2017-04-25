@@ -6,29 +6,11 @@ import * as storage from "hr.storage";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as toggles from "hr.toggles";
-import * as GitService from "edity.editorcore.GitService";
+import * as git from "edity.editorcore.GitService";
 import * as saveService from "edity.editorcore.SaveService";
 
-var currentRowCreatedCallback;
-
-function determineCommitVariant(data) {
-    var listenerVariant = GitService.fireDetermineCommitVariant(data);
-    if (listenerVariant) {
-        currentRowCreatedCallback = listenerVariant[0].rowCreated;
-        return listenerVariant[0].variant;
-    }
-    return data.state;
-}
-
-function commitRowCreated(bindings, data) {
-    if (currentRowCreatedCallback) {
-        currentRowCreatedCallback(bindings, data);
-        currentRowCreatedCallback = null;
-    }
-}
-
 class NavButtonController {
-    constructor(bindings) {
+    constructor(bindings, private controller: CommitController) {
 
     }
 
@@ -36,15 +18,16 @@ class NavButtonController {
         evt.preventDefault();
         saveService.saveNow()
         .then(r => {
-            commitController.startCommit();
+            this.controller.startCommit();
         })
     }
 }
 
-var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.add("CommitNavItem", NavButtonController);
-
 class CommitController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, git.GitService];
+    }
+
     private commitModel;
     private dialog;
 
@@ -54,17 +37,18 @@ class CommitController {
     private noChanges;
     private toggleGroup;
     private changedFiles;
+    private currentRowCreatedCallback;
 
-    constructor(commitDialog) {
-        this.commitModel = commitDialog.getModel('commit');
-        this.dialog = commitDialog.getToggle('dialog');
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
+        this.commitModel = bindings.getModel('commit');
+        this.dialog = bindings.getToggle('dialog');
 
-        this.main = commitDialog.getToggle('main');
-        this.load = commitDialog.getToggle('load');
-        this.error = commitDialog.getToggle('error');
-        this.noChanges = commitDialog.getToggle('noChanges');
+        this.main = bindings.getToggle('main');
+        this.load = bindings.getToggle('load');
+        this.error = bindings.getToggle('error');
+        this.noChanges = bindings.getToggle('noChanges');
         this.toggleGroup = new toggles.Group(this.main, this.load, this.error, this.noChanges);
-        this.changedFiles = commitDialog.getModel('changedFiles');
+        this.changedFiles = bindings.getModel('changedFiles');
 
         GitService.revertStarted.add(() => this.toggleGroup.activate(this.load));
 
@@ -76,14 +60,17 @@ class CommitController {
                 this.toggleGroup.activate(this.error);
             }
         });
+
+        var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
+        editMenu.add("CommitNavItem", NavButtonController, this);
     }
 
     private updateUncommittedFiles() {
-        GitService.uncommittedChanges()
+        this.GitService.uncommittedChanges()
             .then((data: any[]) => {
                 if (data.length > 0) {
                     this.toggleGroup.activate(this.main);
-                    this.changedFiles.setData(data, commitRowCreated, determineCommitVariant);
+                    this.changedFiles.setData(data, (bindings, data) => this.commitRowCreated(bindings, data), (data) => this.determineCommitVariant(data));
                 }
                 else {
                     this.toggleGroup.activate(this.noChanges);
@@ -98,7 +85,7 @@ class CommitController {
         evt.preventDefault();
         this.toggleGroup.activate(this.load);
         var data = this.commitModel.getData();
-        GitService.commit(data)
+        this.GitService.commit(data)
             .then((resultData) => {
                 this.toggleGroup.activate(this.main);
                 this.commitModel.clear();
@@ -115,6 +102,26 @@ class CommitController {
         this.dialog.on();
         this.updateUncommittedFiles();
     }
+
+    private determineCommitVariant(data) {
+        var listenerVariant = this.GitService.fireDetermineCommitVariant(data);
+        if (listenerVariant) {
+            this.currentRowCreatedCallback = listenerVariant[0].rowCreated;
+            return listenerVariant[0].variant;
+        }
+        return data.state;
+    }
+
+    private commitRowCreated(bindings, data) {
+        if (this.currentRowCreatedCallback) {
+            this.currentRowCreatedCallback(bindings, data);
+            this.currentRowCreatedCallback = null;
+        }
+    }
 }
 
-var commitController = controller.create<CommitController, void, void>("commit", CommitController)[0];
+var builder = new controller.InjectedControllerBuilder();
+git.addServices(builder.Services);
+builder.Services.tryAddTransient(CommitController, CommitController);
+
+builder.create("commit", CommitController);

@@ -5,37 +5,40 @@
 import * as storage from "hr.storage";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
-import * as GitService from "edity.editorcore.GitService";
+import * as git from "edity.editorcore.GitService";
 
 var CodeMirror = (<any>window).CodeMirror;
 
 class MergeRow {
-    private mergeController;
-    private data;
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, git.GitService, MergeController, controller.InjectControllerData];
+    }
 
-    constructor(bindings: controller.BindingCollection, context: MergeController, data) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private mergeController: MergeController, private data) {
         bindings.setListener(this);
-        this.mergeController = context;
-        this.data = data;
     }
 
     merge(evt) {
         evt.preventDefault();
         this.mergeController.startUi();
 
-        GitService.mergeInfo(this.data.filePath)
+        this.GitService.mergeInfo(this.data.filePath)
             .then((successData) => this.mergeController.initUI(this.data.filePath, successData))
             .catch((failData) => alert("Cannot read merge data, please try again later"));
     }
 }
 
 class MergeController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, git.GitService];
+    }
+
     private dialog;
     private mergeModel;
     private dv;
     private savePath;
 
-    constructor(bindings: controller.BindingCollection) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
         this.dialog = bindings.getToggle('dialog');
         this.mergeModel = bindings.getModel('merge');
 
@@ -44,9 +47,10 @@ class MergeController {
 
     private mergeVariant(data) {
         if (data.state === "Conflicted") {
+            var creator = builder.createOnCallback(MergeRow);
             return {
                 variant: "Conflicted",
-                rowCreated: (bindings, data) => new MergeRow(bindings, this, data)
+                rowCreated: (bindings, data) => creator(bindings, data)
             };
         }
     }
@@ -87,10 +91,14 @@ class MergeController {
         evt.preventDefault();
 
         var content = this.dv.editor().getValue();
-        GitService.resolve(this.savePath, content)
+        this.GitService.resolve(this.savePath, content)
             .then((data) => this.dialog.off())
             .catch((data) => alert("Error saving merge. Please try again later."));
     }
 }
 
-controller.create<MergeController, void, void>("merge", MergeController);
+var builder = new controller.InjectedControllerBuilder();
+git.addServices(builder.Services);
+builder.Services.tryAddShared(MergeController, MergeController);
+
+builder.create("merge", MergeController);

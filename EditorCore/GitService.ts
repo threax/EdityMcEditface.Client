@@ -94,9 +94,10 @@ export class GitService {
 
 export function addServices(services: di.ServiceCollection) {
     startup.addServices(services);
-    services.tryAddSingleton(edityClient.GitClient, s => {
+    services.tryAddShared(edityClient.GitClient, s => {
         var fetcher = s.getRequiredService(Fetcher);
         var shim = s.getRequiredService(startup.IBackwardCompatPageStart);
         return new edityClient.GitClient(shim.BaseUrl, fetcher);
     });
+    services.tryAddShared(GitService, GitService);
 }
