@@ -1,6 +1,14 @@
 ﻿{
   "$schema": "../../../SchemaGenerator/Schema/EdityProject.json",
   "contentMap": {
+    "tsBin": {
+      "js": [
+        {
+          "file": "~/lib/tsbin.js",
+          "async": false
+        }
+      ]
+    },
     "bootstrap": {
       "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
     },
@@ -33,7 +41,7 @@
       "js": [ { "file": "~/edity/lib/ckeditor/ckeditor.js" } ]
     },
     "editorCore": {
-      "dependencies": [ "transitions", "edityLoading", "codemirror" ]
+      "dependencies": [ "tsBin", "transitions", "edityLoading", "codemirror" ]
     }
   },
   "vars": {
