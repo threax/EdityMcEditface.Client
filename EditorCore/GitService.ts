@@ -5,8 +5,9 @@ import * as uploader from 'edity.editorcore.uploader';
 import { ActionEventDispatcher, FuncEventDispatcher } from 'hr.eventdispatcher';
 import { PagedClientData } from 'edity.editorcore.pageddata';
 import { Fetcher } from 'hr.fetcher';
-import * as startup from 'edity.editorcore.startup';
+import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
+import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 export class GitService {
     public static get InjectorArgs(): di.DiFunction<any>[] {
@@ -93,10 +94,10 @@ export class GitService {
 }
 
 export function addServices(services: di.ServiceCollection) {
-    startup.addServices(services);
+    editorServices.addServices(services);
     services.tryAddShared(edityClient.GitClient, s => {
         var fetcher = s.getRequiredService(Fetcher);
-        var shim = s.getRequiredService(startup.IBackwardCompatPageStart);
+        var shim = s.getRequiredService(IBaseUrlInjector);
         return new edityClient.GitClient(shim.BaseUrl, fetcher);
     });
     services.tryAddShared(GitService, GitService);
