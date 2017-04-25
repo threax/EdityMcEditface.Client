@@ -4,90 +4,99 @@ import * as edityClient from 'edity.editorcore.EdityClient';
 import * as uploader from 'edity.editorcore.uploader';
 import { ActionEventDispatcher, FuncEventDispatcher } from 'hr.eventdispatcher';
 import { PagedClientData } from 'edity.editorcore.pageddata';
-import { CacheBuster } from 'hr.cachebuster';
-import { WindowFetch } from 'hr.windowfetch';
-import * as pageStart from 'edity.editorcore.EditorPageStart';
+import { Fetcher } from 'hr.fetcher';
+import * as startup from 'edity.editorcore.startup';
+import * as di from 'hr.di';
 
-var host = "";
-var cacheBuster = new CacheBuster(new WindowFetch());
-var client: edityClient.GitClient;
+export class GitService {
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [edityClient.GitClient];
+    }
 
-pageStart.init()
-    .then((config) => {
-        client = new edityClient.GitClient(config.BaseUrl, config.Fetcher);
+    private revertStartedHandler = new ActionEventDispatcher<void>();
+    private revertCompletedHandler = new ActionEventDispatcher<boolean>();
+    private host = "";
+    //Commit variant detection and sync
+    private determineCommitVariantEventHandler = new FuncEventDispatcher<any, any>();
+
+    constructor(private client: edityClient.GitClient) {
+
+    }
+
+    get revertStarted() { return this.revertStartedHandler.modifier; }
+    get revertCompleted() { return this.revertCompletedHandler.modifier; };
+    get determineCommitVariantEvent() { return this.determineCommitVariantEventHandler.modifier };
+
+    setHost(url) {
+        this.host = url;
+    }
+
+    syncInfo() {
+        return this.client.syncInfo(null);
+    }
+
+    uncommittedChanges() {
+        return this.client.uncommittedChanges(null);
+    }
+
+    commit(data: edityClient.NewCommit) {
+        return this.client.commit(data, null);
+    }
+
+    uncommittedDiff(file:string) {
+        return this.client.uncommittedDiff(file, null);
+    }
+
+    mergeInfo(file:string) {
+        return this.client.mergeInfo(file, null);
+    }
+
+    historyCount(file) {
+        return this.client.repoHistoryCount(file, null);
+    }
+
+    createHistoryPager(file, count) {
+        return new PagedClientData<edityClient.History[]>((current, resultsPerPage) => this.getDataPage(file, current, resultsPerPage), count);
+    }
+
+    getDataPage(file, current, resultsPerPage): Promise<edityClient.History[]> {
+        return this.client.fileHistory(file, current, resultsPerPage, null);
+    }
+
+    resolve(file, content) {
+        var blob = new Blob([content], { type: "text/html" });
+        return this.client.resolve(file, { data: blob, fileName: file }, null);
+    }
+
+    pull() {
+        return this.client.pull(null);
+    }
+
+    push() {
+        return this.client.push(null);
+    }
+
+    async revert(file) {
+        try {
+            this.revertStartedHandler.fire(null);
+            var data = await this.client.revert(file, null);
+            this.revertCompletedHandler.fire(true);
+        }
+        catch (err) {
+            this.revertCompletedHandler.fire(false);
+        }
+    }
+
+    fireDetermineCommitVariant(data) {
+        return this.determineCommitVariantEventHandler.fire(data);
+    }
+}
+
+export function addServices(services: di.ServiceCollection) {
+    startup.addServices(services);
+    services.tryAddSingleton(edityClient.GitClient, s => {
+        var fetcher = s.getRequiredService(Fetcher);
+        var shim = s.getRequiredService(startup.IBackwardCompatPageStart);
+        return new edityClient.GitClient(shim.BaseUrl, fetcher);
     });
-
-export function setHost(url) {
-    host = url;
 }
-
-export function syncInfo() {
-    return client.syncInfo(null);
-}
-
-export function uncommittedChanges() {
-    return client.uncommittedChanges(null);
-}
-
-export function commit(data: edityClient.NewCommit) {
-    return client.commit(data, null);
-}
-
-export function uncommittedDiff(file:string) {
-    return client.uncommittedDiff(file, null);
-}
-
-export function mergeInfo(file:string) {
-    return client.mergeInfo(file, null);
-}
-
-export function historyCount(file) {
-    return client.repoHistoryCount(file, null);
-}
-
-export function createHistoryPager(file, count) {
-    return new PagedClientData<edityClient.History[]>((current, resultsPerPage) => getDataPage(file, current, resultsPerPage), count);
-}
-
-function getDataPage(file, current, resultsPerPage): Promise<edityClient.History[]> {
-    return client.fileHistory(file, current, resultsPerPage, null);
-}
-
-export function resolve(file, content) {
-    var blob = new Blob([content], { type: "text/html" });
-    return client.resolve(file, { data: blob, fileName: file }, null);
-}
-
-export function pull() {
-    return client.pull(null);
-}
-
-export function push() {
-    return client.push(null);
-}
-
-var revertStartedHandler = new ActionEventDispatcher<void>();
-var revertCompletedHandler = new ActionEventDispatcher<boolean>();
-
-export function revert(file) {
-    revertStartedHandler.fire(null);
-    return client.revert(file, null)
-        .then((data) => {
-            revertCompletedHandler.fire(true);
-        })
-        .catch((err) => {
-            revertCompletedHandler.fire(false);
-        });
-}
-
-export const revertStarted = revertStartedHandler.modifier;
-export const revertCompleted = revertCompletedHandler.modifier;
-
-//Commit variant detection and sync
-var determineCommitVariantEventHandler = new FuncEventDispatcher<any, any>();
-
-export function fireDetermineCommitVariant(data) {
-    return determineCommitVariantEventHandler.fire(data);
-}
-
-export const determineCommitVariantEvent = determineCommitVariantEventHandler.modifier;

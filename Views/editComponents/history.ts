@@ -7,7 +7,7 @@ import * as navmenu from "edity.editorcore.navmenu";
 import * as toggles from "hr.toggles";
 import * as PageNumbers from "edity.editorcore.pagenumbers";
 import * as Iterable from "hr.iterable";
-import * as GitService from "edity.editorcore.GitService";
+import * as git from "edity.editorcore.GitService";
 
 class NavButtonController {
     private controller: HistoryController;
@@ -23,6 +23,10 @@ class NavButtonController {
 }
 
 class HistoryController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, git.GitService];
+    }
+
     private dialog;
 
     private main;
@@ -32,11 +36,11 @@ class HistoryController {
 
     private historyModel;
 
-    private pagedData = GitService.createHistoryPager(window.location.pathname, 10);
+    private pagedData;
     private pageNumbers;
 
 
-    constructor(bindings: controller.BindingCollection) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
         this.dialog = bindings.getToggle('dialog');
 
         this.main = bindings.getToggle('main');
@@ -88,7 +92,7 @@ class HistoryController {
         this.dialog.on();
         this.toggleGroup.activate(this.load);
         this.pagedData.updateData();
-        GitService.historyCount(window.location.pathname)
+        this.GitService.historyCount(window.location.pathname)
             .then((data) => {
                 this.pageNumbers.totalResults = data;
                 this.pageNumbers.currentPage = 0;
@@ -96,5 +100,8 @@ class HistoryController {
             });
     }
 }
+
+var builder = new controller.InjectedControllerBuilder();
+git.addServices(builder.Services);
 
 controller.create<HistoryController, void, void>("history", HistoryController, null);
