@@ -34,6 +34,15 @@ class NavMenu {
         this.itemAddedEvent.fire(item);
     }
 
+    public addInjected(name: string, createOnCallback) {
+        var item = {
+            name: name,
+            created: createOnCallback
+        };
+        this.menuItems.push(item);
+        this.itemAddedEvent.fire(item);
+    }
+
     public getItems() {
         return this.menuItems;
     }
