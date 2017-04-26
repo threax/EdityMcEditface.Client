@@ -9,7 +9,10 @@ import * as Iterable from "hr.iterable";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as EdityClient from 'edity.editorcore.EdityClient';
-import * as PageStart from 'edity.editorcore.EditorPageStart';
+import { Fetcher } from 'hr.fetcher';
+import * as editorServices from 'edity.editorcore.EditorServices';
+import * as di from 'hr.di';
+import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 function getFileName(path) {
     return path.replace(/^.*?([^\\\/]*)$/, '$1');
@@ -120,14 +123,19 @@ class NavButtonController {
 }
 
 class MediaController {
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [controller.BindingCollection, EdityClient.UploadClient];
+    }
+
     private fileBrowser;
     private uploadModel;
     private dialog;
-    private uploadClient: EdityClient.UploadClient;
 
-    constructor(bindings: controller.BindingCollection, context: PageStart.EditorPageStart) {
-        this.uploadClient = new EdityClient.UploadClient(context.BaseUrl, context.Fetcher);
-        this.fileBrowser = new FileBrowser(bindings, this.uploadClient);
+    constructor(bindings: controller.BindingCollection, private uploadClient: EdityClient.UploadClient) {
+        var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
+        editMenu.add("MediaNavItem", NavButtonController, this);
+
+        this.fileBrowser = new FileBrowser(bindings, uploadClient);
         this.uploadModel = bindings.getModel('upload');
         this.dialog = bindings.getToggle('dialog');
     }
@@ -154,9 +162,13 @@ class MediaController {
     }
 }
 
-PageStart.init().then((config) => {
-    var mediaControllerInstance = controller.create<MediaController, PageStart.EditorPageStart, void>("media", MediaController, config)[0];
-
-    var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-    editMenu.add("MediaNavItem", NavButtonController, mediaControllerInstance);
+var builder = new controller.InjectedControllerBuilder();
+editorServices.addServices(builder.Services);
+builder.Services.tryAddShared(EdityClient.UploadClient, s => {
+    var fetcher = s.getRequiredService(Fetcher);
+    var shim = s.getRequiredService(IBaseUrlInjector);
+    return new EdityClient.UploadClient(shim.BaseUrl, fetcher);
 });
+builder.Services.tryAddTransient(MediaController, MediaController);
+
+builder.create("media", MediaController);

@@ -7,7 +7,6 @@ import * as controller from "hr.controller";
 import * as toggles from "hr.toggles";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as EdityClient from 'edity.editorcore.EdityClient';
-import * as PageStart from 'edity.editorcore.EditorPageStart';
 import * as CompileService from 'edity.editorcore.CompileService';
 
 class NavButtonController {
