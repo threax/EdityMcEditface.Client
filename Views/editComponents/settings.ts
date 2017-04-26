@@ -8,16 +8,33 @@ import * as storage from "hr.storage";
 import { PageClient, PageSettings } from "edity.editorcore.EdityClient";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as Toggles from 'hr.toggles';
-import * as PageStart from 'edity.editorcore.EditorPageStart';
+import { Fetcher } from 'hr.fetcher';
+import * as editorServices from 'edity.editorcore.EditorServices';
+import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
+
+class NavButtonController {
+    constructor(bindings: controller.BindingCollection, private pageSettingsInstance: PageSettingsController) {
+
+    }
+
+    open(evt) {
+        evt.preventDefault();
+        this.pageSettingsInstance.open();
+    }
+}
 
 class DeletePageConfirmationController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, PageClient];
+    }
+
     private dialog;
     private model;
     private uploadUrl;
     private currentUrl;
     private client: PageClient;
 
-    constructor(bindings, client: PageClient) {
+    constructor(bindings: controller.BindingCollection, client: PageClient) {
         this.dialog = bindings.getToggle('dialog');
         this.model = bindings.getModel("info");
         this.uploadUrl = this.model.getSrc();
@@ -40,24 +57,20 @@ class DeletePageConfirmationController {
     }
 }
 
-interface PageSettingsContext {
-    client: PageClient,
-    deletePageConfirmation: DeletePageConfirmationController
-}
-
 class PageSettingsController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, PageClient, DeletePageConfirmationController];
+    }
+
     private dialog;
-    private client: PageClient;
     private main: Toggles.Toggle;
     private error: Toggles.Toggle;
     private load: Toggles.Toggle;
     private toggles: Toggles.Group;
     private settings: controller.Model<PageSettings>;
-    private deletePageConfirmation: DeletePageConfirmationController;
 
-    constructor(bindings: controller.BindingCollection, context: PageSettingsContext) {
+    constructor(bindings: controller.BindingCollection, private client: PageClient, private deletePageConfirmation: DeletePageConfirmationController) {
         this.dialog = bindings.getToggle('dialog');
-        this.client = context.client;
 
         this.main = bindings.getToggle('main');
         this.error = bindings.getToggle('error');
@@ -65,7 +78,9 @@ class PageSettingsController {
         this.toggles = new Toggles.Group(this.main, this.error, this.load);
 
         this.settings = bindings.getModel<PageSettings>("settings");
-        this.deletePageConfirmation = context.deletePageConfirmation;
+
+        var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
+        editMenu.add("SettingsNavItem", NavButtonController, this);
     }
 
     deletePage(evt) {
@@ -103,22 +118,14 @@ class PageSettingsController {
     }
 }
 
-PageStart.init().then(config => {
-    var client = new PageClient(config.BaseUrl, config.Fetcher);
-    var deletePageConfirmation = controller.create<DeletePageConfirmationController, PageClient, void>('deletePageConfirm', DeletePageConfirmationController, client)[0];
-    var pageSettingsInstance = controller.create<PageSettingsController, PageSettingsContext, void>('pageSettings', PageSettingsController,
-        {
-            client: client,
-            deletePageConfirmation: deletePageConfirmation
-        })[0];
-
-    class NavButtonController {
-        open(evt) {
-            evt.preventDefault();
-            pageSettingsInstance.open();
-        }
-    }
-
-    var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-    editMenu.add("SettingsNavItem", NavButtonController);
+var builder = new controller.InjectedControllerBuilder();
+controller.InjectedControllerBuilder.GlobalServices.tryAddShared(PageClient, s => {
+    var fetcher = s.getRequiredService(Fetcher);
+    var shim = s.getRequiredService(IBaseUrlInjector);
+    return new PageClient(shim.BaseUrl, fetcher);
 });
+builder.Services.tryAddShared(DeletePageConfirmationController, DeletePageConfirmationController);
+builder.Services.tryAddShared(PageSettingsController, PageSettingsController);
+
+builder.create('deletePageConfirm', DeletePageConfirmationController);
+builder.create('pageSettings', PageSettingsController);
