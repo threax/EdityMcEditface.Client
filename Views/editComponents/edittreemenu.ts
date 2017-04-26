@@ -8,7 +8,6 @@ import * as http from "hr.http";
 import * as TreeMenu from "hr.treemenu.TreeMenu";
 import * as saveService from "edity.editorcore.SaveService";
 import * as EdityClient from 'edity.editorcore.EdityClient';
-import * as PageStart from 'edity.editorcore.EditorPageStart';
 import * as Iter from 'hr.iterable';
 
 var treeMenuEditors = {};
@@ -453,8 +452,9 @@ function listenToTreeMenu(menu: TreeMenu.TreeMenuController) {
     }, true);
 }
 
-PageStart.init().then((config) => {
-    TreeMenu.GetInstances().forEach(listenToTreeMenu);
-    TreeMenu.GetInstanceAdded().add(listenToTreeMenu);
-    uploadClient = new EdityClient.UploadClient(config.BaseUrl, config.Fetcher);
-});
+TreeMenu.GetInstances().forEach(listenToTreeMenu);
+TreeMenu.GetInstanceAdded().add(listenToTreeMenu);
+//cheating, don't really want to rewrite this, so pull scope from global scope
+EdityClient.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var scope = controller.InjectedControllerBuilder.GlobalScope;
+uploadClient = scope.getRequiredService(EdityClient.UploadClient);
