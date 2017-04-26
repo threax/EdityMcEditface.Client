@@ -12,7 +12,6 @@ import * as EdityClient from 'edity.editorcore.EdityClient';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
-import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 function getFileName(path) {
     return path.replace(/^.*?([^\\\/]*)$/, '$1');
@@ -164,11 +163,7 @@ class MediaController {
 
 var builder = new controller.InjectedControllerBuilder();
 editorServices.addServices(controller.InjectedControllerBuilder.GlobalServices);
-builder.Services.tryAddShared(EdityClient.UploadClient, s => {
-    var fetcher = s.getRequiredService(Fetcher);
-    var shim = s.getRequiredService(IBaseUrlInjector);
-    return new EdityClient.UploadClient(shim.BaseUrl, fetcher);
-});
+EdityClient.addServices(controller.InjectedControllerBuilder.GlobalServices);
 builder.Services.tryAddTransient(MediaController, MediaController);
 
 builder.create("media", MediaController);

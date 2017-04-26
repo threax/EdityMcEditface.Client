@@ -6,6 +6,8 @@
 //----------------------
 
 import { Fetcher, RequestInfo, RequestInit, Response } from 'hr.Fetcher';
+import * as di from 'hr.di';
+import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 export class CompileClient {
     private static jsonMimeType = "application/json";
@@ -1373,4 +1375,30 @@ export enum UncommittedChangeState {
 export interface FileParameter {
     data: any;
     fileName: string;
+}
+
+export function addServices(services: di.ServiceCollection){
+    services.tryAddShared(CompileClient, s => {
+        var fetcher = s.getRequiredService(Fetcher);
+        var shim = s.getRequiredService(IBaseUrlInjector);
+        return new CompileClient(shim.BaseUrl, fetcher);
+    });
+
+    services.tryAddShared(GitClient, s => {
+        var fetcher = s.getRequiredService(Fetcher);
+        var shim = s.getRequiredService(IBaseUrlInjector);
+        return new GitClient(shim.BaseUrl, fetcher);
+    });
+
+    services.tryAddShared(PageClient, s => {
+        var fetcher = s.getRequiredService(Fetcher);
+        var shim = s.getRequiredService(IBaseUrlInjector);
+        return new PageClient(shim.BaseUrl, fetcher);
+    });
+
+    services.tryAddShared(UploadClient, s => {
+        var fetcher = s.getRequiredService(Fetcher);
+        var shim = s.getRequiredService(IBaseUrlInjector);
+        return new UploadClient(shim.BaseUrl, fetcher);
+    });
 }

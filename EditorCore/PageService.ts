@@ -5,7 +5,6 @@ import * as saveService from 'edity.editorcore.SaveService';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
-import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 export class PageService {
     public static get InjectorArgs(): di.DiFunction<any>[] {
@@ -55,10 +54,6 @@ export class PageService {
 
 export function addServices(services: di.ServiceCollection) {
     editorServices.addServices(services);
-    services.tryAddShared(edityClient.PageClient, s => {
-        var fetcher = s.getRequiredService(Fetcher);
-        var shim = s.getRequiredService(IBaseUrlInjector);
-        return new edityClient.PageClient(shim.BaseUrl, fetcher);
-    });
+    edityClient.addServices(services);
     services.tryAddShared(PageService, PageService);
 }

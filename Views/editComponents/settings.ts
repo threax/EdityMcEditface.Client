@@ -5,12 +5,11 @@
 import * as controller from "hr.controller";
 import * as FormLifecycle from "edity.editorcore.FormLifecycle";
 import * as storage from "hr.storage";
-import { PageClient, PageSettings } from "edity.editorcore.EdityClient";
+import { PageClient, PageSettings, addServices as addEdityClientServices } from "edity.editorcore.EdityClient";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as Toggles from 'hr.toggles';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
-import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 class NavButtonController {
     constructor(bindings: controller.BindingCollection, private pageSettingsInstance: PageSettingsController) {
@@ -119,11 +118,8 @@ class PageSettingsController {
 }
 
 var builder = new controller.InjectedControllerBuilder();
-controller.InjectedControllerBuilder.GlobalServices.tryAddShared(PageClient, s => {
-    var fetcher = s.getRequiredService(Fetcher);
-    var shim = s.getRequiredService(IBaseUrlInjector);
-    return new PageClient(shim.BaseUrl, fetcher);
-});
+editorServices.addServices(controller.InjectedControllerBuilder.GlobalServices);
+addEdityClientServices(controller.InjectedControllerBuilder.GlobalServices);
 builder.Services.tryAddShared(DeletePageConfirmationController, DeletePageConfirmationController);
 builder.Services.tryAddShared(PageSettingsController, PageSettingsController);
 

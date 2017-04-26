@@ -4,7 +4,6 @@ import { ExternalPromise } from 'hr.externalpromise';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
-import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 export class CompilerServiceEventArgs {
     service: CompilerService;
@@ -140,11 +139,7 @@ export class CompilerService {
 
 export function addServices(services: di.ServiceCollection) {
     editorServices.addServices(services);
-    services.tryAddShared(EdityClient.CompileClient, s => {
-        var fetcher = s.getRequiredService(Fetcher);
-        var shim = s.getRequiredService(IBaseUrlInjector);
-        return new EdityClient.CompileClient(shim.BaseUrl, fetcher);
-    });
+    EdityClient.addServices(services);
     services.tryAddShared(PrimaryCompilePhase, PrimaryCompilePhase);
     services.tryAddShared(CompilerService, CompilerService);
 }

@@ -11,7 +11,7 @@ import * as Iterable from "hr.iterable";
 import * as git from "edity.editorcore.GitService";
 
 class NavButtonController {
-    constructor(private syncInstance: SyncController) {
+    constructor(bindings: controller.BindingCollection, private syncInstance: SyncController) {
 
     }
 
