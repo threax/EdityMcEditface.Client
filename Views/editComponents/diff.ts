@@ -93,7 +93,7 @@ class DiffController {
 
     private diffVariant(data) {
         if (data.state === "Modified") {
-            var creator = builder.createOnCallback(DiffRow);
+            var creator = this.builder.createOnCallback(DiffRow);
             return {
                 variant: "ModifiedWithDiff",
                 rowCreated: (bindings, data) => creator(bindings, data)

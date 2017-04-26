@@ -7,36 +7,28 @@ import * as uploader from "edity.editorcore.uploader";
 import * as component from "hr.components";
 import * as domQuery from "hr.domquery";
 import * as controller from "hr.controller";
-import { init, EditorPageStart } from 'edity.editorcore.EditorPageStart';
 import { TemplateClient, Template, PageClient } from "edity.editorcore.EdityClient";
-
-interface TemplateItemControllerSettings {
-    config: NewPageControllerConfig;
-    pageConfig: EditorPageStart,
-    templateClient: TemplateClient
-    pageClient: PageClient
-}
+import { Fetcher } from 'hr.fetcher';
+import * as editorServices from 'edity.editorcore.EditorServices';
+import * as di from 'hr.di';
+import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
 class TemplateItemController {
-    static GetCreator(context: TemplateItemControllerSettings): controller.ControllerBuilder<TemplateItemController, TemplateItemControllerSettings, Template> {
-        return new controller.ControllerBuilder<TemplateItemController, TemplateItemControllerSettings, Template>(TemplateItemController, context);
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [controller.BindingCollection, controller.InjectControllerData, PageClient, TemplateClient];
     }
 
-    private context: TemplateItemControllerSettings;
-    private data: Template;
-
-    constructor(bindings: controller.BindingCollection, context: TemplateItemControllerSettings, data: Template) {
+    constructor(bindings: controller.BindingCollection, private data: Template, private pageClient: PageClient, private templateClient: TemplateClient) {
         this.data = data;
-        this.context = context;
     }
 
     create(evt) {
         evt.preventDefault();
-        this.context.templateClient.getContent(this.data.path, null)
+        this.templateClient.getContent(this.data.path, null)
             .then((templateData) => {
                 //Make a blob
                 var blob = new Blob([templateData], { type: "text/html" });
-                return this.context.pageClient.save(window.location.pathname, { data: blob, fileName: 'file.html' }, null);
+                return this.pageClient.save(window.location.pathname, { data: blob, fileName: 'file.html' }, null);
             })
             .then(function (data) {
                 window.location.href = window.location.href;
@@ -48,33 +40,41 @@ class TemplateItemController {
     }
 }
 
-interface NewPageControllerConfig {
-    createpath: string;
-}
-
 class NewPageController {
-    constructor(bindings: controller.BindingCollection, context: EditorPageStart) {
-        var templatesModel = bindings.getModel<Template>('templates');
-        var config = bindings.getConfig<NewPageControllerConfig>();
-        var templateClient = new TemplateClient(context.BaseUrl, context.Fetcher);
-        var pageClient = new PageClient(context.BaseUrl, context.Fetcher);
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [controller.BindingCollection, TemplateClient, controller.InjectedControllerBuilder];
+    }
 
-        templateClient.listAll(null)
-            .then((data) => {
-                templatesModel.setData(data, TemplateItemController.GetCreator({
-                    config: config,
-                    pageConfig: context,
-                    templateClient: templateClient,
-                    pageClient: pageClient
-                }).createOnCallback());
-            })
-            .catch((err) => {
-                alert('Cannot load templates, please try again later');
-            });
+    private templatesModel;
+
+    constructor(bindings: controller.BindingCollection, private templateClient: TemplateClient, private builder: controller.InjectedControllerBuilder) {
+        this.templatesModel = bindings.getModel<Template>('templates');
+        this.setup();
+    }
+
+    private async setup() {
+        try {
+            var data = await this.templateClient.listAll(null);
+            this.templatesModel.setData(data, this.builder.createOnCallback(TemplateItemController));
+        }
+        catch (err) {
+            alert('Cannot load templates, please try again later');
+        }
     }
 }
 
-
-init().then((pageConfig) => {
-    controller.create<NewPageController, EditorPageStart, void>("new", NewPageController, pageConfig);
+var builder = new controller.InjectedControllerBuilder();
+editorServices.addServices(controller.InjectedControllerBuilder.GlobalServices);
+builder.Services.tryAddShared(PageClient, s => {
+    var fetcher = s.getRequiredService(Fetcher);
+    var shim = s.getRequiredService(IBaseUrlInjector);
+    return new PageClient(shim.BaseUrl, fetcher);
 });
+builder.Services.tryAddShared(TemplateClient, s => {
+    var fetcher = s.getRequiredService(Fetcher);
+    var shim = s.getRequiredService(IBaseUrlInjector);
+    return new TemplateClient(shim.BaseUrl, fetcher);
+});
+builder.Services.tryAddTransient(TemplateItemController, TemplateItemController);
+builder.Services.tryAddTransient(NewPageController, NewPageController);
+builder.create("new", NewPageController);
