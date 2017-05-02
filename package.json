@@ -1,6 +1,6 @@
 {
   "name": "editymceditface.client",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "private": false,
   "types": "./types/fetch.d.ts",
   "devDependencies": {
@@ -15,6 +15,6 @@
     "jsns": "^4.2.2",
     "htmlrapier": "^5.0.0",
     "htmlrapier.bootstrap": "^4.1.0",
-    "htmlrapier.widgets": "^5.0.0"
+    "htmlrapier.widgets": "^5.0.1"
   }
 }
