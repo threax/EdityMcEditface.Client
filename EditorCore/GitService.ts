@@ -93,7 +93,6 @@ export class GitService {
 }
 
 export function addServices(services: di.ServiceCollection) {
-    editorServices.addServices(services);
     edityClient.addServices(services);
     services.tryAddShared(GitService, GitService);
 }

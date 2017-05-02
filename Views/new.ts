@@ -64,7 +64,6 @@ class NewPageController {
 }
 
 var builder = new controller.InjectedControllerBuilder();
-editorServices.addServices(controller.InjectedControllerBuilder.GlobalServices);
 builder.Services.tryAddShared(PageClient, s => {
     var fetcher = s.getRequiredService(Fetcher);
     var shim = s.getRequiredService(IBaseUrlInjector);

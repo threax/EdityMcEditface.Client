@@ -162,7 +162,6 @@ class MediaController {
 }
 
 var builder = new controller.InjectedControllerBuilder();
-editorServices.addServices(controller.InjectedControllerBuilder.GlobalServices);
 EdityClient.addServices(controller.InjectedControllerBuilder.GlobalServices);
 builder.Services.tryAddTransient(MediaController, MediaController);
 

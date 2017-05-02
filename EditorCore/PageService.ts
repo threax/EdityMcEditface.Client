@@ -53,7 +53,6 @@ export class PageService {
 }
 
 export function addServices(services: di.ServiceCollection) {
-    editorServices.addServices(services);
     edityClient.addServices(services);
     services.tryAddShared(PageService, PageService);
 }

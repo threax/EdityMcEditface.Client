@@ -138,7 +138,6 @@ export class CompilerService {
 }
 
 export function addServices(services: di.ServiceCollection) {
-    editorServices.addServices(services);
     EdityClient.addServices(services);
     services.tryAddShared(PrimaryCompilePhase, PrimaryCompilePhase);
     services.tryAddShared(CompilerService, CompilerService);
