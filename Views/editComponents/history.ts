@@ -69,7 +69,7 @@ class HistoryController {
     }
 
     private dataUpdated(data) {
-        this.historyModel.setData(new Iterable.Iterable(data).select(function(item){
+        this.historyModel.setData(new Iterable.Iterable<any>(data).select(function(item){
             item.when = new Date(item.when).toLocaleString();
             return item;
         }));

@@ -13,8 +13,8 @@
     "ckeditor-youtube-plugin": "^2.1.5",
     "codemirror": "~5.25.2",
     "jsns": "^4.2.2",
-    "htmlrapier": "^5.0.0",
+    "htmlrapier": "^5.0.5",
     "htmlrapier.bootstrap": "^4.1.0",
-    "htmlrapier.widgets": "^5.0.1"
+    "htmlrapier.widgets": "^5.1.0"
   }
 }
