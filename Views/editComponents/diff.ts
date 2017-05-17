@@ -3,7 +3,7 @@
 "use strict";
 
 import * as storage from "hr.storage";
-import * as uploader from "edity.editorcore.uploader";
+import * as EdityClient from 'edity.editorcore.EdityClient';
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as git from "edity.editorcore.GitService";
@@ -74,21 +74,19 @@ class DiffRow {
 
 class DiffController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder];
+        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder, EdityClient.UploadClient];
     }
 
     private dialog;
     private diffModel;
     private dv;
-    private config;
     private savePath;
 
-    constructor(bindings, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder) {
+    constructor(bindings, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder, private uploadClient: EdityClient.UploadClient) {
         GitService.determineCommitVariantEvent.add((d) => this.diffVariant(d))
 
         this.dialog = bindings.getToggle('dialog');
         this.diffModel = bindings.getModel('diff');
-        this.config = bindings.getConfig();
     }
 
     private diffVariant(data) {
@@ -130,18 +128,19 @@ class DiffController {
         this.dialog.on();
     }
 
-    save(evt) {
+    async save(evt) {
         evt.preventDefault();
 
         var content = this.dv.editor().getValue();
         var blob = new Blob([content], { type: "text/html" });
-        uploader.upload(this.config.saveurl + '/' + this.savePath, blob)
-        .then(function () {
+
+        try {
+            await this.uploadClient.upload(this.savePath, { data: blob, fileName: this.savePath }, null);
             this.dialog.off();
-        })
-        .catch(function () {
+        }
+        catch (err) {
             alert("Error saving merge. Please try again later.");
-        });
+        }
     }
 }
 
