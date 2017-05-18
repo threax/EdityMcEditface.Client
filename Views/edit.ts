@@ -19,8 +19,8 @@ menu.getItems().forEach(itemAdded);
 menu.itemAdded.add(itemAdded);
 
 class ToolsViewController {
-    public static Builder() {
-        return new controller.ControllerBuilder<ToolsViewController, void, void>(ToolsViewController);
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection];
     }
 
     private mainToggle: controller.OnOffToggle;
@@ -35,6 +35,6 @@ class ToolsViewController {
     }
 }
 
-
-var builder = ToolsViewController.Builder();
-builder.create("edity-tools");
+var builder = new controller.InjectedControllerBuilder();
+builder.Services.addTransient(ToolsViewController, ToolsViewController);
+builder.create("edity-tools", ToolsViewController);
