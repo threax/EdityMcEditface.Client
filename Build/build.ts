@@ -61,6 +61,8 @@ function buildCkEditor(outDir, moduleDir): Promise<any> {
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/clipboard/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/link/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/table/**/*", moduleDir, outDir));
+    promises.push(copy.glob(moduleDir + "/ckeditor/plugins/tableresize/**/*", moduleDir, outDir));
+    promises.push(copy.glob(moduleDir + "/ckeditor/plugins/tabletools/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/pastefromword/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/uploadwidget/**/*", moduleDir, outDir));
     promises.push(copy.glob(moduleDir + "/ckeditor/plugins/notificationaggregator/**/*", moduleDir, outDir));
