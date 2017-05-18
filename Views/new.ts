@@ -12,6 +12,7 @@ import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
 import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
+import * as edityClient from 'edity.editorcore.EdityClient';
 
 class TemplateItemController {
     public static get InjectorArgs(): di.DiFunction<any>[] {
@@ -64,6 +65,9 @@ class NewPageController {
 }
 
 var builder = new controller.InjectedControllerBuilder();
+
+edityClient.addServices(builder.Services);
+
 builder.Services.tryAddShared(PageClient, s => {
     var fetcher = s.getRequiredService(Fetcher);
     var shim = s.getRequiredService(IBaseUrlInjector);
