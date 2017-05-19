@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "../../../../SchemaGenerator/Schema/PageDefinition.json",
-  "linkedContent": [ "bootstrap", "layout" ],
+  "linkedContent": [ "tsBin", "bootstrap", "layout" ],
   "vars": {
     "title": "Default Page Title"
   }
