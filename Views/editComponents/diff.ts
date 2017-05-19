@@ -7,6 +7,7 @@ import * as EdityClient from 'edity.editorcore.EdityClient';
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as git from "edity.editorcore.GitService";
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 var CodeMirror = (<any>window).CodeMirror;
 
@@ -144,8 +145,8 @@ class DiffController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-git.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+git.addServices(builder.Services);
 builder.Services.tryAddTransient(DiffRow, DiffRow);
 builder.Services.tryAddShared(ConfirmRevertController, ConfirmRevertController);
 builder.Services.tryAddShared(DiffController, DiffController);

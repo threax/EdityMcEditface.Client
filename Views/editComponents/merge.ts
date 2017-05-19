@@ -6,6 +6,7 @@ import * as storage from "hr.storage";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as git from "edity.editorcore.GitService";
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 var CodeMirror = (<any>window).CodeMirror;
 
@@ -97,8 +98,7 @@ class MergeController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-git.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+git.addServices(builder.Services);
 builder.Services.tryAddShared(MergeController, MergeController);
-
 builder.create("merge", MergeController);

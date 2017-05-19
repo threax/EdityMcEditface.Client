@@ -9,6 +9,7 @@ import * as navmenu from "edity.editorcore.navmenu";
 import * as toggles from "hr.toggles";
 import * as Iterable from "hr.iterable";
 import * as git from "edity.editorcore.GitService";
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
     constructor(bindings: controller.BindingCollection, private syncInstance: SyncController) {
@@ -110,8 +111,8 @@ class SyncController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-git.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+git.addServices(builder.Services);
 builder.Services.tryAddShared(SyncController, SyncController);
 
 builder.create("sync", SyncController);

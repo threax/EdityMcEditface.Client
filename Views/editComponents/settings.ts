@@ -117,10 +117,9 @@ class PageSettingsController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-addEdityClientServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+addEdityClientServices(builder.Services);
 builder.Services.tryAddShared(DeletePageConfirmationController, DeletePageConfirmationController);
 builder.Services.tryAddShared(PageSettingsController, PageSettingsController);
-
 builder.create('deletePageConfirm', DeletePageConfirmationController);
 builder.create('pageSettings', PageSettingsController);

@@ -8,6 +8,7 @@ import * as toggles from "hr.toggles";
 import * as PageNumbers from "edity.editorcore.pagenumbers";
 import * as Iterable from "hr.iterable";
 import * as git from "edity.editorcore.GitService";
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
     private controller: HistoryController;
@@ -101,8 +102,7 @@ class HistoryController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-git.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+git.addServices(builder.Services);
 builder.Services.tryAddTransient(HistoryController, HistoryController);
-
 builder.create("history", HistoryController);

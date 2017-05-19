@@ -161,8 +161,7 @@ class MediaController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-EdityClient.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+EdityClient.addServices(builder.Services);
 builder.Services.tryAddTransient(MediaController, MediaController);
-
 builder.create("media", MediaController);

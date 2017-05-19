@@ -8,6 +8,7 @@ import * as storage from "hr.storage";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as page from "edity.editorcore.PageService";
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 var CodeMirror = (<any>window).CodeMirror;
 
@@ -57,8 +58,8 @@ class EditSourceController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-page.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+page.addServices(builder.Services);
 builder.Services.tryAddTransient(EditSourceController, EditSourceController);
 
 builder.create("editSource", EditSourceController);

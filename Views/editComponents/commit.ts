@@ -8,6 +8,7 @@ import * as navmenu from "edity.editorcore.navmenu";
 import * as toggles from "hr.toggles";
 import * as git from "edity.editorcore.GitService";
 import * as saveService from "edity.editorcore.SaveService";
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
     constructor(bindings, private controller: CommitController) {
@@ -120,8 +121,8 @@ class CommitController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-git.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+git.addServices(builder.Services);
 builder.Services.tryAddTransient(CommitController, CommitController);
 
 builder.create("commit", CommitController);

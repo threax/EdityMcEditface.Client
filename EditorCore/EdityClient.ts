@@ -8,7 +8,6 @@
 import { Fetcher, RequestInfo, RequestInit, Response } from 'hr.Fetcher';
 import * as di from 'hr.di';
 import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
-import * as editorServices from 'edity.editorcore.EditorServices';
 
 export class CompileClient {
     private static jsonMimeType = "application/json";
@@ -1378,8 +1377,10 @@ export interface FileParameter {
     fileName: string;
 }
 
+/**
+ * Add services. You will need to supply a Fetcher instance to the services yourself.
+ */
 export function addServices(services: di.ServiceCollection){
-    editorServices.addServices(services);
     services.tryAddShared(CompileClient, s => {
         var fetcher = s.getRequiredService(Fetcher);
         var shim = s.getRequiredService(IBaseUrlInjector);

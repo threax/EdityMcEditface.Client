@@ -8,6 +8,7 @@ import * as toggles from "hr.toggles";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as EdityClient from 'edity.editorcore.EdityClient';
 import * as CompileService from 'edity.editorcore.CompileService';
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
     constructor(bindings: controller.BindingCollection, private controller: CompileController) {
@@ -90,8 +91,8 @@ class CompileController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
-CompileService.addServices(controller.InjectedControllerBuilder.GlobalServices);
+var builder = editorServices.createBaseBuilder();
+CompileService.addServices(builder.Services);
 builder.Services.tryAddTransient(CompileController, CompileController);
 
 builder.create("compile", CompileController);

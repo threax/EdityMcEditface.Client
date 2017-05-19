@@ -11,6 +11,7 @@ import * as Iter from 'hr.iterable';
 import * as TreeMenu from 'hr.treemenu.TreeMenu';
 import * as TreeMenuEditor from 'hr.treemenu.TreeMenuEditor';
 import { Fetcher } from 'hr.fetcher';
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -50,9 +51,8 @@ export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
     }
 }
 
-EdityClient.addServices(controller.InjectedControllerBuilder.GlobalServices);
-
-var builder = new controller.InjectedControllerBuilder();
+var builder = editorServices.createBaseBuilder();
+EdityClient.addServices(builder.Services);
 builder.Services.addTransient(TreeMenu.TreeMenuProvider, TreeMenuEditProvider);
 TreeMenuEditor.addServices(builder.Services);
 
