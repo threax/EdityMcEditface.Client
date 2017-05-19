@@ -9,6 +9,21 @@
         }
       ]
     },
+    "simple-sidebar": {
+      "css": [ "~/edity/lib/sidebar/css/simple-sidebar.css" ]
+    },
+    "sidemenu": {
+      "css": [ "~/edity/lib/sidebar/css/sidemenu.css" ],
+      "dependencies": [
+        "simple-sidebar"
+      ]
+    },
+    "layout": {
+      "css": [ "~/lib/edity/css/layout.css" ],
+      "dependencies": [
+        "sidemenu"
+      ]
+    },
     "bootstrap": {
       "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
     },

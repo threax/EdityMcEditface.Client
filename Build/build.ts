@@ -4,6 +4,7 @@
 
 "use strict";
 import * as clientBuild from './clientbuild';
+import * as sidebarBuild from 'htmlrapier.sidebar/Build/build'
 
 var copy = require('threax-npm-tk/copy');
 var less = require('threax-npm-tk/less');
@@ -20,6 +21,7 @@ export function build(outDir, iconOutPath, moduleDir): Promise<any> {
     promises.push(buildCodemirror(libDir, moduleDir));
     promises.push(buildBootstrap(outDir + '/lib', moduleDir));
     promises.push(copy.glob(filesDir + "/diff_match_patch/**/*", filesDir, libDir));
+    promises.push(sidebarBuild.build(libDir + '/sidebar', moduleDir));
 
     //Return composite promise
     return Promise.all(promises);

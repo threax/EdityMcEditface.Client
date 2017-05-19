@@ -4,6 +4,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var clientBuild = require("./clientbuild");
+var sidebarBuild = require("htmlrapier.sidebar/Build/build");
 var copy = require('threax-npm-tk/copy');
 var less = require('threax-npm-tk/less');
 var filesDir = __dirname + "/..";
@@ -15,6 +16,7 @@ function build(outDir, iconOutPath, moduleDir) {
     promises.push(buildCodemirror(libDir, moduleDir));
     promises.push(buildBootstrap(outDir + '/lib', moduleDir));
     promises.push(copy.glob(filesDir + "/diff_match_patch/**/*", filesDir, libDir));
+    promises.push(sidebarBuild.build(libDir + '/sidebar', moduleDir));
     //Return composite promise
     return Promise.all(promises);
 }
