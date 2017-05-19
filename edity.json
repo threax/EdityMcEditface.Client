@@ -10,10 +10,10 @@
       ]
     },
     "simple-sidebar": {
-      "css": [ "~/edity/lib/sidebar/css/simple-sidebar.css" ]
+      "css": [ "~/lib/sidebar/css/simple-sidebar.css" ]
     },
     "sidemenu": {
-      "css": [ "~/edity/lib/sidebar/css/sidemenu.css" ],
+      "css": [ "~/lib/sidebar/css/sidemenu.css" ],
       "dependencies": [
         "simple-sidebar"
       ]
@@ -34,26 +34,26 @@
       "css": [ "~/lib/edity/css/loading.css" ]
     },
     "diff_match_patch": {
-      "js": [ { "file": "~/edity/lib/diff_match_patch/diff_match_patch.js" } ]
+      "js": [ { "file": "~/lib/diff_match_patch/diff_match_patch.js" } ]
     },
     "codemirror": {
       "js": [
-        { "file": "~/edity/lib/codemirror/lib/codemirror.js" },
-        { "file": "~/edity/lib/codemirror/mode/xml/xml.js" },
-        { "file": "~/edity/lib/codemirror/mode/css/css.js" },
-        { "file": "~/edity/lib/codemirror/mode/javascript/javascript.js" },
-        { "file": "~/edity/lib/codemirror/mode/htmlmixed/htmlmixed.js" },
-        { "file": "~/edity/lib/codemirror/addon/merge/merge.js" }
+        { "file": "~/lib/codemirror/lib/codemirror.js" },
+        { "file": "~/lib/codemirror/mode/xml/xml.js" },
+        { "file": "~/lib/codemirror/mode/css/css.js" },
+        { "file": "~/lib/codemirror/mode/javascript/javascript.js" },
+        { "file": "~/lib/codemirror/mode/htmlmixed/htmlmixed.js" },
+        { "file": "~/lib/codemirror/addon/merge/merge.js" }
       ],
       "css": [
-        "~/edity/lib/codemirror/lib/codemirror.css",
-        "~/edity/lib/codemirror/theme/edity.css",
-        "~/edity/lib/codemirror/addon/merge/merge.css"
+        "~/lib/codemirror/lib/codemirror.css",
+        "~/lib/codemirror/theme/edity.css",
+        "~/lib/codemirror/addon/merge/merge.css"
       ],
       "dependencies": [ "diff_match_patch" ]
     },
     "ckeditor": {
-      "js": [ { "file": "~/edity/lib/ckeditor/ckeditor.js" } ]
+      "js": [ { "file": "~/lib/ckeditor/ckeditor.js" } ]
     },
     "editorCore": {
       "dependencies": [ "tsBin", "transitions", "edityLoading", "codemirror" ]

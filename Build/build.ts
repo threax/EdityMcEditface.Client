@@ -14,12 +14,12 @@ var filesDir = __dirname + "/..";
 export function build(outDir, iconOutPath, moduleDir): Promise<any> {
     var promises = [];
 
-    var libDir = outDir + '/edity/lib';
+    var libDir = outDir + '/lib';
 
     promises.push(clientBuild.build(outDir, iconOutPath, moduleDir, filesDir));
     promises.push(buildCkEditor(libDir, moduleDir));
     promises.push(buildCodemirror(libDir, moduleDir));
-    promises.push(buildBootstrap(outDir + '/lib', moduleDir));
+    promises.push(buildBootstrap(libDir, moduleDir));
     promises.push(copy.glob(filesDir + "/diff_match_patch/**/*", filesDir, libDir));
     promises.push(sidebarBuild.build(libDir + '/sidebar', moduleDir));
 
