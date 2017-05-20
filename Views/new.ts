@@ -64,7 +64,7 @@ class NewPageController {
     }
 }
 
-var builder = new controller.InjectedControllerBuilder();
+var builder = editorServices.createBaseBuilder();
 
 edityClient.addServices(builder.Services);
 

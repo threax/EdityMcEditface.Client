@@ -1,6 +1,6 @@
 {
   "name": "editymceditface.client",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "private": false,
   "types": "./types/fetch.d.ts",
   "devDependencies": {
