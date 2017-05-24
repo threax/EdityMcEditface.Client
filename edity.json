@@ -9,6 +9,14 @@
         }
       ]
     },
+    "tsBinProd": {
+      "js": [
+        {
+          "file": "~/lib/tsbin.prod.js",
+          "async": false
+        }
+      ]
+    },
     "simple-sidebar": {
       "css": [ "~/lib/sidebar/css/simple-sidebar.css" ]
     },
