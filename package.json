@@ -17,6 +17,6 @@
     "htmlrapier.bootstrap": "^4.1.0",
     "htmlrapier.widgets": "^5.1.0",
     "htmlrapier.treemenu": "^4.1.0",
-    "htmlrapier.sidebar": "^1.0.0"
+    "htmlrapier.sidebar": "^2.0.0"
   }
 }
