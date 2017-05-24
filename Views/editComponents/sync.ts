@@ -12,7 +12,11 @@ import * as git from "edity.editorcore.GitService";
 import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
-    constructor(bindings: controller.BindingCollection, private syncInstance: SyncController) {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [SyncController];
+    }
+
+    constructor(private syncInstance: SyncController) {
 
     }
 
@@ -24,7 +28,7 @@ class NavButtonController {
 
 class SyncController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService];
+        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder];
     }
 
     private commitModel;
@@ -41,7 +45,7 @@ class SyncController {
     private behindHistory;
     private aheadHistory;
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder) {
         this.commitModel = bindings.getModel('commit');
         this.dialog = bindings.getToggle('dialog');
 
@@ -57,7 +61,8 @@ class SyncController {
         this.aheadHistory = bindings.getModel('aheadHistory');
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.add("SyncNavItem", NavButtonController, this);
+        builder.Services.addSharedInstance(SyncController, this);
+        editMenu.addInjected("SyncNavItem", builder.createOnCallback(NavButtonController));
     }
 
     push(evt) {
@@ -114,5 +119,6 @@ class SyncController {
 var builder = editorServices.createBaseBuilder();
 git.addServices(builder.Services);
 builder.Services.tryAddShared(SyncController, SyncController);
+builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 
 builder.create("sync", SyncController);

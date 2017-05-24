@@ -11,10 +11,12 @@ import * as git from "edity.editorcore.GitService";
 import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
-    private controller: HistoryController;
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [HistoryController];
+    }
 
-    constructor(bindings: controller.BindingCollection, controller: HistoryController) {
-        this.controller = controller;
+    constructor(private controller: HistoryController) {
+
     }
 
     history(evt) {
@@ -25,7 +27,7 @@ class NavButtonController {
 
 class HistoryController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService];
+        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder];
     }
 
     private dialog;
@@ -41,7 +43,7 @@ class HistoryController {
     private pageNumbers;
 
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder) {
         this.dialog = bindings.getToggle('dialog');
 
         this.main = bindings.getToggle('main');
@@ -62,7 +64,8 @@ class HistoryController {
 
         //Add to nav menu
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.add("HistoryNavItem", NavButtonController, this);
+        builder.Services.addSharedInstance(HistoryController, this);
+        editMenu.addInjected("HistoryNavItem", builder.createOnCallback(NavButtonController));
     }
 
     private dataUpdating() {
@@ -105,4 +108,5 @@ class HistoryController {
 var builder = editorServices.createBaseBuilder();
 git.addServices(builder.Services);
 builder.Services.tryAddTransient(HistoryController, HistoryController);
+builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 builder.create("history", HistoryController);

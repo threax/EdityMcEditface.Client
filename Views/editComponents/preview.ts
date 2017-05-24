@@ -3,4 +3,4 @@
 import * as navmenu from "edity.editorcore.navmenu";
 
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.add("PreviewButton");
+editMenu.addInjected("PreviewButton", undefined);

@@ -11,7 +11,11 @@ import * as saveService from "edity.editorcore.SaveService";
 import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
-    constructor(bindings, private controller: CommitController) {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [CommitController];
+    }
+
+    constructor(private controller: CommitController) {
 
     }
 
@@ -26,7 +30,7 @@ class NavButtonController {
 
 class CommitController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService];
+        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder];
     }
 
     private commitModel;
@@ -40,7 +44,7 @@ class CommitController {
     private changedFiles;
     private currentRowCreatedCallback;
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder) {
         this.commitModel = bindings.getModel('commit');
         this.dialog = bindings.getToggle('dialog');
 
@@ -63,7 +67,8 @@ class CommitController {
         });
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.add("CommitNavItem", NavButtonController, this);
+        this.builder.Services.addSharedInstance(CommitController, this);
+        editMenu.addInjected("CommitNavItem", this.builder.createOnCallback(NavButtonController));
     }
 
     private updateUncommittedFiles() {
@@ -124,5 +129,6 @@ class CommitController {
 var builder = editorServices.createBaseBuilder();
 git.addServices(builder.Services);
 builder.Services.tryAddTransient(CommitController, CommitController);
+builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 
 builder.create("commit", CommitController);

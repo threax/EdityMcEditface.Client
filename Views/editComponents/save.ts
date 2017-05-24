@@ -5,8 +5,13 @@
 import * as navmenu from "edity.editorcore.navmenu";
 import * as saveService from "edity.editorcore.SaveService";
 import * as controller from 'hr.controller';
+import * as editorServices from 'edity.editorcore.EditorServices';
 
 class SaveController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection];
+    }
+
     private load: controller.OnOffToggle;
 
     constructor(bindings: controller.BindingCollection){
@@ -29,5 +34,7 @@ class SaveController {
     }
 }
 
+var builder = editorServices.createBaseBuilder();
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.add("SaveButton", SaveController);
+builder.Services.tryAddTransient(SaveController, SaveController);
+editMenu.addInjected("SaveButton", builder.createOnCallback(SaveController));

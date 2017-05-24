@@ -13,7 +13,11 @@ import * as editorServices from 'edity.editorcore.EditorServices';
 var CodeMirror = (<any>window).CodeMirror;
 
 class NavItemController {
-    constructor(bindings: controller.BindingCollection, private editSourceController: EditSourceController) {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [EditSourceController];
+    }
+
+    constructor(private editSourceController: EditSourceController) {
 
     }
 
@@ -25,13 +29,13 @@ class NavItemController {
 
 class EditSourceController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, page.PageService];
+        return [controller.BindingCollection, page.PageService, controller.InjectedControllerBuilder];
     }
 
     private editSourceDialog;
     private cm;
 
-    constructor(bindings: controller.BindingCollection, private pageService: page.PageService) {
+    constructor(bindings: controller.BindingCollection, private pageService: page.PageService, private builder: controller.InjectedControllerBuilder) {
         this.editSourceDialog = bindings.getToggle('dialog');
         var codemirrorElement = domQuery.first('#editSourceTextarea');
         this.cm = CodeMirror.fromTextArea(codemirrorElement, {
@@ -41,7 +45,8 @@ class EditSourceController {
         });
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.add("EditSourceNavItem", NavItemController, this);
+        builder.Services.addSharedInstance(EditSourceController, this);
+        editMenu.addInjected("EditSourceNavItem", builder.createOnCallback(NavItemController));
     }
 
     apply(evt) {
@@ -61,5 +66,5 @@ class EditSourceController {
 var builder = editorServices.createBaseBuilder();
 page.addServices(builder.Services);
 builder.Services.tryAddTransient(EditSourceController, EditSourceController);
-
+builder.Services.tryAddTransient(NavItemController, NavItemController);
 builder.create("editSource", EditSourceController);

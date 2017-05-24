@@ -10,7 +10,7 @@ import * as controller from 'hr.controller';
 
 var navMenu = domQuery.first('[data-editor-navmenu]');
 
-function itemAdded(item) {
+function itemAdded(item: navmenu.INavMenuItem) {
     component.single(item.name, navMenu, null, item.created);
 }
 

@@ -2,10 +2,11 @@
 
 import * as controller from 'hr.controller';
 import { ActionEventDispatcher } from 'hr.eventdispatcher';
+import * as di from 'hr.di';
 
-interface INavMenuItem {
+export interface INavMenuItem {
     name: string;
-    created: any;
+    created: controller.CreateCallback;
 }
 
 var navMenus = {};
@@ -22,20 +23,8 @@ class NavMenu {
         return this.itemAddedEvent.modifier;
     }
 
-    public add(name, controllerConstructor?: any, context?:any) {
-        if (controllerConstructor !== undefined) {
-            controllerConstructor = controller.createOnCallback(controllerConstructor, context);
-        }
-        var item = {
-            name: name,
-            created: controllerConstructor
-        };
-        this.menuItems.push(item);
-        this.itemAddedEvent.fire(item);
-    }
-
-    public addInjected(name: string, createOnCallback) {
-        var item = {
+    public addInjected(name: string, createOnCallback: controller.CreateCallback) {
+        var item: INavMenuItem = {
             name: name,
             created: createOnCallback
         };
@@ -43,7 +32,7 @@ class NavMenu {
         this.itemAddedEvent.fire(item);
     }
 
-    public getItems() {
+    public getItems(): INavMenuItem[] {
         return this.menuItems;
     }
 }

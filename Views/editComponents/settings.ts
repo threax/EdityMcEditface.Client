@@ -12,7 +12,11 @@ import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
-    constructor(bindings: controller.BindingCollection, private pageSettingsInstance: PageSettingsController) {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [PageSettingsController];
+    }
+
+    constructor(private pageSettingsInstance: PageSettingsController) {
 
     }
 
@@ -58,7 +62,7 @@ class DeletePageConfirmationController {
 
 class PageSettingsController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, PageClient, DeletePageConfirmationController];
+        return [controller.BindingCollection, PageClient, DeletePageConfirmationController, controller.InjectedControllerBuilder];
     }
 
     private dialog;
@@ -68,7 +72,7 @@ class PageSettingsController {
     private toggles: Toggles.Group;
     private settings: controller.Model<PageSettings>;
 
-    constructor(bindings: controller.BindingCollection, private client: PageClient, private deletePageConfirmation: DeletePageConfirmationController) {
+    constructor(bindings: controller.BindingCollection, private client: PageClient, private deletePageConfirmation: DeletePageConfirmationController, private builder: controller.InjectedControllerBuilder) {
         this.dialog = bindings.getToggle('dialog');
 
         this.main = bindings.getToggle('main');
@@ -79,7 +83,8 @@ class PageSettingsController {
         this.settings = bindings.getModel<PageSettings>("settings");
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.add("SettingsNavItem", NavButtonController, this);
+        builder.Services.addSharedInstance(PageSettingsController, this);
+        editMenu.addInjected("SettingsNavItem", builder.createOnCallback(NavButtonController));
     }
 
     deletePage(evt) {
@@ -121,5 +126,6 @@ var builder = editorServices.createBaseBuilder();
 addEdityClientServices(builder.Services);
 builder.Services.tryAddShared(DeletePageConfirmationController, DeletePageConfirmationController);
 builder.Services.tryAddShared(PageSettingsController, PageSettingsController);
+builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 builder.create('deletePageConfirm', DeletePageConfirmationController);
 builder.create('pageSettings', PageSettingsController);

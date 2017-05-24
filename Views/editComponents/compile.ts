@@ -11,7 +11,11 @@ import * as CompileService from 'edity.editorcore.CompileService';
 import * as editorServices from 'edity.editorcore.EditorServices';
 
 class NavButtonController {
-    constructor(bindings: controller.BindingCollection, private controller: CompileController) {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [CompileController];
+    }
+
+    constructor(private controller: CompileController) {
 
     }
 
@@ -27,7 +31,7 @@ interface StatusMessage {
 
 class CompileController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, CompileService.CompilerService, EdityClient.CompileClient];
+        return [controller.BindingCollection, CompileService.CompilerService, EdityClient.CompileClient, controller.InjectedControllerBuilder];
     }
 
     private start;
@@ -41,7 +45,7 @@ class CompileController {
     private dialogToggle;
     private statusModel: controller.Model<StatusMessage>;
 
-    constructor(bindings: controller.BindingCollection, private compileService: CompileService.CompilerService, private compileClient: EdityClient.CompileClient) {
+    constructor(bindings: controller.BindingCollection, private compileService: CompileService.CompilerService, private compileClient: EdityClient.CompileClient, private builder: controller.InjectedControllerBuilder) {
         this.start = bindings.getToggle("start");
         this.success = bindings.getToggle("success");
         this.fail = bindings.getToggle("fail");
@@ -58,7 +62,8 @@ class CompileController {
         this.statusModel = bindings.getModel<StatusMessage>("status");
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.add("CompileNavItem", NavButtonController, this);
+        builder.Services.addSharedInstance(CompileController, this);
+        editMenu.addInjected("CompileNavItem", builder.createOnCallback(NavButtonController));
     }
 
     runCompiler(evt) {
@@ -94,5 +99,6 @@ class CompileController {
 var builder = editorServices.createBaseBuilder();
 CompileService.addServices(builder.Services);
 builder.Services.tryAddTransient(CompileController, CompileController);
+builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 
 builder.create("compile", CompileController);

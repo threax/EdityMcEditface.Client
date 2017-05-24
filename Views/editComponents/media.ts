@@ -107,32 +107,35 @@ function FileBrowser(bindings, uploadClient: EdityClient.UploadClient) {
 };
 
 class NavButtonController {
-    private bindings: controller.BindingCollection;
-    private mediaControllerInstance: MediaController;
+    public static get InjectorArgs(): di.DiFunction<any>[] {
+        return [MediaController];
+    }
 
-    constructor(bindings, mediaControllerInstance: MediaController) {
-        this.bindings = bindings;
-        this.mediaControllerInstance = mediaControllerInstance;
+    private source: string;
+
+    constructor(bindings, private mediaControllerInstance: MediaController) {
+        this.source = bindings.getModel("browse").getSrc();
     }
 
     loadMedia(evt) {
         evt.preventDefault();
-        this.mediaControllerInstance.loadMedia(this.bindings.getModel("browse").getSrc());
+        this.mediaControllerInstance.loadMedia(this.source);
     }
 }
 
 class MediaController {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [controller.BindingCollection, EdityClient.UploadClient];
+        return [controller.BindingCollection, EdityClient.UploadClient, controller.InjectedControllerBuilder];
     }
 
     private fileBrowser;
     private uploadModel;
     private dialog;
 
-    constructor(bindings: controller.BindingCollection, private uploadClient: EdityClient.UploadClient) {
+    constructor(bindings: controller.BindingCollection, private uploadClient: EdityClient.UploadClient, builder: controller.InjectedControllerBuilder) {
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.add("MediaNavItem", NavButtonController, this);
+        builder.Services.addSharedInstance(MediaController, this);
+        editMenu.addInjected("MediaNavItem", builder.createOnCallback(NavButtonController));
 
         this.fileBrowser = new FileBrowser(bindings, uploadClient);
         this.uploadModel = bindings.getModel('upload');
@@ -164,4 +167,5 @@ class MediaController {
 var builder = editorServices.createBaseBuilder();
 EdityClient.addServices(builder.Services);
 builder.Services.tryAddTransient(MediaController, MediaController);
+builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 builder.create("media", MediaController);
