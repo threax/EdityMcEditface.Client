@@ -108,12 +108,12 @@ function FileBrowser(bindings, uploadClient: EdityClient.UploadClient) {
 
 class NavButtonController {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [MediaController];
+        return [controller.BindingCollection, MediaController];
     }
 
     private source: string;
 
-    constructor(bindings, private mediaControllerInstance: MediaController) {
+    constructor(bindings: controller.BindingCollection, private mediaControllerInstance: MediaController) {
         this.source = bindings.getModel("browse").getSrc();
     }
 
