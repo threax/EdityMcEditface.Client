@@ -29,3 +29,15 @@
 .treemenu-editor-link, .treemenu-editor-folder{
     position:relative;
 }
+
+.treemenu-editor .drop-above{
+    border-top: 2px solid black;
+}
+
+.treemenu-editor .drop-inside {
+    border: 2px inset;
+}
+
+.treemenu-editor .drop-below {
+    border-bottom: 2px solid black;
+}
