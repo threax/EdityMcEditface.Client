@@ -15,13 +15,13 @@ import * as editorServices from 'edity.editorcore.EditorServices';
 
 export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [Fetcher, EdityClient.UploadClient];
+        return [Fetcher, TreeMenu.TreeMenuStorage, EdityClient.UploadClient];
     }
 
     private hasChanges = false;
 
-    constructor(fetcher: Fetcher, private uploadClient: EdityClient.UploadClient) {
-        super(fetcher);
+    constructor(fetcher: Fetcher, menuStorage: TreeMenu.TreeMenuStorage, private uploadClient: EdityClient.UploadClient) {
+        super(fetcher, menuStorage);
         saveService.saveEvent.add(a => this.save());
     }
 

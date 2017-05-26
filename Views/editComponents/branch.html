@@ -1,0 +1,40 @@
+﻿<!-- Branch Modal -->
+<template data-hr-component="BranchNavItem">
+    <li><a data-toggle="modal" data-hr-on-click="open" href="#Branch">Branch</a></li>
+</template>
+<div class="modal fade" data-hr-controller="branch" tabindex="-1" role="dialog" aria-labelledby="branchModalLabel" data-hr-toggle="dialog" data-hr-run="edity.core.edit.components.branch">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="branchModalLabel">Branch</h4>
+            </div>
+            <div class="modal-body" data-hr-toggle="load" data-hr-style-off="display:none;">
+                <div class="center">
+                    <div class="load-linebar center-block">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+                    <p>Working...</p>
+                </div>
+            </div>
+            <form data-hr-on-submit="commit" data-hr-model="commit" data-hr-toggle="main" data-hr-style-off="display:none;">
+                
+            </form>
+            <div class="modal-body" data-hr-toggle="error" data-hr-style-off="display:none;">
+                <p class="center">
+                    Cannot get uncommitted changes. Please try again later.
+                </p>
+            </div>
+            <div class="modal-body" data-hr-toggle="noChanges" data-hr-style-off="display:none;">
+                <p class="center">
+                    No changes to commit.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{{mainContent}}
