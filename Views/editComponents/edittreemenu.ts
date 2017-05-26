@@ -33,7 +33,7 @@ export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
     private async save() {
         if (this.hasChanges) {
             this.hasChanges = false;
-            var blob = new Blob([JSON.stringify(this.RootNode, this.menuJsonSerializeReplacer, 4)], { type: "application/json" });
+            var blob = new Blob([JSON.stringify(this.RootNode, this.menuJsonSerializeReplacer, 2)], { type: "application/json" });
             try {
                 await this.uploadClient.upload(this.saveUrl, { data: blob, fileName: this.saveUrl }, null);
             }
