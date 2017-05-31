@@ -1,6 +1,8 @@
 ﻿<!-- Branch Modal -->
 <template data-hr-component="BranchNavItem">
-    <li><a data-toggle="modal" data-hr-on-click="open" href="#Branch">Branch</a></li>
+    <li>
+        <a data-toggle="modal" data-hr-on-click="open" href="#Branch">Branch</a>
+    </li>
 </template>
 <div class="modal fade" data-hr-controller="branch" tabindex="-1" role="dialog" aria-labelledby="branchModalLabel" data-hr-toggle="dialog" data-hr-run="edity.core.edit.components.branch">
     <div class="modal-dialog" role="document">
@@ -21,17 +23,19 @@
                     <p>Working...</p>
                 </div>
             </div>
-            <form data-hr-on-submit="commit" data-hr-model="commit" data-hr-toggle="main" data-hr-style-off="display:none;">
-                
-            </form>
+            
+            <div class="modal-body" data-hr-toggle="main" data-hr-style-off="display:none;">
+                <h1>Choose Branch</h1>
+                <div data-hr-model="branch">
+                    <template>
+                        <div><a href="#{{name}}" data-hr-on-click="setMode">{{name}}</a></div>
+                    </template>
+                </div>
+            </div>
+
             <div class="modal-body" data-hr-toggle="error" data-hr-style-off="display:none;">
                 <p class="center">
                     Cannot get uncommitted changes. Please try again later.
-                </p>
-            </div>
-            <div class="modal-body" data-hr-toggle="noChanges" data-hr-style-off="display:none;">
-                <p class="center">
-                    No changes to commit.
                 </p>
             </div>
         </div>

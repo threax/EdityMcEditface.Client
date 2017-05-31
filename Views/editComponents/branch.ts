@@ -7,10 +7,8 @@ import * as navmenu from "edity.editorcore.navmenu";
 import * as toggles from "hr.toggles";
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as storage from 'hr.storage';
-
-interface BranchCookie {
-    currentBranch: string;
-}
+import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as iter from 'hr.iterable';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -27,40 +25,72 @@ class NavButtonController {
     }
 }
 
-class BranchController {
+interface BranchModelData {
+    name: string;
+    result: client.BranchViewResult;
+}
+
+class BranchItem {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, BranchStorage];
+        return [controller.BindingCollection, controller.InjectControllerData];
     }
 
-    private dialog: controller.OnOffToggle;
+    constructor(bindings: controller.BindingCollection, private data: BranchModelData) {
 
-    constructor(bindings: controller.BindingCollection, private storage: BranchStorage) {
-        this.dialog = bindings.getToggle('dialog');
     }
 
-    public show(): void {
-        this.dialog.on();
-        var branchCookie: BranchCookie = this.storage.getValue();
-        if (branchCookie === null) {
-            branchCookie = {
-                currentBranch: "draft"
-            }
-        }
-        this.storage.setValue(branchCookie);
+    public async setMode(evt: Event): Promise<void> {
+        evt.preventDefault();
+        await this.data.result.setBranch();
+        window.location.href = window.location.href;
     }
 }
 
-class BranchStorage extends storage.JsonStorage<BranchCookie>{
-    constructor(storage: storage.IStorageDriver) {
-        super(storage);
+class BranchController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder];
+    }
+
+    private dialog: controller.OnOffToggle;
+    private mainToggle: toggles.OnOffToggle;
+    private loadToggle: toggles.OnOffToggle;
+    private errorToggle: toggles.OnOffToggle;
+    private toggleGroup: toggles.Group;
+    private branchModel: controller.Model<client.BranchView>;
+
+    constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
+        this.dialog = bindings.getToggle('dialog');
+
+        this.mainToggle = bindings.getToggle("main");
+        this.loadToggle = bindings.getToggle("load");
+        this.errorToggle = bindings.getToggle("error");
+        this.toggleGroup = new toggles.Group(this.mainToggle, this.loadToggle, this.errorToggle);
+
+        this.branchModel = bindings.getModel<BranchModelData>("branch");
+    }
+
+    public async show(): Promise<void> {
+        this.dialog.on();
+        this.toggleGroup.activate(this.mainToggle);
+        var entry = await this.entryPointInjector.load();
+        if (entry.canListBranches()) {
+            var branchResult = await entry.listBranches();
+            var branches = new iter.Iterable(branchResult.items).select(i => {
+                return {
+                    name: i.data.name,
+                    result: i
+                };
+            });
+            this.branchModel.setData(branches, this.builder.createOnCallback(BranchItem));
+        }
     }
 }
 
 var builder = editorServices.createBaseBuilder();
 var childBuilder = builder.createChildBuilder();
-childBuilder.Services.addShared(BranchStorage, s => new BranchStorage(new storage.CookieStorageDriver("BranchCookie")));
 childBuilder.Services.addShared(BranchController, BranchController);
 childBuilder.Services.addShared(NavButtonController, NavButtonController);
+childBuilder.Services.addTransient(BranchItem, BranchItem);
 
 childBuilder.create("branch", BranchController);
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
