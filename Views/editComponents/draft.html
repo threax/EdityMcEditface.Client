@@ -1,15 +1,15 @@
-﻿<!-- Phase Modal -->
-<template data-hr-component="PhaseNavItem">
+<!-- Branch Modal -->
+<template data-hr-component="DraftNavItem">
     <li>
-        <a data-toggle="modal" data-hr-on-click="open" href="#Phase">Phase</a>
+        <a data-toggle="modal" data-hr-on-click="open" href="#Draft">Draft</a>
     </li>
 </template>
-<div class="modal fade" data-hr-controller="phase" tabindex="-1" role="dialog" aria-labelledby="PhaseModalLabel" data-hr-toggle="dialog" data-hr-run="edity.core.edit.components.phase">
+<div class="modal fade" data-hr-controller="draft" tabindex="-1" role="dialog" aria-labelledby="DraftModalLabel" data-hr-toggle="dialog" data-hr-run="edity.core.edit.components.draft">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="PhaseModalLabel">Choose Phase</h4>
+                <h4 class="modal-title" id="DraftModalLabel">Draft Page</h4>
             </div>
             <div class="modal-body" data-hr-toggle="load" data-hr-style-off="display:none;">
                 <div class="center">
@@ -25,16 +25,12 @@
             </div>
             
             <div class="modal-body" data-hr-toggle="main" data-hr-style-off="display:none;">
-                <div data-hr-model="phase">
-                    <template>
-                        <button type="button" class="btn btn-primary btn-lg btn-block" data-hr-on-click="setMode">{{name}}</button>
-                    </template>
-                </div>
+                <div><a href="#SendToDraft" data-hr-on-click="draft">Click to send to draft</a></div>
             </div>
 
             <div class="modal-body" data-hr-toggle="error" data-hr-style-off="display:none;">
                 <p class="center">
-                    An error occured processsing phases. Please try again later.
+                    Cannot get draft information. Please try again later.
                 </p>
             </div>
         </div>

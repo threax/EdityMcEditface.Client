@@ -1,6 +1,80 @@
 import * as hal from 'hr.halcyon.EndpointClient';
 import { Fetcher } from 'hr.fetcher';
 
+export class DraftResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: Draft = undefined;
+    public get data(): Draft {
+        this.strongData = this.strongData || this.client.GetData<Draft>();
+        return this.strongData;
+    }
+
+    public submitLatestDraft() {
+        return this.client.LoadLink("SubmitLatestDraft")
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canSubmitLatestDraft(): boolean {
+        return this.client.HasLink("SubmitLatestDraft");
+    }
+}
+
+export class DraftCollectionResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: DraftCollection = undefined;
+    public get data(): DraftCollection {
+        this.strongData = this.strongData || this.client.GetData<DraftCollection>();
+        return this.strongData;
+    }
+
+    private strongItems: DraftResult[];
+    public get items(): DraftResult[] {
+        if (this.strongItems === undefined) {
+            var embeds = this.client.GetEmbed("values");
+            var clients = embeds.GetAllClients();
+            this.strongItems = [];
+            for (var i = 0; i < clients.length; ++i) {
+                this.strongItems.push(new DraftResult(clients[i]));
+            }
+        }
+        return this.strongItems;
+    }
+
+    public refresh(): Promise<DraftCollectionResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+}
+
 export class EntryPointInjector {
     private url: string;
     private fetcher: Fetcher;
@@ -65,84 +139,106 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("self");
     }
 
-    public listBranches(): Promise<BranchViewCollectionResult> {
-        return this.client.LoadLink("ListBranches")
+    public listPhases(): Promise<PhaseCollectionResult> {
+        return this.client.LoadLink("ListPhases")
             .then(r => {
-                return new BranchViewCollectionResult(r);
+                return new PhaseCollectionResult(r);
             });
     }
 
-    public canListBranches(): boolean {
-        return this.client.HasLink("ListBranches");
+    public canListPhases(): boolean {
+        return this.client.HasLink("ListPhases");
     }
 
-    public getListBranchesDocs(): Promise<hal.HalEndpointDoc> {
-        return this.client.LoadLinkDoc("ListBranches")
+    public getListPhasesDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("ListPhases")
             .then(r => {
                 return r.GetData<hal.HalEndpointDoc>();
             });
     }
 
-    public hasListBranchesDocs(): boolean {
-        return this.client.HasLinkDoc("ListBranches");
+    public hasListPhasesDocs(): boolean {
+        return this.client.HasLinkDoc("ListPhases");
+    }
+
+    public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
+        return this.client.LoadLinkWithQuery("ListDrafts", query)
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
+    }
+
+    public canListDrafts(): boolean {
+        return this.client.HasLink("ListDrafts");
+    }
+
+    public getListDraftsDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("ListDrafts")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListDraftsDocs(): boolean {
+        return this.client.HasLinkDoc("ListDrafts");
     }
 }
 
-export class BranchViewResult {
+export class PhaseResult {
     private client: hal.HalEndpointClient;
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
     }
 
-    private strongData: BranchView = undefined;
-    public get data(): BranchView {
-        this.strongData = this.strongData || this.client.GetData<BranchView>();
+    private strongData: Phase = undefined;
+    public get data(): Phase {
+        this.strongData = this.strongData || this.client.GetData<Phase>();
         return this.strongData;
     }
 
-    public setBranch() {
-        return this.client.LoadLink("SetBranch")
+    public setPhase() {
+        return this.client.LoadLink("SetPhase")
             .then(r => {
                 return r;
             });
     }
 
-    public canSetBranch(): boolean {
-        return this.client.HasLink("SetBranch");
+    public canSetPhase(): boolean {
+        return this.client.HasLink("SetPhase");
     }
 }
 
-export class BranchViewCollectionResult {
+export class PhaseCollectionResult {
     private client: hal.HalEndpointClient;
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
     }
 
-    private strongData: BranchViewCollection = undefined;
-    public get data(): BranchViewCollection {
-        this.strongData = this.strongData || this.client.GetData<BranchViewCollection>();
+    private strongData: PhaseCollection = undefined;
+    public get data(): PhaseCollection {
+        this.strongData = this.strongData || this.client.GetData<PhaseCollection>();
         return this.strongData;
     }
 
-    private strongItems: BranchViewResult[];
-    public get items(): BranchViewResult[] {
+    private strongItems: PhaseResult[];
+    public get items(): PhaseResult[] {
         if (this.strongItems === undefined) {
             var embeds = this.client.GetEmbed("values");
             var clients = embeds.GetAllClients();
             this.strongItems = [];
             for (var i = 0; i < clients.length; ++i) {
-                this.strongItems.push(new BranchViewResult(clients[i]));
+                this.strongItems.push(new PhaseResult(clients[i]));
             }
         }
         return this.strongItems;
     }
 
-    public refresh(): Promise<BranchViewCollectionResult> {
+    public refresh(): Promise<PhaseCollectionResult> {
         return this.client.LoadLink("self")
             .then(r => {
-                return new BranchViewCollectionResult(r);
+                return new PhaseCollectionResult(r);
             });
     }
 
@@ -161,11 +257,26 @@ export class BranchViewCollectionResult {
         return this.client.HasLinkDoc("self");
     }
 }
+export interface Draft {
+    file?: string;
+}
+export interface DraftCollection {
+    offset?: number;
+    limit?: number;
+    total?: number;
+}
+export interface DraftQuery {
+    file?: string;
+    /** The number of pages (item number = Offset * Limit) into the collection to query. */
+    offset?: number;
+    /** The limit of the number of items to return. */
+    limit?: number;
+}
 export interface EntryPoint {
 }
-export interface BranchViewCollection {
+export interface PhaseCollection {
 }
-export interface BranchView {
+export interface Phase {
     name?: string;
     current?: boolean;
 }

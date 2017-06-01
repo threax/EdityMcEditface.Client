@@ -1,4 +1,4 @@
-﻿///<amd-module name="edity.core.edit.components.phase"/>
+///<amd-module name="edity.core.edit.components.draft"/>
 
 "use strict";
 
@@ -9,13 +9,14 @@ import * as editorServices from 'edity.editorcore.EditorServices';
 import * as storage from 'hr.storage';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as iter from 'hr.iterable';
+import * as uri from 'hr.uri';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [PhaseController];
+        return [DraftController];
     }
 
-    constructor(private controller: PhaseController) {
+    constructor(private controller: DraftController) {
 
     }
 
@@ -25,28 +26,7 @@ class NavButtonController {
     }
 }
 
-interface PhaseModelData {
-    name: string;
-    result: client.PhaseResult;
-}
-
-class PhaseItem {
-    public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, controller.InjectControllerData];
-    }
-
-    constructor(bindings: controller.BindingCollection, private data: PhaseModelData) {
-
-    }
-
-    public async setMode(evt: Event): Promise<void> {
-        evt.preventDefault();
-        await this.data.result.setPhase();
-        window.location.href = window.location.href;
-    }
-}
-
-class PhaseController {
+class DraftController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
         return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder];
     }
@@ -56,7 +36,7 @@ class PhaseController {
     private loadToggle: toggles.OnOffToggle;
     private errorToggle: toggles.OnOffToggle;
     private toggleGroup: toggles.Group;
-    private phaseModel: controller.Model<client.Phase>;
+    private fileInfo: client.DraftResult;
 
     constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
         this.dialog = bindings.getToggle('dialog');
@@ -65,28 +45,48 @@ class PhaseController {
         this.loadToggle = bindings.getToggle("load");
         this.errorToggle = bindings.getToggle("error");
         this.toggleGroup = new toggles.Group(this.mainToggle, this.loadToggle, this.errorToggle);
-
-        this.phaseModel = bindings.getModel<PhaseModelData>("phase");
     }
 
     public async show(): Promise<void> {
-        this.toggleGroup.activate(this.loadToggle);
         this.dialog.on();
+
         try {
+            this.toggleGroup.activate(this.loadToggle);
             var entry = await this.entryPointInjector.load();
-            if (entry.canListPhases()) {
-                var phaseResult = await entry.listPhases();
-                var phases = new iter.Iterable(phaseResult.items).select(i => {
-                    return {
-                        name: i.data.name,
-                        result: i
-                    };
+            if (entry.canListDrafts()) {
+                var url = new uri.Uri();
+                var path = url.path;
+                if (path.length > 0) {
+                    path = path.substr(1);
+                }
+                var collection = await entry.listDrafts({
+                    file: path
                 });
-                this.phaseModel.setData(phases, this.builder.createOnCallback(PhaseItem));
-                this.toggleGroup.activate(this.mainToggle);
+
+                if (collection.data.total > 0) {
+                    this.fileInfo = collection.items[0];
+                    this.toggleGroup.activate(this.mainToggle);
+                }
+                else {
+                    throw new Error("Could not find a draft for " + path);
+                }
             }
             else {
-                throw new Error("Cannot list phases.")
+                throw new Error("No permissions to find draft files.");
+            }
+        }
+        catch (err) {
+            this.toggleGroup.activate(this.errorToggle);
+        }
+    }
+
+    public async draft(evt: Event): Promise<void> {
+        evt.preventDefault();
+        try {
+            this.toggleGroup.activate(this.loadToggle);
+            if (this.fileInfo.canSubmitLatestDraft()) {
+                await this.fileInfo.submitLatestDraft();
+                this.toggleGroup.activate(this.mainToggle);
             }
         }
         catch (err) {
@@ -97,10 +97,9 @@ class PhaseController {
 
 var builder = editorServices.createBaseBuilder();
 var childBuilder = builder.createChildBuilder();
-childBuilder.Services.addShared(PhaseController, PhaseController);
+childBuilder.Services.addShared(DraftController, DraftController);
 childBuilder.Services.addShared(NavButtonController, NavButtonController);
-childBuilder.Services.addTransient(PhaseItem, PhaseItem);
 
-childBuilder.create("phase", PhaseController);
+childBuilder.create("draft", DraftController);
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.addInjected("PhaseNavItem", childBuilder.createOnCallback(NavButtonController));
+editMenu.addInjected("DraftNavItem", childBuilder.createOnCallback(NavButtonController));
