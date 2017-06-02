@@ -95,11 +95,21 @@ class DraftController {
     }
 }
 
-var builder = editorServices.createBaseBuilder();
-var childBuilder = builder.createChildBuilder();
-childBuilder.Services.addShared(DraftController, DraftController);
-childBuilder.Services.addShared(NavButtonController, NavButtonController);
+(async () => {
+    var builder = editorServices.createBaseBuilder();
 
-childBuilder.create("draft", DraftController);
-var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.addInjected("DraftNavItem", childBuilder.createOnCallback(NavButtonController));
+    var childBuilder = builder.createChildBuilder();
+    childBuilder.Services.addShared(DraftController, DraftController);
+    childBuilder.Services.addShared(NavButtonController, NavButtonController);
+
+    //Check to see if we can draft
+    var scope = builder.Services.createScope();
+    var injector = scope.getRequiredService(client.EntryPointInjector);
+    var entry = await injector.load();
+
+    if (entry.canListDrafts()) {
+        childBuilder.create("draft", DraftController);
+        var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
+        editMenu.addInjected("DraftNavItem", childBuilder.createOnCallback(NavButtonController));
+    }
+})();
