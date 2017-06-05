@@ -57,14 +57,18 @@ class DraftController {
     private errorToggle: toggles.OnOffToggle;
     private toggleGroup: toggles.Group;
     private fileInfo: client.DraftResult;
+    private currentPageInfo: controller.Model<client.Draft>;
+    private firstDisplay: boolean = true;
 
     constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder, private crudService: crudPage.ICrudService) {
         this.dialog = bindings.getToggle('dialog');
 
-        this.mainToggle = bindings.getToggle("main");
-        this.loadToggle = bindings.getToggle("load");
-        this.errorToggle = bindings.getToggle("error");
+        this.mainToggle = bindings.getToggle("draftMain");
+        this.loadToggle = bindings.getToggle("draftLoad");
+        this.errorToggle = bindings.getToggle("draftError");
         this.toggleGroup = new toggles.Group(this.mainToggle, this.loadToggle, this.errorToggle);
+
+        this.currentPageInfo = bindings.getModel<client.Draft>('currentPageInfo');
     }
 
     public async show(): Promise<void> {
@@ -85,6 +89,14 @@ class DraftController {
 
                 if (collection.data.total > 0) {
                     this.fileInfo = collection.items[0];
+                    this.currentPageInfo.setData(this.fileInfo.data);
+
+                    if (this.firstDisplay) {
+                        this.firstDisplay = false;
+                        this.builder.create("draftPageNumbers", hyperCrudPage.CrudPageNumbers);
+                        this.builder.create("draftTable", hyperCrudPage.CrudTableController);
+                    }
+
                     this.toggleGroup.activate(this.mainToggle);
                 }
                 else {
@@ -154,8 +166,5 @@ class DraftController {
         childBuilder.create("draft", DraftController);
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         editMenu.addInjected("DraftNavItem", childBuilder.createOnCallback(NavButtonController));
-
-        childBuilder.create("draftPageNumbers", hyperCrudPage.CrudPageNumbers);
-        childBuilder.create("draftTable", hyperCrudPage.CrudTableController);
     }
 })();

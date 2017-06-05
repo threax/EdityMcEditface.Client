@@ -11,7 +11,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="DraftModalLabel">Draft Page</h4>
             </div>
-            <div class="modal-body" data-hr-toggle="load" data-hr-style-off="display:none;">
+            <div class="modal-body" data-hr-toggle="draftLoad" data-hr-style-off="display:none;">
                 <div class="center">
                     <div class="load-linebar center-block">
                         <div class="rect1"></div>
@@ -24,8 +24,14 @@
                 </div>
             </div>
             
-            <div class="modal-body" data-hr-toggle="main" data-hr-style-off="display:none;">
-                <button class="btn btn-primary btn-lg btn-block" href="#SendToDraft" data-hr-on-click="draft">Click to Draft Current Page</button>
+            <div class="modal-body" data-hr-toggle="draftMain" data-hr-style-off="display:none;">
+                <div data-hr-model="currentPageInfo">
+                    <h2>Current Page</h2>
+                    <h3>{{{title}}}</h3>
+                    <p>Status: {{status}}</p>
+                    <p>Last Drafted On: {{lastUpdate}}</p>
+                </div>
+                <button class="btn btn-primary" href="#SendToDraft" data-hr-on-click="draft">Click to Draft Current Page</button>
                 <h2>All Draftable Items</h2>
                 <div class="table-responsive" data-hr-controller="draftTable">
                     <div data-hr-toggle="load" data-hr-style-off="display:none;">
@@ -64,7 +70,7 @@
                             </table>
                         </template>
 
-                        <div data-hr-controller="draftPageNumbers" class="clearfix ">
+                        <div data-hr-controller="draftPageNumbers" class="clearfix">
                             <div data-hr-model="totals">Items {{itemStart}} - {{itemEnd}} of {{total}}</div>
                             <ul class="pagination pull-left">
                                 <li data-hr-toggle="first" aria-label="First" data-hr-on-click="pageFirst" data-hr-class-off="disabled">
@@ -109,12 +115,12 @@
                                 </div>
                             </form>
                         </div>
-                        <button class="btn btn-primary btn-lg btn-block" href="#SendAllToDraft" data-hr-on-click="draftAll">Click to Draft All Items</button>
+                        <button class="btn btn-primary" href="#SendAllToDraft" data-hr-on-click="draftAll">Click to Draft All Items</button>
                     </div>
                 </div>
             </div>
 
-            <div class="modal-body" data-hr-toggle="error" data-hr-style-off="display:none;">
+            <div class="modal-body" data-hr-toggle="draftError" data-hr-style-off="display:none;">
                 <p class="center">
                     Cannot get draft information. Please try again later.
                 </p>
