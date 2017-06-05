@@ -14,6 +14,28 @@ export class DraftResult {
         return this.strongData;
     }
 
+    public refresh(): Promise<DraftResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new DraftResult(r);
+            });
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+
     public submitLatestDraft() {
         return this.client.LoadLink("SubmitLatestDraft")
             .then(r => {

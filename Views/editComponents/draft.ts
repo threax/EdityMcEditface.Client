@@ -118,6 +118,8 @@ class DraftController {
             this.toggleGroup.activate(this.loadToggle);
             if (this.fileInfo.canSubmitLatestDraft()) {
                 await this.fileInfo.submitLatestDraft();
+                this.fileInfo = await this.fileInfo.refresh();
+                this.currentPageInfo.setData(this.fileInfo.data);
                 this.toggleGroup.activate(this.mainToggle);
                 this.crudService.refreshPage();
             }
