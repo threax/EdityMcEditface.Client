@@ -24,6 +24,17 @@ export class DraftResult {
     public canSubmitLatestDraft(): boolean {
         return this.client.HasLink("SubmitLatestDraft");
     }
+
+    public submitAllDrafts() {
+        return this.client.LoadLink("SubmitAllDrafts")
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canSubmitAllDrafts(): boolean {
+        return this.client.HasLink("SubmitAllDrafts");
+    }
 }
 
 export class DraftCollectionResult {
@@ -270,6 +281,17 @@ export class EntryPointResult {
     public hasListDraftsDocs(): boolean {
         return this.client.HasLinkDoc("ListDrafts");
     }
+
+    public submitAllDrafts() {
+        return this.client.LoadLink("SubmitAllDrafts")
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canSubmitAllDrafts(): boolean {
+        return this.client.HasLink("SubmitAllDrafts");
+    }
 }
 
 export class PhaseResult {
@@ -349,6 +371,7 @@ export interface Draft {
     lastUpdate?: Date;
     status?: string;
     file?: string;
+    title?: string;
 }
 export interface DraftCollection {
     offset?: number;
@@ -370,3 +393,4 @@ export interface Phase {
     name?: string;
     current?: boolean;
 }
+

@@ -114,6 +114,24 @@ class DraftController {
             this.toggleGroup.activate(this.errorToggle);
         }
     }
+
+    public async draftAll(evt: Event): Promise<void> {
+        try {
+            this.toggleGroup.activate(this.loadToggle);
+            var entry = await this.entryPointInjector.load();
+            if (entry.canSubmitAllDrafts()) {
+                await entry.submitAllDrafts();
+                this.crudService.refreshPage();
+                this.toggleGroup.activate(this.mainToggle);
+            }
+            else {
+                throw new Error("Cannot submit all drafts");
+            }
+        }
+        catch (err) {
+            this.toggleGroup.activate(this.errorToggle);
+        }
+    }
 }
 
 (async () => {
