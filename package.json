@@ -14,9 +14,9 @@
     "ckeditor-youtube-plugin": "^2.1.5",
     "codemirror": "~5.25.2",
     "htmlrapier": ">=6.1.0",
-    "htmlrapier.bootstrap": ">=4.1.0",
-    "htmlrapier.widgets": ">=5.2.1",
-    "htmlrapier.treemenu": ">=5.0.1",
-    "htmlrapier.sidebar": ">=2.0.0"
+    "htmlrapier.bootstrap": ">=4.2.0",
+    "htmlrapier.widgets": ">=5.3.1",
+    "htmlrapier.treemenu": ">=5.1.0",
+    "htmlrapier.sidebar": ">=2.1.0"
   }
 }

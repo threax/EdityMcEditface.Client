@@ -73,6 +73,94 @@ export class DraftCollectionResult {
     public hasRefreshDocs(): boolean {
         return this.client.HasLinkDoc("self");
     }
+
+    public next(): Promise<DraftCollectionResult> {
+        return this.client.LoadLink("next")
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
+    }
+
+    public canNext(): boolean {
+        return this.client.HasLink("next");
+    }
+
+    public getNextDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("next")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasNextDocs(): boolean {
+        return this.client.HasLinkDoc("next");
+    }
+
+    public previous(): Promise<DraftCollectionResult> {
+        return this.client.LoadLink("previous")
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
+    }
+
+    public canPrevious(): boolean {
+        return this.client.HasLink("previous");
+    }
+
+    public getPreviousDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("previous")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasPreviousDocs(): boolean {
+        return this.client.HasLinkDoc("previous");
+    }
+
+    public first(): Promise<DraftCollectionResult> {
+        return this.client.LoadLink("first")
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
+    }
+
+    public canFirst(): boolean {
+        return this.client.HasLink("first");
+    }
+
+    public getFirstDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("first")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasFirstDocs(): boolean {
+        return this.client.HasLinkDoc("first");
+    }
+
+    public last(): Promise<DraftCollectionResult> {
+        return this.client.LoadLink("last")
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
+    }
+
+    public canLast(): boolean {
+        return this.client.HasLink("last");
+    }
+
+    public getLastDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("last")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasLastDocs(): boolean {
+        return this.client.HasLinkDoc("last");
+    }
 }
 
 export class EntryPointInjector {
@@ -258,6 +346,8 @@ export class PhaseCollectionResult {
     }
 }
 export interface Draft {
+    lastUpdate?: Date;
+    status?: string;
     file?: string;
 }
 export interface DraftCollection {
@@ -280,4 +370,3 @@ export interface Phase {
     name?: string;
     current?: boolean;
 }
-

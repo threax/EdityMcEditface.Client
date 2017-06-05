@@ -8,8 +8,10 @@ import * as toggles from "hr.toggles";
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as storage from 'hr.storage';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as injectors from 'edity.editorcore.EdityHypermediaInjectors';
 import * as iter from 'hr.iterable';
 import * as uri from 'hr.uri';
+import * as hyperCrudPage from 'hr.widgets.HypermediaCrudService';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -111,5 +113,10 @@ class DraftController {
         childBuilder.create("draft", DraftController);
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         editMenu.addInjected("DraftNavItem", childBuilder.createOnCallback(NavButtonController));
+
+        hyperCrudPage.addServices(builder.Services);
+        builder.Services.tryAddShared(hyperCrudPage.HypermediaPageInjector, injectors.DraftCrudInjector);
+        builder.create("draftPageNumbers", hyperCrudPage.CrudPageNumbers);
+        builder.create("draftTable", hyperCrudPage.CrudTableController);
     }
 })();

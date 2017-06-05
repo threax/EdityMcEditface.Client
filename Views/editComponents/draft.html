@@ -25,7 +25,76 @@
             </div>
             
             <div class="modal-body" data-hr-toggle="main" data-hr-style-off="display:none;">
-                <div><a href="#SendToDraft" data-hr-on-click="draft">Click to send to draft</a></div>
+                <div><button class="btn btn-default btn-block" href="#SendToDraft" data-hr-on-click="draft">Click to send current page to draft</button></div>
+                <h2>All Draftable Items</h2>
+                <div class="table-responsive" data-hr-controller="draftTable">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody data-hr-model="listing" data-hr-model-component="mainTableBody"></tbody>
+                    </table>
+                    <template data-hr-component="mainTableBody">
+                        <table>
+                            <tr>
+                                <td>{{file}}</td>
+                                <td>
+                                    <button data-hr-on-click="edit" class="btn btn-default" data-hr-toggle="edit" data-hr-style-off="display:none;">Edit</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </template>
+                </div>
+                
+                <div data-hr-controller="draftPageNumbers" class="clearfix ">
+                    <div data-hr-model="totals">Items {{itemStart}} - {{itemEnd}} of {{total}}</div>
+                    <ul class="pagination pull-left">
+                        <li data-hr-toggle="first" aria-label="First" data-hr-on-click="pageFirst" data-hr-class-off="disabled">
+                            <a href="#First">
+                                <span aria-hidden="true" class="glyphicon glyphicon-backward"></span>
+                            </a>
+                        </li>
+                        <li data-hr-toggle="previous" aria-label="Previous" data-hr-on-click="pagePrevious" data-hr-class-off="disabled">
+                            <a href="#Previous">
+                                <span aria-hidden="true" class="glyphicon glyphicon-triangle-left"></span>
+                            </a>
+                        </li>
+                        <li data-hr-toggle="page0" data-hr-model="page0" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page0"><a href="#Page">{{pageNum}}</a></li>
+                        <li data-hr-toggle="page1" data-hr-model="page1" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page1"><a href="#Page">{{pageNum}}</a></li>
+                        <li data-hr-toggle="page2" data-hr-model="page2" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page2"><a href="#Page">{{pageNum}}</a></li>
+                        <li data-hr-toggle="page3" data-hr-model="page3" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page3"><a href="#Page">{{pageNum}}</a></li>
+                        <li data-hr-toggle="page4" data-hr-model="page4" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page4"><a href="#Page">{{pageNum}}</a></li>
+                        <li data-hr-toggle="page5" data-hr-model="page5" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page5"><a href="#Page">{{pageNum}}</a></li>
+                        <li data-hr-toggle="page6" data-hr-model="page6" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page6"><a href="#Page">{{pageNum}}</a></li>
+                        <li data-hr-toggle="next" aria-label="Next" data-hr-on-click="pageNext" data-hr-class-off="disabled">
+                            <a href="#Next">
+                                <span aria-hidden="true" class="glyphicon glyphicon-triangle-right"></span>
+                            </a>
+                        </li>
+                        <li data-hr-toggle="last" aria-label="Last" data-hr-on-click="pageLast" data-hr-class-off="disabled">
+                            <a href="#Last">
+                                <span aria-hidden="true" class="glyphicon glyphicon-forward"></span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                    <form class="form-inline pull-left" data-hr-model="itemsPerPage" data-hr-on-change="itemsPerPageChanged">
+                        <div class="form-group">
+                            <label for="itemsPerPage">Items per Page</label>
+                            <select name="itemsPerPage" class="form-control">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
             </div>
 
             <div class="modal-body" data-hr-toggle="error" data-hr-style-off="display:none;">
