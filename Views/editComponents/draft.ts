@@ -12,6 +12,7 @@ import * as injectors from 'edity.editorcore.EdityHypermediaInjectors';
 import * as iter from 'hr.iterable';
 import * as uri from 'hr.uri';
 import * as hyperCrudPage from 'hr.widgets.HypermediaCrudService';
+import * as crudPage from 'hr.widgets.CrudPage';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -28,9 +29,26 @@ class NavButtonController {
     }
 }
 
+class DraftRowController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, crudPage.ICrudService, controller.InjectControllerData];
+    }
+
+    constructor(bindings: controller.BindingCollection, private crudService: crudPage.ICrudService, private data: client.DraftResult) {
+
+    }
+
+    public async draft(evt: Event): Promise<void> {
+        if (this.data.canSubmitLatestDraft()) {
+            await this.data.submitLatestDraft();
+            this.crudService.refreshPage();
+        }
+    }
+}
+
 class DraftController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder];
+        return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder, crudPage.ICrudService];
     }
 
     private dialog: controller.OnOffToggle;
@@ -40,7 +58,7 @@ class DraftController {
     private toggleGroup: toggles.Group;
     private fileInfo: client.DraftResult;
 
-    constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
+    constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder, private crudService: crudPage.ICrudService) {
         this.dialog = bindings.getToggle('dialog');
 
         this.mainToggle = bindings.getToggle("main");
@@ -89,6 +107,7 @@ class DraftController {
             if (this.fileInfo.canSubmitLatestDraft()) {
                 await this.fileInfo.submitLatestDraft();
                 this.toggleGroup.activate(this.mainToggle);
+                this.crudService.refreshPage();
             }
         }
         catch (err) {
@@ -110,13 +129,15 @@ class DraftController {
     var entry = await injector.load();
 
     if (entry.canListDrafts()) {
+        childBuilder.Services.tryAddTransient(crudPage.CrudTableRowController, DraftRowController);
+        childBuilder.Services.tryAddShared(hyperCrudPage.HypermediaPageInjector, injectors.DraftCrudInjector);
+        hyperCrudPage.addServices(childBuilder.Services);
+
         childBuilder.create("draft", DraftController);
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         editMenu.addInjected("DraftNavItem", childBuilder.createOnCallback(NavButtonController));
 
-        hyperCrudPage.addServices(builder.Services);
-        builder.Services.tryAddShared(hyperCrudPage.HypermediaPageInjector, injectors.DraftCrudInjector);
-        builder.create("draftPageNumbers", hyperCrudPage.CrudPageNumbers);
-        builder.create("draftTable", hyperCrudPage.CrudTableController);
+        childBuilder.create("draftPageNumbers", hyperCrudPage.CrudPageNumbers);
+        childBuilder.create("draftTable", hyperCrudPage.CrudTableController);
     }
 })();
