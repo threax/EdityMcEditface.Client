@@ -1,43 +1,41 @@
 ﻿<!-- Phase Modal -->
+<span data-hr-run="edity.core.edit.components.phase"></span>
 <template data-hr-component="PhaseNavItem">
     <li>
-        <a data-toggle="modal" data-hr-on-click="open" href="#Phase">Phase</a>
-    </li>
-</template>
-<div class="modal fade" data-hr-controller="phase" tabindex="-1" role="dialog" aria-labelledby="PhaseModalLabel" data-hr-toggle="dialog" data-hr-run="edity.core.edit.components.phase">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="PhaseModalLabel">Choose Phase</h4>
-            </div>
-            <div class="modal-body" data-hr-toggle="load" data-hr-style-off="display:none;">
-                <div class="center">
-                    <div class="load-linebar center-block">
-                        <div class="rect1"></div>
-                        <div class="rect2"></div>
-                        <div class="rect3"></div>
-                        <div class="rect4"></div>
-                        <div class="rect5"></div>
+        <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle" type="button" id="phaseDropDownMenu" data-hr-toggle="phaseDropToggle" data-hr-on-click="openPhaseDropdown" aria-haspopup="true" aria-expanded="true">
+                View
+                <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu phaseDropdown" aria-labelledby="phaseDropDownMenu">
+                <div data-hr-toggle="load" data-hr-style-off="display:none;">
+                    <div class="center">
+                        <div class="load-linebar center-block">
+                            <div class="rect1"></div>
+                            <div class="rect2"></div>
+                            <div class="rect3"></div>
+                            <div class="rect4"></div>
+                            <div class="rect5"></div>
+                        </div>
                     </div>
-                    <p>Working...</p>
                 </div>
-            </div>
-            
-            <div class="modal-body" data-hr-toggle="main" data-hr-style-off="display:none;">
-                <div data-hr-model="phase">
-                    <template>
-                        <button type="button" class="btn btn-primary btn-lg btn-block" data-hr-on-click="setMode">{{name}}</button>
-                    </template>
-                </div>
-            </div>
 
-            <div class="modal-body" data-hr-toggle="error" data-hr-style-off="display:none;">
-                <p class="center">
-                    An error occured processsing phases. Please try again later.
-                </p>
+                <div data-hr-toggle="main" data-hr-style-off="display:none;">
+                    <div data-hr-model="phase">
+                        <template>
+                            <button type="button" class="btn btn-primary btn-lg btn-block" data-hr-on-click="setMode">{{name}}</button>
+                        </template>
+                    </div>
+                </div>
+
+                <div data-hr-toggle="error" data-hr-style-off="display:none;">
+                    <p class="center">
+                        An error occured processsing phases. Please try again later.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </li>
+</template>
+
 {{mainContent}}

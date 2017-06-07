@@ -12,16 +12,55 @@ import * as iter from 'hr.iterable';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [PhaseController];
+        return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder];
     }
 
-    constructor(private controller: PhaseController) {
+    private phaseDropToggle: controller.OnOffToggle;
+    private mainToggle: toggles.OnOffToggle;
+    private loadToggle: toggles.OnOffToggle;
+    private errorToggle: toggles.OnOffToggle;
+    private toggleGroup: toggles.Group;
+    private phaseModel: controller.Model<client.Phase>;
+    private firstOpen: boolean = true;
 
+    constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
+        this.phaseDropToggle = bindings.getToggle("phaseDropToggle");
+
+        this.mainToggle = bindings.getToggle("main");
+        this.loadToggle = bindings.getToggle("load");
+        this.errorToggle = bindings.getToggle("error");
+        this.toggleGroup = new toggles.Group(this.mainToggle, this.loadToggle, this.errorToggle);
+
+        this.phaseModel = bindings.getModel<PhaseModelData>("phase");
     }
 
-    open(evt) {
+    public async openPhaseDropdown(evt: Event): Promise<void> {
         evt.preventDefault();
-        this.controller.show();
+
+        if (this.firstOpen) {
+            this.firstOpen = false;
+            this.toggleGroup.activate(this.loadToggle);
+            try {
+                var entry = await this.entryPointInjector.load();
+                if (entry.canListPhases()) {
+                    var phaseResult = await entry.listPhases();
+                    var phases = new iter.Iterable(phaseResult.items).select(i => {
+                        return {
+                            name: i.data.name,
+                            result: i
+                        };
+                    });
+                    this.phaseModel.setData(phases, this.builder.createOnCallback(PhaseItem));
+                    this.toggleGroup.activate(this.mainToggle);
+                }
+                else {
+                    throw new Error("Cannot list phases.")
+                }
+            }
+            catch (err) {
+                this.toggleGroup.activate(this.errorToggle);
+            }
+        }
     }
 }
 
@@ -46,61 +85,10 @@ class PhaseItem {
     }
 }
 
-class PhaseController {
-    public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder];
-    }
-
-    private dialog: controller.OnOffToggle;
-    private mainToggle: toggles.OnOffToggle;
-    private loadToggle: toggles.OnOffToggle;
-    private errorToggle: toggles.OnOffToggle;
-    private toggleGroup: toggles.Group;
-    private phaseModel: controller.Model<client.Phase>;
-
-    constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
-        this.dialog = bindings.getToggle('dialog');
-
-        this.mainToggle = bindings.getToggle("main");
-        this.loadToggle = bindings.getToggle("load");
-        this.errorToggle = bindings.getToggle("error");
-        this.toggleGroup = new toggles.Group(this.mainToggle, this.loadToggle, this.errorToggle);
-
-        this.phaseModel = bindings.getModel<PhaseModelData>("phase");
-    }
-
-    public async show(): Promise<void> {
-        this.toggleGroup.activate(this.loadToggle);
-        this.dialog.on();
-        try {
-            var entry = await this.entryPointInjector.load();
-            if (entry.canListPhases()) {
-                var phaseResult = await entry.listPhases();
-                var phases = new iter.Iterable(phaseResult.items).select(i => {
-                    return {
-                        name: i.data.name,
-                        result: i
-                    };
-                });
-                this.phaseModel.setData(phases, this.builder.createOnCallback(PhaseItem));
-                this.toggleGroup.activate(this.mainToggle);
-            }
-            else {
-                throw new Error("Cannot list phases.")
-            }
-        }
-        catch (err) {
-            this.toggleGroup.activate(this.errorToggle);
-        }
-    }
-}
-
 var builder = editorServices.createBaseBuilder();
 var childBuilder = builder.createChildBuilder();
-childBuilder.Services.addShared(PhaseController, PhaseController);
 childBuilder.Services.addShared(NavButtonController, NavButtonController);
 childBuilder.Services.addTransient(PhaseItem, PhaseItem);
 
-childBuilder.create("phase", PhaseController);
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
 editMenu.addInjected("PhaseNavItem", childBuilder.createOnCallback(NavButtonController));
