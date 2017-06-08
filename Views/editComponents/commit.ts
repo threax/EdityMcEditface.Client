@@ -6,9 +6,11 @@ import * as storage from "hr.storage";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as toggles from "hr.toggles";
-import * as git from "edity.editorcore.GitService";
 import * as saveService from "edity.editorcore.SaveService";
 import * as editorServices from 'edity.editorcore.EditorServices';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as git from "edity.editorcore.GitService";
+import { ResultModel } from 'hr.halcyon.ResultModel';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -30,7 +32,7 @@ class NavButtonController {
 
 class CommitController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder];
+        return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder, git.GitService];
     }
 
     private commitModel;
@@ -41,10 +43,10 @@ class CommitController {
     private error;
     private noChanges;
     private toggleGroup;
-    private changedFiles;
+    private changedFiles: ResultModel<client.UncommittedChange, client.UncommittedChangeResult>;
     private currentRowCreatedCallback;
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder) {
+    constructor(bindings: controller.BindingCollection, private entry: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder, private GitService: git.GitService) {
         this.commitModel = bindings.getModel('commit');
         this.dialog = bindings.getToggle('dialog');
 
@@ -53,7 +55,7 @@ class CommitController {
         this.error = bindings.getToggle('error');
         this.noChanges = bindings.getToggle('noChanges');
         this.toggleGroup = new toggles.Group(this.main, this.load, this.error, this.noChanges);
-        this.changedFiles = bindings.getModel('changedFiles');
+        this.changedFiles = new ResultModel(bindings.getModel<client.UncommittedChange>('changedFiles'));
 
         GitService.revertStarted.add(() => this.toggleGroup.activate(this.load));
 
@@ -71,36 +73,41 @@ class CommitController {
         editMenu.addInjected("CommitNavItem", this.builder.createOnCallback(NavButtonController));
     }
 
-    private updateUncommittedFiles() {
-        this.GitService.uncommittedChanges()
-            .then((data: any[]) => {
-                if (data.length > 0) {
-                    this.toggleGroup.activate(this.main);
-                    this.changedFiles.setData(data, (bindings, data) => this.commitRowCreated(bindings, data), (data) => this.determineCommitVariant(data));
-                }
-                else {
-                    this.toggleGroup.activate(this.noChanges);
-                }
-            })
-            .catch((data) => {
-                this.toggleGroup.activate(this.error);
-            });
+    private async updateUncommittedFiles(): Promise<void> {
+        try {
+            var entryPoint = await this.entry.load();
+            var changes = await entryPoint.getUncommittedChanges();
+
+            if (changes.items.length > 0) {
+                this.changedFiles.setData(changes.items, (bindings, data) => this.commitRowCreated(bindings, data), (data) => this.determineCommitVariant(data));
+                this.toggleGroup.activate(this.main);
+            }
+            else {
+                this.toggleGroup.activate(this.noChanges);
+            }
+        }
+        catch (err) {
+            this.toggleGroup.activate(this.error);
+        }
     }
 
-    commit(evt) {
+    public async commit(evt: Event): Promise<void> {
         evt.preventDefault();
-        this.toggleGroup.activate(this.load);
-        var data = this.commitModel.getData();
-        this.GitService.commit(data)
-            .then((resultData) => {
+        try {
+            this.toggleGroup.activate(this.load);
+            var data = this.commitModel.getData();
+            var entryPoint = await this.entry.load();
+            if (entryPoint.canCommit()) {
+                await entryPoint.commit(data);
                 this.toggleGroup.activate(this.main);
                 this.commitModel.clear();
                 this.dialog.off();
-            })
-            .catch((errorData) => {
-                this.toggleGroup.activate(this.main);
-                alert('Error Committing');
-            });
+            }
+        }
+        catch (err) {
+            this.toggleGroup.activate(this.main);
+            alert('Error Committing');
+        }
     }
 
     startCommit() {
@@ -109,16 +116,16 @@ class CommitController {
         this.updateUncommittedFiles();
     }
 
-    private determineCommitVariant(data) {
-        var listenerVariant = this.GitService.fireDetermineCommitVariant(data);
+    private determineCommitVariant(result: client.UncommittedChangeResult) {
+        var listenerVariant = this.GitService.fireDetermineCommitVariant(result);
         if (listenerVariant) {
             this.currentRowCreatedCallback = listenerVariant[0].rowCreated;
             return listenerVariant[0].variant;
         }
-        return data.state;
+        return result.data.state;
     }
 
-    private commitRowCreated(bindings, data) {
+    private commitRowCreated(bindings: controller.BindingCollection, data: client.UncommittedChangeResult) {
         if (this.currentRowCreatedCallback) {
             this.currentRowCreatedCallback(bindings, data);
             this.currentRowCreatedCallback = null;

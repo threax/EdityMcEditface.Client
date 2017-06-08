@@ -17,6 +17,7 @@
     "htmlrapier.bootstrap": ">=4.2.1",
     "htmlrapier.widgets": ">=5.3.1",
     "htmlrapier.treemenu": ">=5.1.0",
-    "htmlrapier.sidebar": ">=2.1.0"
+    "htmlrapier.sidebar": ">=2.1.0",
+    "htmlrapier.halcyon": ">=4.1.2"
   }
 }

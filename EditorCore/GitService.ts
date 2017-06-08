@@ -7,6 +7,13 @@ import { PagedClientData } from 'edity.editorcore.pageddata';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as controller from 'hr.controller';
+
+export interface CommitVariant {
+    variant: string;
+    rowCreated: controller.CreateCallback;
+}
 
 export class GitService {
     public static get InjectorArgs(): di.DiFunction<any>[] {
@@ -17,7 +24,7 @@ export class GitService {
     private revertCompletedHandler = new ActionEventDispatcher<boolean>();
     private host = "";
     //Commit variant detection and sync
-    private determineCommitVariantEventHandler = new FuncEventDispatcher<any, any>();
+    private determineCommitVariantEventHandler = new FuncEventDispatcher<CommitVariant, client.UncommittedChangeResult>();
 
     constructor(private client: edityClient.GitClient) {
 
@@ -87,8 +94,8 @@ export class GitService {
         }
     }
 
-    fireDetermineCommitVariant(data) {
-        return this.determineCommitVariantEventHandler.fire(data);
+    fireDetermineCommitVariant(result: client.UncommittedChangeResult) {
+        return this.determineCommitVariantEventHandler.fire(result);
     }
 }
 

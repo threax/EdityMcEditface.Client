@@ -7,6 +7,7 @@ import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as git from "edity.editorcore.GitService";
 import * as editorServices from 'edity.editorcore.EditorServices';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
 
 var CodeMirror = (<any>window).CodeMirror;
 
@@ -15,7 +16,7 @@ class MergeRow {
         return [controller.BindingCollection, git.GitService, MergeController, controller.InjectControllerData];
     }
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private mergeController: MergeController, private data) {
+    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private mergeController: MergeController, private result: client.UncommittedChangeResult) {
         bindings.setListener(this);
     }
 
@@ -23,8 +24,8 @@ class MergeRow {
         evt.preventDefault();
         this.mergeController.startUi();
 
-        this.GitService.mergeInfo(this.data.filePath)
-            .then((successData) => this.mergeController.initUI(this.data.filePath, successData))
+        this.GitService.mergeInfo(this.result.data.filePath)
+            .then((successData) => this.mergeController.initUI(this.result.data.filePath, successData))
             .catch((failData) => alert("Cannot read merge data, please try again later"));
     }
 }
@@ -46,8 +47,8 @@ class MergeController {
         GitService.determineCommitVariantEvent.add((d) => this.mergeVariant(d));
     }
 
-    private mergeVariant(data) {
-        if (data.state === "Conflicted") {
+    private mergeVariant(result: client.UncommittedChangeResult): git.CommitVariant {
+        if (result.data.state === "Conflicted") {
             var creator = builder.createOnCallback(MergeRow);
             return {
                 variant: "Conflicted",

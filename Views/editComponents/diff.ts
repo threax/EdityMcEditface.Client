@@ -8,6 +8,7 @@ import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as git from "edity.editorcore.GitService";
 import * as editorServices from 'edity.editorcore.EditorServices';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
 
 var CodeMirror = (<any>window).CodeMirror;
 
@@ -46,10 +47,10 @@ class DiffRow {
         return [controller.BindingCollection, controller.InjectControllerData, DiffController, git.GitService, ConfirmRevertController];
     }
 
-    private data;
+    private result: client.UncommittedChangeResult;
 
-    constructor(bindings, data, private diffControllerInstance: DiffController, private GitService: git.GitService, private revertConfirmation: ConfirmRevertController) {
-        this.data = data;
+    constructor(bindings: controller.BindingCollection, result: client.UncommittedChangeResult, private diffControllerInstance: DiffController, private GitService: git.GitService, private revertConfirmation: ConfirmRevertController) {
+        this.result = result;
         bindings.setListener(this);
     }
 
@@ -57,9 +58,9 @@ class DiffRow {
         evt.preventDefault();
         this.diffControllerInstance.openDialog();
 
-        this.GitService.uncommittedDiff(this.data.filePath)
+        this.GitService.uncommittedDiff(this.result.data.filePath)
             .then((successData) => {
-                this.diffControllerInstance.initUI(this.data.filePath, successData);
+                this.diffControllerInstance.initUI(this.result.data.filePath, successData);
             })
             .catch((failData) => {
                 alert("Cannot read diff data, please try again later");
@@ -69,7 +70,7 @@ class DiffRow {
     revert(evt) {
         evt.preventDefault();
 
-        this.revertConfirmation.confirm(this.data.filePath);
+        this.revertConfirmation.confirm(this.result.data.filePath);
     }
 }
 
@@ -90,8 +91,8 @@ class DiffController {
         this.diffModel = bindings.getModel('diff');
     }
 
-    private diffVariant(data) {
-        if (data.state === "Modified") {
+    private diffVariant(result: client.UncommittedChangeResult): git.CommitVariant {
+        if (result.data.state === "Modified") {
             var creator = this.builder.createOnCallback(DiffRow);
             return {
                 variant: "ModifiedWithDiff",
