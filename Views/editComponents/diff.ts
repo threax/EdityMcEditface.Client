@@ -17,27 +17,26 @@ class ConfirmRevertController{
         return [controller.BindingCollection, git.GitService];
     }
 
-    private targetFile;
-    private dialog;
-    private info;
+    private reverter: client.UncommittedChangeResult;
+    private dialog: controller.OnOffToggle;
+    private info: controller.Model<string>;
 
     constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
-        this.targetFile;
         this.dialog = bindings.getToggle('dialog');
-        this.info = bindings.getModel('info');
+        this.info = bindings.getModel<string>('info');
     }
 
-    revert() {
-        this.GitService.revert(this.targetFile)
-        .then((data) => {
+    async revert(evt: Event): Promise<void> {
+        if (this.reverter && this.reverter.canRevert()) {
+            await this.reverter.revert();
             this.dialog.off();
-        });
-        this.targetFile = null;
+            this.reverter = null;
+        }
     }
 
-    confirm(file) {
-        this.targetFile = file;
-        this.info.setData(file);
+    public confirm(reverter: client.UncommittedChangeResult): void {
+        this.reverter = reverter;
+        this.info.setData(reverter.data.filePath);
         this.dialog.on();
     }
 }
@@ -70,7 +69,7 @@ class DiffRow {
     revert(evt) {
         evt.preventDefault();
 
-        this.revertConfirmation.confirm(this.result.data.filePath);
+        this.revertConfirmation.confirm(this.result);
     }
 }
 
