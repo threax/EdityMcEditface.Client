@@ -196,6 +196,115 @@ export class DraftCollectionResult {
     }
 }
 
+export class DraftEntryPointInjector {
+    private url: string;
+    private fetcher: Fetcher;
+    private instance: Promise<DraftEntryPointResult>;
+
+    constructor(url: string, fetcher: Fetcher) {
+        this.url = url;
+        this.fetcher = fetcher;
+    }
+
+    public load(): Promise<DraftEntryPointResult> {
+        if (!this.instance) {
+            this.instance = DraftEntryPointResult.Load(this.url, this.fetcher);
+        }
+
+        return this.instance;
+    }
+}
+
+export class DraftEntryPointResult {
+    private client: hal.HalEndpointClient;
+
+    public static Load(url: string, fetcher: Fetcher): Promise<DraftEntryPointResult> {
+        return hal.HalEndpointClient.Load({
+            href: url,
+            method: "GET"
+        }, fetcher)
+            .then(c => {
+                return new DraftEntryPointResult(c);
+            });
+    }
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: DraftEntryPoint = undefined;
+    public get data(): DraftEntryPoint {
+        this.strongData = this.strongData || this.client.GetData<DraftEntryPoint>();
+        return this.strongData;
+    }
+
+    public refresh(): Promise<DraftEntryPointResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new DraftEntryPointResult(r);
+            });
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+
+    public commit(data: NewCommit) {
+        return this.client.LoadLinkWithBody("Commit", data)
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canCommit(): boolean {
+        return this.client.HasLink("Commit");
+    }
+
+    public getCommitDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("Commit")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasCommitDocs(): boolean {
+        return this.client.HasLinkDoc("Commit");
+    }
+
+    public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
+        return this.client.LoadLinkWithQuery("ListDrafts", query)
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
+    }
+
+    public canListDrafts(): boolean {
+        return this.client.HasLink("ListDrafts");
+    }
+
+    public getListDraftsDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("ListDrafts")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListDraftsDocs(): boolean {
+        return this.client.HasLinkDoc("ListDrafts");
+    }
+}
+
 export class EntryPointInjector {
     private url: string;
     private fetcher: Fetcher;
@@ -280,6 +389,28 @@ export class EntryPointResult {
 
     public hasListPhasesDocs(): boolean {
         return this.client.HasLinkDoc("ListPhases");
+    }
+
+    public beginDraft(): Promise<DraftEntryPointResult> {
+        return this.client.LoadLink("BeginDraft")
+            .then(r => {
+                return new DraftEntryPointResult(r);
+            });
+    }
+
+    public canBeginDraft(): boolean {
+        return this.client.HasLink("BeginDraft");
+    }
+
+    public getBeginDraftDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("BeginDraft")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasBeginDraftDocs(): boolean {
+        return this.client.HasLinkDoc("BeginDraft");
     }
 
     public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
@@ -705,14 +836,17 @@ export interface DraftQuery {
     limit?: number;
 }
 
-export interface EntryPoint {
-}
-
-export interface PhaseCollection {
+export interface DraftEntryPoint {
 }
 
 export interface NewCommit {
     message?: string;
+}
+
+export interface EntryPoint {
+}
+
+export interface PhaseCollection {
 }
 
 export interface UncommittedChangeCollection {
