@@ -11,43 +11,68 @@ import * as git from "edity.editorcore.GitService";
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as saveService from "edity.editorcore.SaveService";
+import { ExternalPromise } from 'hr.externalpromise';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [client.EntryPointInjector, PushController, PullController, git.GitService];
+        return [SyncManager, PullController, git.GitService];
     }
 
-    constructor(private entryInjector: client.EntryPointInjector, private push: PushController, private pull: PullController, private gitService: git.GitService) {
-
+    constructor(private syncManager: SyncManager, private pull: PullController) {
+        
     }
 
     public async sync(evt: Event): Promise<void> {
         evt.preventDefault();
         try {
             await saveService.saveNow();
-            var entry = await this.entryInjector.load();
-            if (entry.canBeginSync()) {
-                var syncInfo = await entry.beginSync();
-                if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
-                    var commitResult = await this.gitService.commit();
-                    if (commitResult.Success) {
-                        this.sync(evt); //Reload data and try to push again.
-                    }
-                }
-                else if (syncInfo.canPull()) {
-                    this.pull.show(syncInfo);
-                }
-                else if (syncInfo.canPush()) {
-                    this.push.show(syncInfo);
-                }
-                else {
-                    this.pull.showNoSync();
-                }
-            }
+            await this.syncManager.sync();
         }
         catch (err) {
             this.pull.showError(err);
         }
+    }
+}
+
+class SyncManager implements git.ISyncHandler {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [client.EntryPointInjector, PushController, PullController, git.GitService];
+    }
+
+    constructor(private entryInjector: client.EntryPointInjector, private push: PushController, private pull: PullController, private gitService: git.GitService) {
+        this.gitService.setSyncHandler(this);
+    }
+
+    public async sync(): Promise<git.SyncResult> {
+        var entry = await this.entryInjector.load();
+        var syncResult = new git.SyncResult(false);
+        if (entry.canBeginSync()) {
+            var syncInfo = await entry.beginSync();
+
+            if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
+                var commitResult = await this.gitService.commit();
+                if (commitResult.Success) {
+                    syncResult = await this.sync();
+                }
+            }
+
+            else if (syncInfo.canPull()) {
+                var syncResult = await this.pull.show(syncInfo);
+                if (syncResult.Success) {
+                    syncResult = await this.sync();
+                }
+            }
+
+            else if (syncInfo.canPush()) {
+                syncResult = await this.push.show(syncInfo);
+            }
+
+            else {
+                this.pull.showNoSync();
+            }
+        }
+
+        return syncResult;
     }
 }
 
@@ -73,6 +98,7 @@ abstract class SyncController {
     protected history: controller.Model<HistoryDisplay>;
 
     protected currentSyncInfo: client.SyncInfoResult;
+    private currentPromise: ExternalPromise<git.SyncResult> = null;
 
     constructor(bindings: controller.BindingCollection) {
         this.dialog = bindings.getToggle('dialog');
@@ -92,7 +118,13 @@ abstract class SyncController {
 
     protected abstract get CurrentHistory(): client.History[];
 
-    public show(syncInfo: client.SyncInfoResult): void {
+    public show(syncInfo: client.SyncInfoResult): Promise<git.SyncResult> {
+        if (this.currentPromise !== null) {
+            this.currentPromise.resolve(new git.SyncResult(false));
+        }
+
+        this.currentPromise = new ExternalPromise<git.SyncResult>();
+
         this.currentSyncInfo = syncInfo;
         var data = this.currentSyncInfo.data;
 
@@ -101,6 +133,8 @@ abstract class SyncController {
         this.history.setData(new Iterable.Iterable(this.CurrentHistory).select(SyncController.formatRow));
 
         this.dialog.on();
+
+        return this.currentPromise.Promise;
     }
 
     public showNoSync() {
@@ -112,6 +146,12 @@ abstract class SyncController {
         this.dialog.on();
         this.group.activate(this.error);
         //Doesn't really do anything with err, but should
+    }
+
+    protected resolveCurrentPromise(success: boolean) {
+        if (this.currentPromise !== null) {
+            this.currentPromise.resolve(new git.SyncResult(success));
+        }
     }
 
     private static formatRow(row: HistoryDisplay): HistoryDisplay {
@@ -126,7 +166,7 @@ class PullController extends SyncController {
         return [controller.BindingCollection, PushController];
     }
 
-    constructor(bindings: controller.BindingCollection, private push: PushController) {
+    constructor(bindings: controller.BindingCollection) {
         super(bindings);
     }
 
@@ -135,13 +175,8 @@ class PullController extends SyncController {
         this.group.activate(this.load);
         try {
             await this.currentSyncInfo.pull();
-            this.currentSyncInfo = await this.currentSyncInfo.refresh();
-            if (this.currentSyncInfo.canPush()) {
-                this.push.show(this.currentSyncInfo);
-            }
-            else {
-                this.dialog.off();
-            }
+            this.dialog.off();
+            this.resolveCurrentPromise(true);
         }
         catch (err) {
             this.group.activate(this.error)
@@ -168,6 +203,7 @@ class PushController extends SyncController {
         try {
             await this.currentSyncInfo.push();
             this.dialog.off();
+            this.resolveCurrentPromise(true);
         }
         catch (err) {
             this.group.activate(this.error);
@@ -184,6 +220,7 @@ git.addServices(builder.Services);
 builder.Services.tryAddShared(PushController, PushController);
 builder.Services.tryAddShared(PullController, PullController);
 builder.Services.tryAddShared(NavButtonController, NavButtonController);
+builder.Services.tryAddShared(SyncManager, SyncManager);
 
 builder.create("syncpush", PushController);
 builder.create("syncpull", PullController);

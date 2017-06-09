@@ -29,6 +29,20 @@ export interface ICommitHandler {
     commit(): Promise<CommitResult>;
 }
 
+export class SyncResult {
+    constructor(private success: boolean) {
+
+    }
+
+    public get Success() {
+        return this.success;
+    }
+}
+
+export interface ISyncHandler {
+    sync(): Promise<SyncResult>;
+}
+
 export class GitService {
     public static get InjectorArgs(): di.DiFunction<any>[] {
         return [edityClient.GitClient];
@@ -41,6 +55,7 @@ export class GitService {
     private determineCommitVariantEventHandler = new FuncEventDispatcher<CommitVariant, client.UncommittedChangeResult>();
 
     private commitHandler: ICommitHandler;
+    private syncHandler: ISyncHandler;
 
     constructor(private client: edityClient.GitClient) {
 
@@ -54,6 +69,10 @@ export class GitService {
         this.commitHandler = commitHandler;
     }
 
+    /**
+     * Perform a commit, will return a CommitResult promise with
+     * the results of trying to commit.
+     */
     public commit(): Promise<CommitResult> {
         if (this.commitHandler) {
             return this.commitHandler.commit();
@@ -63,16 +82,33 @@ export class GitService {
         }
     }
 
+    /**
+     * Set the sync handler to use.
+     * @param syncHandler
+     */
+    public setSyncHandler(syncHandler: ISyncHandler) {
+        this.syncHandler = syncHandler;
+    }
+
+    /**
+     * Perform a sync, will return a SyncResult promise with
+     * the results of trying to sync.
+     */
+    public sync(): Promise<SyncResult> {
+        if (this.syncHandler) {
+            return this.syncHandler.sync();
+        }
+        else {
+            return Promise.resolve(new SyncResult(false));
+        }
+    }
+
     get revertStarted() { return this.revertStartedHandler.modifier; }
     get revertCompleted() { return this.revertCompletedHandler.modifier; };
     get determineCommitVariantEvent() { return this.determineCommitVariantEventHandler.modifier };
 
     setHost(url) {
         this.host = url;
-    }
-
-    syncInfo() {
-        return this.client.syncInfo(null);
     }
 
     uncommittedDiff(file:string) {
