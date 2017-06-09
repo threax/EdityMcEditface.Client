@@ -13,19 +13,36 @@ import * as iter from 'hr.iterable';
 import * as uri from 'hr.uri';
 import * as hyperCrudPage from 'hr.widgets.HypermediaCrudService';
 import * as crudPage from 'hr.widgets.CrudPage';
+import * as saveService from "edity.editorcore.SaveService";
+import * as git from "edity.editorcore.GitService";
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [DraftController];
+        return [DraftController, client.EntryPointInjector, git.GitService];
     }
 
-    constructor(private controller: DraftController) {
+    constructor(private controller: DraftController, private entryInjector: client.EntryPointInjector, private gitService: git.GitService) {
 
     }
 
-    open(evt) {
+    public async open(evt: Event): Promise<void> {
         evt.preventDefault();
-        this.controller.show();
+        await saveService.saveNow();
+        this.handleDraft();
+    }
+
+    private async handleDraft(): Promise<void> {
+        var entry = await this.entryInjector.load();
+        var beginDraft = await entry.beginDraft();
+        if (beginDraft.canCommit()) {
+            var commitResult = await this.gitService.commit();
+            if (commitResult.Success) {
+                this.handleDraft();
+            }
+        }
+        else {
+            this.controller.show();
+        }
     }
 }
 
