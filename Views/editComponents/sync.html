@@ -33,18 +33,9 @@
                                 <th>When</th>
                             </tr>
                         </thead>
-                        <tbody data-hr-model="behindHistory" data-hr-model-component="syncModal.HistoryTable"></tbody>
+                        <tbody data-hr-model="history" data-hr-model-component="syncModal.HistoryTable"></tbody>
                     </table>
-                    <button type="button" class="btn btn-default" data-hr-on-click="pull">Pull</button>
-                    <template data-hr-component="syncModal.HistoryTable">
-                        <table>
-                            <tr>
-                                <td>{{message}}</td>
-                                <td>{{name}}</td>
-                                <td>{{when}}</td>
-                            </tr>
-                        </table>
-                    </template>
+                    <button type="button" class="btn btn-default" data-hr-on-click="performAction">Pull</button>
                 </div>
             </div>
             <div class="modal-body" data-hr-toggle="cantSync" data-hr-style-off="display:none;">
@@ -93,18 +84,9 @@
                                 <th>When</th>
                             </tr>
                         </thead>
-                        <tbody data-hr-model="aheadHistory" data-hr-model-component="syncModal.HistoryTable"></tbody>
+                        <tbody data-hr-model="history" data-hr-model-component="syncModal.HistoryTable"></tbody>
                     </table>
-                    <button type="button" class="btn btn-default" data-hr-on-click="push">Push</button>
-                    <template data-hr-component="syncModal.HistoryTable">
-                        <table>
-                            <tr>
-                                <td>{{message}}</td>
-                                <td>{{name}}</td>
-                                <td>{{when}}</td>
-                            </tr>
-                        </table>
-                    </template>
+                    <button type="button" class="btn btn-default" data-hr-on-click="performAction">Push</button>
                 </div>
             </div>
             <div class="modal-body" data-hr-toggle="cantSync" data-hr-style-off="display:none;">
@@ -121,4 +103,13 @@
         </div>
     </div>
 </div>
+<template data-hr-component="syncModal.HistoryTable">
+    <table>
+        <tr>
+            <td>{{message}}</td>
+            <td>{{name}}</td>
+            <td>{{whenStr}}</td>
+        </tr>
+    </table>
+</template>
 {{mainContent}}

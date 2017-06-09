@@ -41,26 +41,30 @@ class NavButtonController {
     }
 }
 
-class PullController {
+interface HistoryDisplay extends client.History {
+    whenStr: string;
+}
+
+abstract class SyncController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
         return [controller.BindingCollection, PushController];
     }
 
-    private dialog: controller.OnOffToggle;
+    protected dialog: controller.OnOffToggle;
 
-    private load: controller.OnOffToggle;
-    private main: controller.OnOffToggle;
-    private cantSync: controller.OnOffToggle;
-    private error: controller.OnOffToggle;
-    private noChanges: controller.OnOffToggle;
-    private group: toggles.Group;
+    protected load: controller.OnOffToggle;
+    protected main: controller.OnOffToggle;
+    protected cantSync: controller.OnOffToggle;
+    protected error: controller.OnOffToggle;
+    protected noChanges: controller.OnOffToggle;
+    protected group: toggles.Group;
 
-    private changesModel: controller.Model<client.SyncInfo>;
-    private behindHistory: controller.Model<any>;
+    protected changesModel: controller.Model<client.SyncInfo>;
+    protected history: controller.Model<HistoryDisplay>;
 
-    private currentSyncInfo: client.SyncInfoResult;
+    protected currentSyncInfo: client.SyncInfoResult;
 
-    constructor(bindings: controller.BindingCollection, private push: PushController) {
+    constructor(bindings: controller.BindingCollection) {
         this.dialog = bindings.getToggle('dialog');
 
         this.load = bindings.getToggle('load');
@@ -71,10 +75,46 @@ class PullController {
         this.group = new toggles.Group(this.load, this.main, this.cantSync, this.error, this.noChanges);
 
         this.changesModel = bindings.getModel<client.SyncInfo>('changes');
-        this.behindHistory = bindings.getModel<any>('behindHistory');
+        this.history = bindings.getModel<HistoryDisplay>('history');
     }
 
-    public async pull(evt): Promise<void> {
+    public abstract performAction(evt: Event): Promise<void>;
+
+    protected abstract get CurrentHistory(): client.History[];
+
+    public show(syncInfo: client.SyncInfoResult): void {
+        this.currentSyncInfo = syncInfo;
+        var data = this.currentSyncInfo.data;
+
+        if (data.aheadBy === 0 && data.behindBy === 0) {
+            this.group.activate(this.noChanges);
+        }
+        else {
+            this.group.activate(this.main);
+            this.changesModel.setData(data);
+            this.history.setData(new Iterable.Iterable(this.CurrentHistory).select(SyncController.formatRow));
+        }
+
+        this.dialog.on();
+    }
+
+    private static formatRow(row: HistoryDisplay): HistoryDisplay {
+        var date = new Date(row.when);
+        row.whenStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        return row;
+    }
+}
+
+class PullController extends SyncController {
+    public static get InjectorArgs(): controller.DiFunction<any>[] {
+        return [controller.BindingCollection, PushController];
+    }
+
+    constructor(bindings: controller.BindingCollection, private push: PushController) {
+        super(bindings);
+    }
+
+    public async performAction(evt: Event): Promise<void> {
         evt.preventDefault();
         this.group.activate(this.load);
         try {
@@ -92,64 +132,21 @@ class PullController {
         }
     }
 
-    private setupSyncInfo(data: client.SyncInfo): void {
-        if (data.aheadBy === 0 && data.behindBy === 0) {
-            this.group.activate(this.noChanges);
-        }
-        else {
-            this.group.activate(this.main);
-            this.changesModel.setData(data);
-            this.behindHistory.setData(new Iterable.Iterable(data.behindHistory).select(PullController.formatRow));
-        }
-    }
-
-    public show(syncInfo: client.SyncInfoResult): void {
-        this.setupSyncInfo(syncInfo.data);
-        this.dialog.on();
-        this.currentSyncInfo = syncInfo;
-    }
-
-    private static formatRow(row) {
-        var date = new Date(row.when);
-        row.when = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-        return row;
+    protected get CurrentHistory(): client.History[] {
+        return this.currentSyncInfo.data.behindHistory;
     }
 }
 
-class PushController {
+class PushController extends SyncController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
         return [controller.BindingCollection];
     }
 
-    private dialog: controller.OnOffToggle;
-
-    private load: controller.OnOffToggle;
-    private main: controller.OnOffToggle;
-    private cantSync: controller.OnOffToggle;
-    private error: controller.OnOffToggle;
-    private noChanges: controller.OnOffToggle;
-    private group: toggles.Group;
-
-    private changesModel;
-    private aheadHistory;
-
-    private currentSyncInfo: client.SyncInfoResult;
-
     constructor(bindings: controller.BindingCollection) {
-        this.dialog = bindings.getToggle('dialog');
-
-        this.load = bindings.getToggle('load');
-        this.main = bindings.getToggle('main');
-        this.cantSync = bindings.getToggle('cantSync');
-        this.error = bindings.getToggle('error');
-        this.noChanges = bindings.getToggle('noChanges');
-        this.group = new toggles.Group(this.load, this.main, this.cantSync, this.error, this.noChanges);
-
-        this.changesModel = bindings.getModel('changes');
-        this.aheadHistory = bindings.getModel('aheadHistory');
+        super(bindings);
     }
 
-    public async push(evt: Event): Promise<void> {
+    public async performAction(evt: Event): Promise<void> {
         evt.preventDefault();
         this.group.activate(this.load);
         try {
@@ -161,27 +158,8 @@ class PushController {
         }
     }
 
-    private setupSyncInfo(data: client.SyncInfo): void {
-        if (data.aheadBy === 0 && data.behindBy === 0) {
-            this.group.activate(this.noChanges);
-        }
-        else {
-            this.group.activate(this.main);
-            this.changesModel.setData(data);
-            this.aheadHistory.setData(new Iterable.Iterable(data.aheadHistory).select(PushController.formatRow));
-        }
-    }
-
-    public show(syncInfo: client.SyncInfoResult): void {
-        this.setupSyncInfo(syncInfo.data);
-        this.dialog.on();
-        this.currentSyncInfo = syncInfo;
-    }
-
-    private static formatRow(row) {
-        var date = new Date(row.when);
-        row.when = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-        return row;
+    protected get CurrentHistory(): client.History[] {
+        return this.currentSyncInfo.data.aheadHistory;
     }
 }
 
