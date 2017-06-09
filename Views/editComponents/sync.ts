@@ -2,7 +2,6 @@
 
 "use strict";
 
-
 import * as storage from "hr.storage";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
@@ -33,10 +32,13 @@ class NavButtonController {
                 else if (syncInfo.canPush()) {
                     this.push.show(syncInfo);
                 }
+                else {
+                    this.pull.showNoSync();
+                }
             }
         }
         catch (err) {
-            alert("Error starting sync " + err.message);
+            this.pull.showError(err);
         }
     }
 }
@@ -86,16 +88,22 @@ abstract class SyncController {
         this.currentSyncInfo = syncInfo;
         var data = this.currentSyncInfo.data;
 
-        if (data.aheadBy === 0 && data.behindBy === 0) {
-            this.group.activate(this.noChanges);
-        }
-        else {
-            this.group.activate(this.main);
-            this.changesModel.setData(data);
-            this.history.setData(new Iterable.Iterable(this.CurrentHistory).select(SyncController.formatRow));
-        }
+        this.group.activate(this.main);
+        this.changesModel.setData(data);
+        this.history.setData(new Iterable.Iterable(this.CurrentHistory).select(SyncController.formatRow));
 
         this.dialog.on();
+    }
+
+    public showNoSync() {
+        this.dialog.on();
+        this.group.activate(this.noChanges);
+    }
+
+    public showError(err: Error) {
+        this.dialog.on();
+        this.group.activate(this.error);
+        //Doesn't really do anything with err, but should
     }
 
     private static formatRow(row: HistoryDisplay): HistoryDisplay {
