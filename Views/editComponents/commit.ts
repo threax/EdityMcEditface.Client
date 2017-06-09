@@ -11,6 +11,7 @@ import * as editorServices from 'edity.editorcore.EditorServices';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as git from "edity.editorcore.GitService";
 import { ResultModel } from 'hr.halcyon.ResultModel';
+import { ExternalPromise } from 'hr.externalpromise';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -21,12 +22,20 @@ class NavButtonController {
 
     }
 
-    commit(evt) {
+    public async commit(evt: Event): Promise<void> {
         evt.preventDefault();
-        saveService.saveNow()
-        .then(r => {
-            this.controller.startCommit();
-        })
+        await saveService.saveNow();
+        this.controller.startCommit();
+    }
+}
+
+class CommitHandler implements git.ICommitHandler {
+    constructor(private controller: CommitController) {
+
+    }
+
+    public commit(): Promise<git.CommitResult> {
+        return this.controller.startCommit();
     }
 }
 
@@ -35,16 +44,17 @@ class CommitController {
         return [controller.BindingCollection, client.EntryPointInjector, controller.InjectedControllerBuilder, git.GitService];
     }
 
-    private commitModel;
-    private dialog;
+    private commitModel: controller.Model<any>;
+    private dialog: controller.OnOffToggle;
 
-    private main;
-    private load;
-    private error;
-    private noChanges;
-    private toggleGroup;
+    private main: controller.OnOffToggle;
+    private load: controller.OnOffToggle;
+    private error: controller.OnOffToggle;
+    private noChanges: controller.OnOffToggle;
+    private toggleGroup: toggles.Group;
     private changedFiles: ResultModel<client.UncommittedChange, client.UncommittedChangeResult>;
-    private currentRowCreatedCallback;
+    private currentRowCreatedCallback: any;
+    private currentPromise: ExternalPromise<git.CommitResult> = null;
 
     constructor(bindings: controller.BindingCollection, private entry: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder, private GitService: git.GitService) {
         this.commitModel = bindings.getModel('commit');
@@ -58,6 +68,7 @@ class CommitController {
         this.changedFiles = new ResultModel(bindings.getModel<client.UncommittedChange>('changedFiles'));
 
         GitService.revertStarted.add(() => this.toggleGroup.activate(this.load));
+        GitService.setCommitHandler(new CommitHandler(this));
 
         GitService.revertCompleted.add((success) => {
             if (success) {
@@ -102,6 +113,11 @@ class CommitController {
                 this.toggleGroup.activate(this.main);
                 this.commitModel.clear();
                 this.dialog.off();
+                //Fire sucessful promise event
+                if (this.currentPromise !== null) {
+                    this.currentPromise.resolve(new git.CommitResult(true));
+                    this.currentPromise = null;
+                }
             }
         }
         catch (err) {
@@ -110,10 +126,19 @@ class CommitController {
         }
     }
 
-    startCommit() {
+    public startCommit(): Promise<git.CommitResult> {
+        //If we had an old promise hanging around we never completed the commit, send a negative result to whoever is waiting
+        if (this.currentPromise !== null) {
+            this.currentPromise.resolve(new git.CommitResult(false));
+        }
+
+        this.currentPromise = new ExternalPromise();
+
         this.toggleGroup.activate(this.load);
         this.dialog.on();
         this.updateUncommittedFiles();
+
+        return this.currentPromise.Promise;
     }
 
     private determineCommitVariant(result: client.UncommittedChangeResult) {

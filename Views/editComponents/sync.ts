@@ -10,23 +10,31 @@ import * as Iterable from "hr.iterable";
 import * as git from "edity.editorcore.GitService";
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as saveService from "edity.editorcore.SaveService";
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [client.EntryPointInjector, PushController, PullController];
+        return [client.EntryPointInjector, PushController, PullController, git.GitService];
     }
 
-    constructor(private entryInjector: client.EntryPointInjector, private push: PushController, private pull: PullController) {
+    constructor(private entryInjector: client.EntryPointInjector, private push: PushController, private pull: PullController, private gitService: git.GitService) {
 
     }
 
     public async sync(evt: Event): Promise<void> {
         evt.preventDefault();
         try {
+            await saveService.saveNow();
             var entry = await this.entryInjector.load();
             if (entry.canBeginSync()) {
                 var syncInfo = await entry.beginSync();
-                if (syncInfo.canPull()) {
+                if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
+                    var commitResult = await this.gitService.commit();
+                    if (commitResult.Success) {
+                        this.sync(evt); //Reload data and try to push again.
+                    }
+                }
+                else if (syncInfo.canPull()) {
                     this.pull.show(syncInfo);
                 }
                 else if (syncInfo.canPush()) {

@@ -15,6 +15,20 @@ export interface CommitVariant {
     rowCreated: controller.CreateCallback;
 }
 
+export class CommitResult {
+    constructor(private success: boolean) {
+        
+    }
+
+    public get Success() {
+        return this.success;
+    }
+}
+
+export interface ICommitHandler {
+    commit(): Promise<CommitResult>;
+}
+
 export class GitService {
     public static get InjectorArgs(): di.DiFunction<any>[] {
         return [edityClient.GitClient];
@@ -26,8 +40,27 @@ export class GitService {
     //Commit variant detection and sync
     private determineCommitVariantEventHandler = new FuncEventDispatcher<CommitVariant, client.UncommittedChangeResult>();
 
+    private commitHandler: ICommitHandler;
+
     constructor(private client: edityClient.GitClient) {
 
+    }
+
+    /**
+     * Set the commit handler to use.
+     * @param commitHandler
+     */
+    public setCommitHandler(commitHandler: ICommitHandler): void {
+        this.commitHandler = commitHandler;
+    }
+
+    public commit(): Promise<CommitResult> {
+        if (this.commitHandler) {
+            return this.commitHandler.commit();
+        }
+        else {
+            return Promise.resolve(new CommitResult(false));
+        }
     }
 
     get revertStarted() { return this.revertStartedHandler.modifier; }
@@ -40,14 +73,6 @@ export class GitService {
 
     syncInfo() {
         return this.client.syncInfo(null);
-    }
-
-    uncommittedChanges() {
-        return this.client.uncommittedChanges(null);
-    }
-
-    commit(data: edityClient.NewCommit) {
-        return this.client.commit(data, null);
     }
 
     uncommittedDiff(file:string) {
@@ -73,14 +98,6 @@ export class GitService {
     resolve(file, content) {
         var blob = new Blob([content], { type: "text/html" });
         return this.client.resolve(file, { data: blob, fileName: file }, null);
-    }
-
-    pull() {
-        return this.client.pull(null);
-    }
-
-    push() {
-        return this.client.push(null);
     }
 
     async revert(file) {
