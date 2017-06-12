@@ -29,12 +29,13 @@ class NavButtonController {
 
 class HistoryController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection];
+        return [controller.BindingCollection, controller.InjectedControllerBuilder];
     }
 
     private dialog: toggles.OnOffToggle;
+    private firstRun: boolean = true;
 
-    constructor(bindings: controller.BindingCollection) {
+    constructor(bindings: controller.BindingCollection, private builder: controller.InjectedControllerBuilder) {
         this.dialog = bindings.getToggle('dialog');
 
         //Add to nav menu
@@ -44,6 +45,12 @@ class HistoryController {
     }
 
     public showHistory(): void {
+        if (this.firstRun) {
+            //Create table
+            builder.create("history.pageNumbers", hyperCrudPage.CrudPageNumbers);
+            builder.create("historyMainTable", hyperCrudPage.CrudTableController);
+            this.firstRun = false;
+        }
         this.dialog.on();
     }
 }
@@ -57,8 +64,3 @@ git.addServices(builder.Services);
 builder.Services.tryAddTransient(HistoryController, HistoryController);
 builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 builder.create("history", HistoryController);
-
-//builder.create(settings.searchName, hyperCrudPage.CrudSearch);
-builder.create("history.pageNumbers", hyperCrudPage.CrudPageNumbers);
-builder.create("historyMainTable", hyperCrudPage.CrudTableController);
-//builder.create(settings.entryEditorName, hyperCrudPage.CrudItemEditorController);
