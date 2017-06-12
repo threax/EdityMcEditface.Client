@@ -1,4 +1,4 @@
-﻿import * as EdityClient from 'edity.editorcore.EdityClient';
+﻿import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as event from 'hr.eventdispatcher';
 import { ExternalPromise } from 'hr.externalpromise';
 import { Fetcher } from 'hr.fetcher';
@@ -36,25 +36,26 @@ export interface CompilerStatus {
 }
 
 export interface CompilerPhase {
-    execute: (arg: CompilerServiceEventArgs) => Promise<any>;
+    execute: (arg: CompilerServiceEventArgs) => Promise<void>;
 }
 
 class PrimaryCompilePhase implements CompilerPhase {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [EdityClient.CompileClient];
+        return [client.EntryPointInjector];
     }
 
-    constructor(private compileClient: EdityClient.CompileClient) {
+    constructor(private entryInjector: client.EntryPointInjector) {
         
     }
 
-    execute(arg: CompilerServiceEventArgs) {
+    public async execute(arg: CompilerServiceEventArgs): Promise<void> {
         arg.service.setStatus({ message: "Publishing Website" })
-        return this.compileClient.compile(null)
-            .then(r => {
-                arg.service.setStatus({ message: "Website compiled in " + r.elapsedSeconds + " seconds." });
-                return r;
-            });
+        var entry = await this.entryInjector.load();
+        if (!entry.canCompile()) {
+            throw new Error("Cannot compile website.");
+        }
+        var compileResult = await entry.compile();
+        arg.service.setStatus({ message: "Website compiled in " + compileResult.data.elapsedSeconds + " seconds." });
     }
 }
 
@@ -76,39 +77,18 @@ export class CompilerService {
         this.phases.push(primaryPhase);
     }
 
-    public compile(): Promise<any> {
+    public async compile(): Promise<void> {
         this.startedEvent.fire(new CompilerServiceEventArgs(this));
-
-        var compilePromise = new ExternalPromise<any>();
-
-        var currentPhase: CompilerPhase;
-        var currentPromise: Promise<any>;
-        var i = 0;
-        var runPhase = () => {
-            if (i < this.phases.length) {
-                currentPhase = this.phases[i++];
-                currentPhase.execute(new CompilerServiceEventArgs(this))
-                    .then(r => {
-                        runPhase();
-                    })
-                    .catch(err => {
-                        compilePromise.reject(err);
-                    });
+        try {
+            for (let i = 0; i < this.phases.length; ++i) {
+                await this.phases[i++].execute(new CompilerServiceEventArgs(this));
             }
-            else {
-                compilePromise.resolve();
-            }
-        };
-        runPhase();
-
-        return compilePromise.Promise.then(r => {
             this.successEvent.fire(new CompilerServiceEventArgs(this));
-            return r;
-        })
-        .catch(err => {
+        }
+        catch (err) {
             this.failedEvent.fire(new CompilerServiceErrorEventArgs(this, err));
-            return err;
-        });
+            throw err;
+        }
     }
 
     public setStatus(status: CompilerStatus) {
@@ -138,7 +118,6 @@ export class CompilerService {
 }
 
 export function addServices(services: di.ServiceCollection) {
-    EdityClient.addServices(services);
     services.tryAddShared(PrimaryCompilePhase, PrimaryCompilePhase);
     services.tryAddShared(CompilerService, CompilerService);
 }

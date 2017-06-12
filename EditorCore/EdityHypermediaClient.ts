@@ -533,6 +533,28 @@ export class EntryPointResult {
     public hasPublishStatusDocs(): boolean {
         return this.client.HasLinkDoc("PublishStatus");
     }
+
+    public compile(): Promise<CompilerResultResult> {
+        return this.client.LoadLink("Compile")
+               .then(r => {
+                    return new CompilerResultResult(r);
+                });
+    }
+
+    public canCompile(): boolean {
+        return this.client.HasLink("Compile");
+    }
+
+    public getCompileDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("Compile")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasCompileDocs(): boolean {
+        return this.client.HasLinkDoc("Compile");
+    }
 }
 
 export class DiffInfoResult {
@@ -817,6 +839,28 @@ export class CompilerStatusResult {
     public hasRefreshDocs(): boolean {
         return this.client.HasLinkDoc("self");
     }
+
+    public compile(): Promise<CompilerResultResult> {
+        return this.client.LoadLink("Compile")
+               .then(r => {
+                    return new CompilerResultResult(r);
+                });
+    }
+
+    public canCompile(): boolean {
+        return this.client.HasLink("Compile");
+    }
+
+    public getCompileDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("Compile")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasCompileDocs(): boolean {
+        return this.client.HasLinkDoc("Compile");
+    }
 }
 
 export class PhaseResult {
@@ -966,6 +1010,10 @@ export interface CompilerStatus {
     behindHistory?: any;
 }
 
+export interface CompilerResult {
+    elapsedSeconds?: number;
+}
+
 export interface DiffInfo {
     filePath?: string;
     original?: string;
@@ -988,10 +1036,6 @@ export enum GitFileStatus {
 export interface UncommittedChange {
     filePath?: string;
     state?: string;
-}
-
-export interface CompilerResult {
-    elapsedSeconds?: number;
 }
 
 export interface Phase {
