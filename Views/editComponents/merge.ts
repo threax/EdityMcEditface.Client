@@ -102,4 +102,5 @@ class MergeController {
 var builder = editorServices.createBaseBuilder();
 git.addServices(builder.Services);
 builder.Services.tryAddShared(MergeController, MergeController);
+builder.Services.tryAddTransient(MergeRow, MergeRow);
 builder.create("merge", MergeController);
