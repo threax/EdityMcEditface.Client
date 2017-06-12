@@ -16,9 +16,9 @@ export class DraftResult {
 
     public refresh(): Promise<DraftResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new DraftResult(r);
-                });
+            .then(r => {
+                return new DraftResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -38,9 +38,9 @@ export class DraftResult {
 
     public submitLatestDraft() {
         return this.client.LoadLink("SubmitLatestDraft")
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canSubmitLatestDraft(): boolean {
@@ -49,13 +49,35 @@ export class DraftResult {
 
     public submitAllDrafts() {
         return this.client.LoadLink("SubmitAllDrafts")
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canSubmitAllDrafts(): boolean {
         return this.client.HasLink("SubmitAllDrafts");
+    }
+
+    public listPageHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
+        return this.client.LoadLinkWithQuery("ListPageHistory", query)
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canListPageHistory(): boolean {
+        return this.client.HasLink("ListPageHistory");
+    }
+
+    public getListPageHistoryDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("ListPageHistory")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListPageHistoryDocs(): boolean {
+        return this.client.HasLinkDoc("ListPageHistory");
     }
 }
 
@@ -74,7 +96,7 @@ export class DraftCollectionResult {
 
     private strongItems: DraftResult[];
     public get items(): DraftResult[] {
-        if(this.strongItems === undefined){
+        if (this.strongItems === undefined) {
             var embeds = this.client.GetEmbed("values");
             var clients = embeds.GetAllClients();
             this.strongItems = [];
@@ -87,9 +109,9 @@ export class DraftCollectionResult {
 
     public refresh(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new DraftCollectionResult(r);
-                });
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -109,9 +131,9 @@ export class DraftCollectionResult {
 
     public next(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("next")
-               .then(r => {
-                    return new DraftCollectionResult(r);
-                });
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
     }
 
     public canNext(): boolean {
@@ -131,9 +153,9 @@ export class DraftCollectionResult {
 
     public previous(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("previous")
-               .then(r => {
-                    return new DraftCollectionResult(r);
-                });
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
     }
 
     public canPrevious(): boolean {
@@ -153,9 +175,9 @@ export class DraftCollectionResult {
 
     public first(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("first")
-               .then(r => {
-                    return new DraftCollectionResult(r);
-                });
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
     }
 
     public canFirst(): boolean {
@@ -175,9 +197,9 @@ export class DraftCollectionResult {
 
     public last(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("last")
-               .then(r => {
-                    return new DraftCollectionResult(r);
-                });
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
     }
 
     public canLast(): boolean {
@@ -224,9 +246,9 @@ export class DraftEntryPointResult {
             method: "GET"
         }, fetcher)
             .then(c => {
-                 return new DraftEntryPointResult(c);
-             });
-            }
+                return new DraftEntryPointResult(c);
+            });
+    }
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
@@ -240,9 +262,9 @@ export class DraftEntryPointResult {
 
     public refresh(): Promise<DraftEntryPointResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new DraftEntryPointResult(r);
-                });
+            .then(r => {
+                return new DraftEntryPointResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -262,9 +284,9 @@ export class DraftEntryPointResult {
 
     public commit(data: NewCommit) {
         return this.client.LoadLinkWithBody("Commit", data)
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canCommit(): boolean {
@@ -284,9 +306,9 @@ export class DraftEntryPointResult {
 
     public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
         return this.client.LoadLinkWithQuery("ListDrafts", query)
-               .then(r => {
-                    return new DraftCollectionResult(r);
-                });
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
     }
 
     public canListDrafts(): boolean {
@@ -333,9 +355,9 @@ export class EntryPointResult {
             method: "GET"
         }, fetcher)
             .then(c => {
-                 return new EntryPointResult(c);
-             });
-            }
+                return new EntryPointResult(c);
+            });
+    }
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
@@ -349,9 +371,9 @@ export class EntryPointResult {
 
     public refresh(): Promise<EntryPointResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new EntryPointResult(r);
-                });
+            .then(r => {
+                return new EntryPointResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -371,9 +393,9 @@ export class EntryPointResult {
 
     public listPhases(): Promise<PhaseCollectionResult> {
         return this.client.LoadLink("ListPhases")
-               .then(r => {
-                    return new PhaseCollectionResult(r);
-                });
+            .then(r => {
+                return new PhaseCollectionResult(r);
+            });
     }
 
     public canListPhases(): boolean {
@@ -393,9 +415,9 @@ export class EntryPointResult {
 
     public beginDraft(): Promise<DraftEntryPointResult> {
         return this.client.LoadLink("BeginDraft")
-               .then(r => {
-                    return new DraftEntryPointResult(r);
-                });
+            .then(r => {
+                return new DraftEntryPointResult(r);
+            });
     }
 
     public canBeginDraft(): boolean {
@@ -415,9 +437,9 @@ export class EntryPointResult {
 
     public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
         return this.client.LoadLinkWithQuery("ListDrafts", query)
-               .then(r => {
-                    return new DraftCollectionResult(r);
-                });
+            .then(r => {
+                return new DraftCollectionResult(r);
+            });
     }
 
     public canListDrafts(): boolean {
@@ -437,9 +459,9 @@ export class EntryPointResult {
 
     public submitAllDrafts() {
         return this.client.LoadLink("SubmitAllDrafts")
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canSubmitAllDrafts(): boolean {
@@ -448,9 +470,9 @@ export class EntryPointResult {
 
     public commit(data: NewCommit) {
         return this.client.LoadLinkWithBody("Commit", data)
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canCommit(): boolean {
@@ -470,9 +492,9 @@ export class EntryPointResult {
 
     public getUncommittedChanges(): Promise<UncommittedChangeCollectionResult> {
         return this.client.LoadLink("GetUncommittedChanges")
-               .then(r => {
-                    return new UncommittedChangeCollectionResult(r);
-                });
+            .then(r => {
+                return new UncommittedChangeCollectionResult(r);
+            });
     }
 
     public canGetUncommittedChanges(): boolean {
@@ -492,9 +514,9 @@ export class EntryPointResult {
 
     public beginSync(): Promise<SyncInfoResult> {
         return this.client.LoadLink("BeginSync")
-               .then(r => {
-                    return new SyncInfoResult(r);
-                });
+            .then(r => {
+                return new SyncInfoResult(r);
+            });
     }
 
     public canBeginSync(): boolean {
@@ -514,9 +536,9 @@ export class EntryPointResult {
 
     public publishStatus(): Promise<CompilerStatusResult> {
         return this.client.LoadLink("PublishStatus")
-               .then(r => {
-                    return new CompilerStatusResult(r);
-                });
+            .then(r => {
+                return new CompilerStatusResult(r);
+            });
     }
 
     public canPublishStatus(): boolean {
@@ -536,9 +558,9 @@ export class EntryPointResult {
 
     public compile(): Promise<CompilerResultResult> {
         return this.client.LoadLink("Compile")
-               .then(r => {
-                    return new CompilerResultResult(r);
-                });
+            .then(r => {
+                return new CompilerResultResult(r);
+            });
     }
 
     public canCompile(): boolean {
@@ -554,6 +576,212 @@ export class EntryPointResult {
 
     public hasCompileDocs(): boolean {
         return this.client.HasLinkDoc("Compile");
+    }
+
+    public listHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
+        return this.client.LoadLinkWithQuery("ListHistory", query)
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canListHistory(): boolean {
+        return this.client.HasLink("ListHistory");
+    }
+
+    public getListHistoryDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("ListHistory")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListHistoryDocs(): boolean {
+        return this.client.HasLinkDoc("ListHistory");
+    }
+}
+
+export class HistoryResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: History = undefined;
+    public get data(): History {
+        this.strongData = this.strongData || this.client.GetData<History>();
+        return this.strongData;
+    }
+
+    public getEntryPoint(): Promise<EntryPointResult> {
+        return this.client.LoadLink("GetEntryPoint")
+            .then(r => {
+                return new EntryPointResult(r);
+            });
+    }
+
+    public canGetEntryPoint(): boolean {
+        return this.client.HasLink("GetEntryPoint");
+    }
+
+    public getGetEntryPointDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("GetEntryPoint")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasGetEntryPointDocs(): boolean {
+        return this.client.HasLinkDoc("GetEntryPoint");
+    }
+}
+
+export class HistoryCollectionResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: HistoryCollection = undefined;
+    public get data(): HistoryCollection {
+        this.strongData = this.strongData || this.client.GetData<HistoryCollection>();
+        return this.strongData;
+    }
+
+    private strongItems: HistoryResult[];
+    public get items(): HistoryResult[] {
+        if (this.strongItems === undefined) {
+            var embeds = this.client.GetEmbed("values");
+            var clients = embeds.GetAllClients();
+            this.strongItems = [];
+            for (var i = 0; i < clients.length; ++i) {
+                this.strongItems.push(new HistoryResult(clients[i]));
+            }
+        }
+        return this.strongItems;
+    }
+
+    public refresh(): Promise<HistoryCollectionResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+
+    public getListDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("List")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListDocs(): boolean {
+        return this.client.HasLinkDoc("List");
+    }
+
+    public next(): Promise<HistoryCollectionResult> {
+        return this.client.LoadLink("next")
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canNext(): boolean {
+        return this.client.HasLink("next");
+    }
+
+    public getNextDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("next")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasNextDocs(): boolean {
+        return this.client.HasLinkDoc("next");
+    }
+
+    public previous(): Promise<HistoryCollectionResult> {
+        return this.client.LoadLink("previous")
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canPrevious(): boolean {
+        return this.client.HasLink("previous");
+    }
+
+    public getPreviousDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("previous")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasPreviousDocs(): boolean {
+        return this.client.HasLinkDoc("previous");
+    }
+
+    public first(): Promise<HistoryCollectionResult> {
+        return this.client.LoadLink("first")
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canFirst(): boolean {
+        return this.client.HasLink("first");
+    }
+
+    public getFirstDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("first")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasFirstDocs(): boolean {
+        return this.client.HasLinkDoc("first");
+    }
+
+    public last(): Promise<HistoryCollectionResult> {
+        return this.client.LoadLink("last")
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canLast(): boolean {
+        return this.client.HasLink("last");
+    }
+
+    public getLastDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("last")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasLastDocs(): boolean {
+        return this.client.HasLinkDoc("last");
     }
 }
 
@@ -572,9 +800,9 @@ export class DiffInfoResult {
 
     public refresh(): Promise<DiffInfoResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new DiffInfoResult(r);
-                });
+            .then(r => {
+                return new DiffInfoResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -590,6 +818,28 @@ export class DiffInfoResult {
 
     public hasRefreshDocs(): boolean {
         return this.client.HasLinkDoc("self");
+    }
+
+    public listPageHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
+        return this.client.LoadLinkWithQuery("ListPageHistory", query)
+            .then(r => {
+                return new HistoryCollectionResult(r);
+            });
+    }
+
+    public canListPageHistory(): boolean {
+        return this.client.HasLink("ListPageHistory");
+    }
+
+    public getListPageHistoryDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("ListPageHistory")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListPageHistoryDocs(): boolean {
+        return this.client.HasLinkDoc("ListPageHistory");
     }
 }
 
@@ -608,9 +858,9 @@ export class SyncInfoResult {
 
     public refresh(): Promise<SyncInfoResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new SyncInfoResult(r);
-                });
+            .then(r => {
+                return new SyncInfoResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -630,9 +880,9 @@ export class SyncInfoResult {
 
     public pull() {
         return this.client.LoadLink("Pull")
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canPull(): boolean {
@@ -641,9 +891,9 @@ export class SyncInfoResult {
 
     public push() {
         return this.client.LoadLink("Push")
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canPush(): boolean {
@@ -652,9 +902,9 @@ export class SyncInfoResult {
 
     public commit(data: NewCommit) {
         return this.client.LoadLinkWithBody("Commit", data)
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canCommit(): boolean {
@@ -688,9 +938,9 @@ export class UncommittedChangeResult {
 
     public getUncommittedDiff(): Promise<DiffInfoResult> {
         return this.client.LoadLink("GetUncommittedDiff")
-               .then(r => {
-                    return new DiffInfoResult(r);
-                });
+            .then(r => {
+                return new DiffInfoResult(r);
+            });
     }
 
     public canGetUncommittedDiff(): boolean {
@@ -710,9 +960,9 @@ export class UncommittedChangeResult {
 
     public revert() {
         return this.client.LoadLink("Revert")
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canRevert(): boolean {
@@ -735,7 +985,7 @@ export class UncommittedChangeCollectionResult {
 
     private strongItems: UncommittedChangeResult[];
     public get items(): UncommittedChangeResult[] {
-        if(this.strongItems === undefined){
+        if (this.strongItems === undefined) {
             var embeds = this.client.GetEmbed("values");
             var clients = embeds.GetAllClients();
             this.strongItems = [];
@@ -748,9 +998,9 @@ export class UncommittedChangeCollectionResult {
 
     public refresh(): Promise<UncommittedChangeCollectionResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new UncommittedChangeCollectionResult(r);
-                });
+            .then(r => {
+                return new UncommittedChangeCollectionResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -784,9 +1034,9 @@ export class CompilerResultResult {
 
     public publishStatus(): Promise<CompilerStatusResult> {
         return this.client.LoadLink("PublishStatus")
-               .then(r => {
-                    return new CompilerStatusResult(r);
-                });
+            .then(r => {
+                return new CompilerStatusResult(r);
+            });
     }
 
     public canPublishStatus(): boolean {
@@ -820,9 +1070,9 @@ export class CompilerStatusResult {
 
     public refresh(): Promise<CompilerStatusResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new CompilerStatusResult(r);
-                });
+            .then(r => {
+                return new CompilerStatusResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -842,9 +1092,9 @@ export class CompilerStatusResult {
 
     public compile(): Promise<CompilerResultResult> {
         return this.client.LoadLink("Compile")
-               .then(r => {
-                    return new CompilerResultResult(r);
-                });
+            .then(r => {
+                return new CompilerResultResult(r);
+            });
     }
 
     public canCompile(): boolean {
@@ -878,9 +1128,9 @@ export class PhaseResult {
 
     public setPhase() {
         return this.client.LoadLink("SetPhase")
-               .then(r => {
-                    return r;
-                });
+            .then(r => {
+                return r;
+            });
     }
 
     public canSetPhase(): boolean {
@@ -903,7 +1153,7 @@ export class PhaseCollectionResult {
 
     private strongItems: PhaseResult[];
     public get items(): PhaseResult[] {
-        if(this.strongItems === undefined){
+        if (this.strongItems === undefined) {
             var embeds = this.client.GetEmbed("values");
             var clients = embeds.GetAllClients();
             this.strongItems = [];
@@ -916,9 +1166,9 @@ export class PhaseCollectionResult {
 
     public refresh(): Promise<PhaseCollectionResult> {
         return this.client.LoadLink("self")
-               .then(r => {
-                    return new PhaseCollectionResult(r);
-                });
+            .then(r => {
+                return new PhaseCollectionResult(r);
+            });
     }
 
     public canRefresh(): boolean {
@@ -948,9 +1198,9 @@ export class PhaseCollectionResult {
 
 /** This enum captures the current status of a draft. */
 export enum DraftStatus {
-    UndraftedEdits = <any>"UndraftedEdits", 
-    NeverDrafted = <any>"NeverDrafted", 
-    UpToDate = <any>"UpToDate", 
+    UndraftedEdits = <any>"UndraftedEdits",
+    NeverDrafted = <any>"NeverDrafted",
+    UpToDate = <any>"UpToDate",
 }
 
 export interface Draft {
@@ -958,6 +1208,21 @@ export interface Draft {
     status?: string;
     file?: string;
     title?: string;
+}
+
+export interface HistoryQuery {
+    filePath?: string;
+    /** The number of pages (item number = Offset * Limit) into the collection to query. */
+    offset?: number;
+    /** The limit of the number of items to return. */
+    limit?: number;
+}
+
+export interface HistoryCollection {
+    filePath?: string;
+    offset?: number;
+    limit?: number;
+    total?: number;
 }
 
 export interface DraftCollection {
@@ -1014,6 +1279,14 @@ export interface CompilerResult {
     elapsedSeconds?: number;
 }
 
+export interface History2 {
+    message?: string;
+    sha?: string;
+    name?: string;
+    email?: string;
+    when?: Date;
+}
+
 export interface DiffInfo {
     filePath?: string;
     original?: string;
@@ -1022,15 +1295,15 @@ export interface DiffInfo {
 
 /** A verision of FileStatus from git with ambiguity removed */
 export enum GitFileStatus {
-    Nonexistent = <any>"Nonexistent", 
-    Unaltered = <any>"Unaltered", 
-    Added = <any>"Added", 
-    Removed = <any>"Removed", 
-    Renamed = <any>"Renamed", 
-    Modified = <any>"Modified", 
-    Unreadable = <any>"Unreadable", 
-    Ignored = <any>"Ignored", 
-    Conflicted = <any>"Conflicted", 
+    Nonexistent = <any>"Nonexistent",
+    Unaltered = <any>"Unaltered",
+    Added = <any>"Added",
+    Removed = <any>"Removed",
+    Renamed = <any>"Renamed",
+    Modified = <any>"Modified",
+    Unreadable = <any>"Unreadable",
+    Ignored = <any>"Ignored",
+    Conflicted = <any>"Conflicted",
 }
 
 export interface UncommittedChange {
