@@ -106,10 +106,6 @@ export class GitService {
     get revertCompleted() { return this.revertCompletedHandler.modifier; };
     get determineCommitVariantEvent() { return this.determineCommitVariantEventHandler.modifier };
 
-    uncommittedDiff(file:string) {
-        return this.client.uncommittedDiff(file, null);
-    }
-
     mergeInfo(file:string) {
         return this.client.mergeInfo(file, null);
     }

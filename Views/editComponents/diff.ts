@@ -14,14 +14,14 @@ var CodeMirror = (<any>window).CodeMirror;
 
 class ConfirmRevertController{
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService];
+        return [controller.BindingCollection];
     }
 
     private reverter: client.UncommittedChangeResult;
     private dialog: controller.OnOffToggle;
     private info: controller.Model<string>;
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
+    constructor(bindings: controller.BindingCollection) {
         this.dialog = bindings.getToggle('dialog');
         this.info = bindings.getModel<string>('info');
     }
@@ -43,32 +43,30 @@ class ConfirmRevertController{
 
 class DiffRow {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, controller.InjectControllerData, DiffController, git.GitService, ConfirmRevertController];
+        return [controller.BindingCollection, controller.InjectControllerData, DiffController, ConfirmRevertController];
     }
 
     private result: client.UncommittedChangeResult;
 
-    constructor(bindings: controller.BindingCollection, result: client.UncommittedChangeResult, private diffControllerInstance: DiffController, private GitService: git.GitService, private revertConfirmation: ConfirmRevertController) {
+    constructor(bindings: controller.BindingCollection, result: client.UncommittedChangeResult, private diffControllerInstance: DiffController, private revertConfirmation: ConfirmRevertController) {
         this.result = result;
         bindings.setListener(this);
     }
 
-    diff(evt) {
+    public async diff(evt: Event): Promise<void> {
         evt.preventDefault();
         this.diffControllerInstance.openDialog();
-
-        this.GitService.uncommittedDiff(this.result.data.filePath)
-            .then((successData) => {
-                this.diffControllerInstance.initUI(this.result.data.filePath, successData);
-            })
-            .catch((failData) => {
-                alert("Cannot read diff data, please try again later");
-            });
+        try {
+            var diffResult = await this.result.getUncommittedDiff();
+            this.diffControllerInstance.initUI(this.result.data.filePath, diffResult.data);
+        }
+        catch (err) {
+            alert("Cannot read diff data, please try again later\nMessage: " + err.message);
+        }
     }
 
-    revert(evt) {
+    public revert(evt: Event): void {
         evt.preventDefault();
-
         this.revertConfirmation.confirm(this.result);
     }
 }
@@ -78,16 +76,14 @@ class DiffController {
         return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder, EdityClient.UploadClient];
     }
 
-    private dialog;
-    private diffModel;
-    private dv;
-    private savePath;
+    private dialog: controller.OnOffToggle;
+    private dv: any;
+    private savePath: string;
 
     constructor(bindings, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder, private uploadClient: EdityClient.UploadClient) {
         GitService.determineCommitVariantEvent.add((d) => this.diffVariant(d))
 
         this.dialog = bindings.getToggle('dialog');
-        this.diffModel = bindings.getModel('diff');
     }
 
     private diffVariant(result: client.UncommittedChangeResult): git.CommitVariant {
@@ -100,7 +96,7 @@ class DiffController {
         }
     }
 
-    initUI(path, data) {
+    public initUI(path: string, data: client.DiffInfo): void {
         this.savePath = path;
         var target = document.getElementById("diffViewArea");
         target.innerHTML = "";
@@ -125,11 +121,11 @@ class DiffController {
         }, 500);
     }
 
-    openDialog() {
+    public openDialog(): void {
         this.dialog.on();
     }
 
-    async save(evt) {
+    public async save(evt): Promise<void> {
         evt.preventDefault();
 
         var content = this.dv.editor().getValue();
