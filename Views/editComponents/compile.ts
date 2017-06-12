@@ -6,9 +6,9 @@ import * as storage from "hr.storage";
 import * as controller from "hr.controller";
 import * as toggles from "hr.toggles";
 import * as navmenu from "edity.editorcore.navmenu";
-import * as EdityClient from 'edity.editorcore.EdityClient';
 import * as CompileService from 'edity.editorcore.CompileService';
 import * as editorServices from 'edity.editorcore.EditorServices';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -21,7 +21,7 @@ class NavButtonController {
 
     compile(evt) {
         evt.preventDefault();
-        this.controller.startCompile();
+        this.controller.openDialog();
     }
 }
 
@@ -31,7 +31,7 @@ interface StatusMessage {
 
 class CompileController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, CompileService.CompilerService, EdityClient.CompileClient, controller.InjectedControllerBuilder];
+        return [controller.BindingCollection, CompileService.CompilerService, client.EntryPointInjector, controller.InjectedControllerBuilder];
     }
 
     private start;
@@ -45,7 +45,7 @@ class CompileController {
     private dialogToggle;
     private statusModel: controller.Model<StatusMessage>;
 
-    constructor(bindings: controller.BindingCollection, private compileService: CompileService.CompilerService, private compileClient: EdityClient.CompileClient, private builder: controller.InjectedControllerBuilder) {
+    constructor(bindings: controller.BindingCollection, private compileService: CompileService.CompilerService, private entryInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
         this.start = bindings.getToggle("start");
         this.success = bindings.getToggle("success");
         this.fail = bindings.getToggle("fail");
@@ -71,19 +71,24 @@ class CompileController {
         this.compileService.compile();
     }
 
-    startCompile() {
+    public async openDialog(): Promise<void> {
         this.statusModel.clear();
         this.toggleGroup.activate(this.compiling);
         this.dialogToggle.on();
-        this.compileClient.status(null)
-            .then((data: any) => {
+        try {
+            var entry = await this.entryInjector.load();
+            if (entry.canPublishStatus()) {
+                var result = await entry.publishStatus();
+                var data = result.data;
                 this.infoModel.setData(data);
                 this.changesModel.setData(data.behindHistory);
                 this.toggleGroup.activate(this.start);
-            })
-            .catch((err) => {
-                this.toggleGroup.activate(this.fail);
-            });
+            }
+        }
+        catch (err) {
+            console.log(err.message);
+            this.toggleGroup.activate(this.fail);
+        }
     }
 
     private compileStarted(arg: CompileService.CompilerServiceEventArgs) {
