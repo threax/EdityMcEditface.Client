@@ -50,7 +50,6 @@ export class GitService {
 
     private revertStartedHandler = new ActionEventDispatcher<void>();
     private revertCompletedHandler = new ActionEventDispatcher<boolean>();
-    private host = "";
     //Commit variant detection and sync
     private determineCommitVariantEventHandler = new FuncEventDispatcher<CommitVariant, client.UncommittedChangeResult>();
 
@@ -107,10 +106,6 @@ export class GitService {
     get revertCompleted() { return this.revertCompletedHandler.modifier; };
     get determineCommitVariantEvent() { return this.determineCommitVariantEventHandler.modifier };
 
-    setHost(url) {
-        this.host = url;
-    }
-
     uncommittedDiff(file:string) {
         return this.client.uncommittedDiff(file, null);
     }
@@ -134,17 +129,6 @@ export class GitService {
     resolve(file, content) {
         var blob = new Blob([content], { type: "text/html" });
         return this.client.resolve(file, { data: blob, fileName: file }, null);
-    }
-
-    async revert(file) {
-        try {
-            this.revertStartedHandler.fire(null);
-            var data = await this.client.revert(file, null);
-            this.revertCompletedHandler.fire(true);
-        }
-        catch (err) {
-            this.revertCompletedHandler.fire(false);
-        }
     }
 
     fireDetermineCommitVariant(result: client.UncommittedChangeResult) {

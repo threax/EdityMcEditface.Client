@@ -9,110 +9,6 @@ import { Fetcher, RequestInfo, RequestInit, Response } from 'hr.Fetcher';
 import * as di from 'hr.di';
 import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 
-export class CompileClient {
-    private static jsonMimeType = "application/json";
-    private baseUrl: string;
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    protected jsonParseReviver: (key: string, value: any) => any = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.baseUrl = baseUrl ? baseUrl : "";
-        this.http = http ? http : <any>window;
-    }
-
-    parseResult<T>(response: Response, data: string, jsonParseReviver: (key: string, value: any) => any): T | string {
-        var result: T | string;
-        var contentHeader = response.headers.get('content-type');
-        if (contentHeader && contentHeader.length >= CompileClient.jsonMimeType.length && contentHeader.substring(0, CompileClient.jsonMimeType.length) === CompileClient.jsonMimeType) {
-            result = data === "" ? null : <T>JSON.parse(data, jsonParseReviver);
-        }
-        else {
-            result = data === "" ? null : data;
-        }
-        return result;
-    }
-
-    /**
-     * Get the current status of the compiler.
-     * @return Success
-     */
-    status(bearer: string): Promise<CompilerStatus> {
-        let url_ = this.baseUrl + "/edity/Compile/Status";
-
-        return this.http.fetch(url_, {
-            method: "GET",
-            headers: {
-                "bearer": bearer,
-                "Content-Type": "application/json; charset=UTF-8"
-            }
-        }).then((response) => {
-            return this.processStatus(response);
-        });
-    }
-
-    private processStatus(response: Response) {
-        return response.text().then((data) => {
-            const status = response.status.toString();
-
-            if (status === "200") {
-                let result200: CompilerStatus = null;
-                result200 = data === "" ? null : <CompilerStatus>this.parseResult(response, data, this.jsonParseReviver);
-                return result200;
-            }
-            else
-                if (status === "500") {
-                    let result500: ExceptionResult = null;
-                    result500 = data === "" ? null : <ExceptionResult>this.parseResult(response, data, this.jsonParseReviver);
-                    throw result500;
-                }
-                else {
-                    throw new Error("error_no_callback_for_the_received_http_status");
-                }
-        });
-    }
-
-    /**
-     * Run the compiler.
-     * @return Success
-     */
-    compile(bearer: string): Promise<CompilerResult> {
-        let url_ = this.baseUrl + "/edity/Compile/Compile";
-
-        const content_ = "";
-        return this.http.fetch(url_, {
-            body: content_,
-            method: "POST",
-            headers: {
-                "bearer": bearer,
-                "Content-Type": "application/json; charset=UTF-8"
-            }
-        }).then((response) => {
-            return this.processCompile(response);
-        });
-    }
-
-    private processCompile(response: Response) {
-        return response.text().then((data) => {
-            const status = response.status.toString();
-
-            if (status === "200") {
-                let result200: CompilerResult = null;
-                result200 = data === "" ? null : <CompilerResult>this.parseResult(response, data, this.jsonParseReviver);
-                return result200;
-            }
-            else
-                if (status === "500") {
-                    let result500: ExceptionResult = null;
-                    result500 = data === "" ? null : <ExceptionResult>this.parseResult(response, data, this.jsonParseReviver);
-                    throw result500;
-                }
-                else {
-                    throw new Error("error_no_callback_for_the_received_http_status");
-                }
-        });
-    }
-}
-
 export class GitClient {
     private static jsonMimeType = "application/json";
     private baseUrl: string;
@@ -957,68 +853,6 @@ export class PageClient {
     }
 }
 
-export class ShutdownClient {
-    private static jsonMimeType = "application/json";
-    private baseUrl: string;
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    protected jsonParseReviver: (key: string, value: any) => any = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.baseUrl = baseUrl ? baseUrl : "";
-        this.http = http ? http : <any>window;
-    }
-
-    parseResult<T>(response: Response, data: string, jsonParseReviver: (key: string, value: any) => any): T | string {
-        var result: T | string;
-        var contentHeader = response.headers.get('content-type');
-        if (contentHeader && contentHeader.length >= ShutdownClient.jsonMimeType.length && contentHeader.substring(0, ShutdownClient.jsonMimeType.length) === ShutdownClient.jsonMimeType) {
-            result = data === "" ? null : <T>JSON.parse(data, jsonParseReviver);
-        }
-        else {
-            result = data === "" ? null : data;
-        }
-        return result;
-    }
-
-    /**
-     * Stop the Edity McEditface process.
-     * @return Success
-     */
-    shutdown(bearer: string): Promise<void> {
-        let url_ = this.baseUrl + "/edity/Shutdown/Shutdown";
-
-        const content_ = "";
-        return this.http.fetch(url_, {
-            body: content_,
-            method: "POST",
-            headers: {
-                "bearer": bearer,
-                "Content-Type": "application/json; charset=UTF-8"
-            }
-        }).then((response) => {
-            return this.processShutdown(response);
-        });
-    }
-
-    private processShutdown(response: Response) {
-        return response.text().then((data) => {
-            const status = response.status.toString();
-
-            if (status === "200") {
-            }
-            else
-                if (status === "500") {
-                    let result500: ExceptionResult = null;
-                    result500 = data === "" ? null : <ExceptionResult>this.parseResult(response, data, this.jsonParseReviver);
-                    throw result500;
-                }
-                else {
-                    throw new Error("error_no_callback_for_the_received_http_status");
-                }
-        });
-    }
-}
-
 export class TemplateClient {
     private static jsonMimeType = "application/json";
     private baseUrl: string;
@@ -1381,12 +1215,6 @@ export interface FileParameter {
  * Add services. You will need to supply a Fetcher instance to the services yourself.
  */
 export function addServices(services: di.ServiceCollection){
-    services.tryAddShared(CompileClient, s => {
-        var fetcher = s.getRequiredService(Fetcher);
-        var shim = s.getRequiredService(IBaseUrlInjector);
-        return new CompileClient(shim.BaseUrl, fetcher);
-    });
-
     services.tryAddShared(GitClient, s => {
         var fetcher = s.getRequiredService(Fetcher);
         var shim = s.getRequiredService(IBaseUrlInjector);
