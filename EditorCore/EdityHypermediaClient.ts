@@ -621,6 +621,28 @@ export class EntryPointResult {
     public hasGetMergeInfoDocs(): boolean {
         return this.client.HasLinkDoc("GetMergeInfo");
     }
+
+    public listPages(query: PageQuery): Promise<PageInfoCollectionResult> {
+        return this.client.LoadLinkWithQuery("ListPages", query)
+            .then(r => {
+                return new PageInfoCollectionResult(r);
+            });
+    }
+
+    public canListPages(): boolean {
+        return this.client.HasLink("ListPages");
+    }
+
+    public getListPagesDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("ListPages")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListPagesDocs(): boolean {
+        return this.client.HasLinkDoc("ListPages");
+    }
 }
 
 export class HistoryResult {
@@ -804,6 +826,325 @@ export class HistoryCollectionResult {
 
     public hasLastDocs(): boolean {
         return this.client.HasLinkDoc("last");
+    }
+}
+
+export class PageInfoResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: PageInfo = undefined;
+    public get data(): PageInfo {
+        this.strongData = this.strongData || this.client.GetData<PageInfo>();
+        return this.strongData;
+    }
+
+    public savePage(data: SavePageInput) {
+        return this.client.LoadLinkWithForm("SavePage", data)
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canSavePage(): boolean {
+        return this.client.HasLink("SavePage");
+    }
+
+    public getSavePageDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("SavePage")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasSavePageDocs(): boolean {
+        return this.client.HasLinkDoc("SavePage");
+    }
+
+    public deletePage() {
+        return this.client.LoadLink("DeletePage")
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canDeletePage(): boolean {
+        return this.client.HasLink("DeletePage");
+    }
+
+    public getSettings(): Promise<PageSettingsResult> {
+        return this.client.LoadLink("GetSettings")
+            .then(r => {
+                return new PageSettingsResult(r);
+            });
+    }
+
+    public canGetSettings(): boolean {
+        return this.client.HasLink("GetSettings");
+    }
+
+    public getGetSettingsDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("GetSettings")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasGetSettingsDocs(): boolean {
+        return this.client.HasLinkDoc("GetSettings");
+    }
+
+    public updateSettings(data: PageSettings) {
+        return this.client.LoadLinkWithBody("UpdateSettings", data)
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canUpdateSettings(): boolean {
+        return this.client.HasLink("UpdateSettings");
+    }
+
+    public getUpdateSettingsDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("UpdateSettings")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasUpdateSettingsDocs(): boolean {
+        return this.client.HasLinkDoc("UpdateSettings");
+    }
+}
+
+export class PageInfoCollectionResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: PageInfoCollection = undefined;
+    public get data(): PageInfoCollection {
+        this.strongData = this.strongData || this.client.GetData<PageInfoCollection>();
+        return this.strongData;
+    }
+
+    private strongItems: PageInfoResult[];
+    public get items(): PageInfoResult[] {
+        if (this.strongItems === undefined) {
+            var embeds = this.client.GetEmbed("values");
+            var clients = embeds.GetAllClients();
+            this.strongItems = [];
+            for (var i = 0; i < clients.length; ++i) {
+                this.strongItems.push(new PageInfoResult(clients[i]));
+            }
+        }
+        return this.strongItems;
+    }
+
+    public refresh(): Promise<PageInfoCollectionResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new PageInfoCollectionResult(r);
+            });
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+
+    public next(): Promise<PageInfoCollectionResult> {
+        return this.client.LoadLink("next")
+            .then(r => {
+                return new PageInfoCollectionResult(r);
+            });
+    }
+
+    public canNext(): boolean {
+        return this.client.HasLink("next");
+    }
+
+    public getNextDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("next")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasNextDocs(): boolean {
+        return this.client.HasLinkDoc("next");
+    }
+
+    public previous(): Promise<PageInfoCollectionResult> {
+        return this.client.LoadLink("previous")
+            .then(r => {
+                return new PageInfoCollectionResult(r);
+            });
+    }
+
+    public canPrevious(): boolean {
+        return this.client.HasLink("previous");
+    }
+
+    public getPreviousDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("previous")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasPreviousDocs(): boolean {
+        return this.client.HasLinkDoc("previous");
+    }
+
+    public first(): Promise<PageInfoCollectionResult> {
+        return this.client.LoadLink("first")
+            .then(r => {
+                return new PageInfoCollectionResult(r);
+            });
+    }
+
+    public canFirst(): boolean {
+        return this.client.HasLink("first");
+    }
+
+    public getFirstDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("first")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasFirstDocs(): boolean {
+        return this.client.HasLinkDoc("first");
+    }
+
+    public last(): Promise<PageInfoCollectionResult> {
+        return this.client.LoadLink("last")
+            .then(r => {
+                return new PageInfoCollectionResult(r);
+            });
+    }
+
+    public canLast(): boolean {
+        return this.client.HasLink("last");
+    }
+
+    public getLastDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("last")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasLastDocs(): boolean {
+        return this.client.HasLinkDoc("last");
+    }
+}
+
+export class PageSettingsResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: PageSettings = undefined;
+    public get data(): PageSettings {
+        this.strongData = this.strongData || this.client.GetData<PageSettings>();
+        return this.strongData;
+    }
+
+    public refresh(): Promise<PageSettingsResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new PageSettingsResult(r);
+            });
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+
+    public updateSettings(data: PageSettings) {
+        return this.client.LoadLinkWithBody("UpdateSettings", data)
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canUpdateSettings(): boolean {
+        return this.client.HasLink("UpdateSettings");
+    }
+
+    public getUpdateSettingsDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("UpdateSettings")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasUpdateSettingsDocs(): boolean {
+        return this.client.HasLinkDoc("UpdateSettings");
+    }
+
+    public savePage(data: SavePageInput) {
+        return this.client.LoadLinkWithForm("SavePage", data)
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canSavePage(): boolean {
+        return this.client.HasLink("SavePage");
+    }
+
+    public getSavePageDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("SavePage")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasSavePageDocs(): boolean {
+        return this.client.HasLinkDoc("SavePage");
+    }
+
+    public deletePage() {
+        return this.client.LoadLink("DeletePage")
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canDeletePage(): boolean {
+        return this.client.HasLink("DeletePage");
     }
 }
 
@@ -1370,12 +1711,39 @@ export interface MergeInfo {
     file?: string;
 }
 
+export interface PageQuery {
+    file?: string;
+    /** The number of pages (item number = Offset * Limit) into the collection to query. */
+    offset?: number;
+    /** The limit of the number of items to return. */
+    limit?: number;
+}
+
+export interface PageInfoCollection {
+    offset?: number;
+    limit?: number;
+    total?: number;
+}
+
 export interface History2 {
     message?: string;
     sha?: string;
     name?: string;
     email?: string;
     when?: Date;
+}
+
+export interface PageInfo {
+    filePath?: string;
+}
+
+export interface SavePageInput {
+    content?: any;
+}
+
+export interface PageSettings {
+    title: string;
+    visible?: boolean;
 }
 
 export interface DiffInfo {

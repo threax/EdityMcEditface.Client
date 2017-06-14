@@ -5,11 +5,12 @@
 import * as controller from "hr.controller";
 import * as FormLifecycle from "edity.editorcore.FormLifecycle";
 import * as storage from "hr.storage";
-import { PageClient, PageSettings, addServices as addEdityClientServices } from "edity.editorcore.EdityClient";
+import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as navmenu from "edity.editorcore.navmenu";
 import * as Toggles from 'hr.toggles';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
+import * as uri from 'hr.uri';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -28,41 +29,40 @@ class NavButtonController {
 
 class DeletePageConfirmationController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, PageClient];
+        return [controller.BindingCollection];
     }
 
     private dialog;
     private model;
-    private uploadUrl;
-    private currentUrl;
-    private client: PageClient;
+    private currentPage: client.PageInfoResult = null;
 
-    constructor(bindings: controller.BindingCollection, client: PageClient) {
+    constructor(bindings: controller.BindingCollection) {
         this.dialog = bindings.getToggle('dialog');
         this.model = bindings.getModel("info");
-        this.uploadUrl = this.model.getSrc();
-        this.currentUrl;
-        this.client = client;
     }
 
-    deletePage(evt) {
+    public async deletePage(evt: Event): Promise<void> {
         evt.preventDefault();
         evt.stopPropagation();
-        this.client.delete(this.currentUrl, null);
-        this.currentUrl = null;
+
+        //Need to delete page
+        if (this.currentPage !== null) {
+            await this.currentPage.deletePage();
+        }
+        this.currentPage = null;
         this.dialog.off();
     }
 
-    confirmDelete(name, url) {
+    confirmDelete(name: string, currentPage: client.PageInfoResult) {
         this.model.setData(name);
-        this.currentUrl = url;
+        this.currentPage = currentPage;
         this.dialog.on();
     }
 }
 
 class PageSettingsController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, PageClient, DeletePageConfirmationController, controller.InjectedControllerBuilder];
+        return [controller.BindingCollection, client.EntryPointInjector, DeletePageConfirmationController, controller.InjectedControllerBuilder];
     }
 
     private dialog;
@@ -70,9 +70,10 @@ class PageSettingsController {
     private error: Toggles.Toggle;
     private load: Toggles.Toggle;
     private toggles: Toggles.Group;
-    private settings: controller.Model<PageSettings>;
+    private settings: controller.Model<client.PageSettings>;
+    private currentPage: client.PageInfoResult;
 
-    constructor(bindings: controller.BindingCollection, private client: PageClient, private deletePageConfirmation: DeletePageConfirmationController, private builder: controller.InjectedControllerBuilder) {
+    constructor(bindings: controller.BindingCollection, private entryInjector: client.EntryPointInjector, private deletePageConfirmation: DeletePageConfirmationController, private builder: controller.InjectedControllerBuilder) {
         this.dialog = bindings.getToggle('dialog');
 
         this.main = bindings.getToggle('main');
@@ -80,50 +81,70 @@ class PageSettingsController {
         this.load = bindings.getToggle('load');
         this.toggles = new Toggles.Group(this.main, this.error, this.load);
 
-        this.settings = bindings.getModel<PageSettings>("settings");
+        this.settings = bindings.getModel<client.PageSettings>("settings");
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(PageSettingsController, this);
         editMenu.addInjected("SettingsNavItem", builder.createOnCallback(NavButtonController));
     }
 
-    deletePage(evt) {
+    public deletePage(evt: Event): void {
         evt.preventDefault();
         evt.stopPropagation();
-        this.deletePageConfirmation.confirmDelete(document.title, window.location.pathname);
+        this.deletePageConfirmation.confirmDelete(document.title, this.currentPage);
         this.dialog.off();
     }
 
-    open() {
+    public async open(): Promise<void> {
         this.toggles.activate(this.load);
-        this.client.getSettings(window.location.pathname, null)
-            .then(data => {
-                this.settings.setData(data);
-                this.toggles.activate(this.main);
-            })
-            .catch(err => {
-                this.toggles.activate(this.error);
-            });
         this.dialog.on();
+        try {
+            var entry = await this.entryInjector.load();
+            if (entry.canListPages()) {
+                var url = new uri.Uri();
+                var path = url.path;
+                if (path.length > 0) {
+                    path = path.substr(1);
+                }
+
+                var pages = await entry.listPages({
+                    file: path
+                });
+
+                if (pages.data.total >= 0) {
+                    this.currentPage = pages.items[0];
+
+                    if (this.currentPage.canGetSettings()) {
+                        var settingsResult = await this.currentPage.getSettings();
+                        this.settings.setData(settingsResult.data);
+                        this.toggles.activate(this.main);
+                    }
+                }
+            }
+        }
+        catch (err) {
+            console.log("Error loading page settings " + err.message);
+            this.toggles.activate(this.error);
+        }
     }
 
-    submit(evt) {
+    public async submit(evt: Event): Promise<void> {
         evt.preventDefault();
-        this.toggles.activate(this.load);
-        var data = this.settings.getData();
-        this.client.updateSettings(window.location.pathname, data, null)
-            .then(result => {
-                this.toggles.activate(this.main);
-                this.dialog.off();
-            })
-            .catch(err => {
-                this.toggles.activate(this.error);
-            });
+        try {
+            this.toggles.activate(this.load);
+            var data = this.settings.getData();
+            await this.currentPage.updateSettings(data);
+            this.toggles.activate(this.main);
+            this.dialog.off();
+        }
+        catch (err) {
+            console.log("Error saving page settings " + err.message);
+            this.toggles.activate(this.error);
+        }
     }
 }
 
-var builder = editorServices.createBaseBuilder();
-addEdityClientServices(builder.Services);
+var builder = editorServices.createBaseBuilder().createChildBuilder();
 builder.Services.tryAddShared(DeletePageConfirmationController, DeletePageConfirmationController);
 builder.Services.tryAddShared(PageSettingsController, PageSettingsController);
 builder.Services.tryAddTransient(NavButtonController, NavButtonController);

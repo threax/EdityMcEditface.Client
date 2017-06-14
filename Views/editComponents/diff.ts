@@ -143,6 +143,7 @@ class DiffController {
 
 var builder = editorServices.createBaseBuilder();
 git.addServices(builder.Services);
+EdityClient.addServices(builder.Services);
 builder.Services.tryAddTransient(DiffRow, DiffRow);
 builder.Services.tryAddShared(ConfirmRevertController, ConfirmRevertController);
 builder.Services.tryAddShared(DiffController, DiffController);
