@@ -1,6 +1,5 @@
 ﻿"use strict";
 
-import * as edityClient from 'edity.editorcore.EdityClient';
 import * as uploader from 'edity.editorcore.uploader';
 import { ActionEventDispatcher, FuncEventDispatcher } from 'hr.eventdispatcher';
 import { PagedClientData } from 'edity.editorcore.pageddata';
@@ -45,7 +44,7 @@ export interface ISyncHandler {
 
 export class GitService {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [edityClient.GitClient];
+        return [];
     }
 
     private revertStartedHandler = new ActionEventDispatcher<void>();
@@ -56,7 +55,7 @@ export class GitService {
     private commitHandler: ICommitHandler;
     private syncHandler: ISyncHandler;
 
-    constructor(private client: edityClient.GitClient) {
+    constructor() {
 
     }
 
@@ -106,33 +105,11 @@ export class GitService {
     get revertCompleted() { return this.revertCompletedHandler.modifier; };
     get determineCommitVariantEvent() { return this.determineCommitVariantEventHandler.modifier };
 
-    mergeInfo(file:string) {
-        return this.client.mergeInfo(file, null);
-    }
-
-    historyCount(file) {
-        return this.client.repoHistoryCount(file, null);
-    }
-
-    createHistoryPager(file, count) {
-        return new PagedClientData<edityClient.History[]>((current, resultsPerPage) => this.getDataPage(file, current, resultsPerPage), count);
-    }
-
-    getDataPage(file, current, resultsPerPage): Promise<edityClient.History[]> {
-        return this.client.fileHistory(file, current, resultsPerPage, null);
-    }
-
-    resolve(file, content) {
-        var blob = new Blob([content], { type: "text/html" });
-        return this.client.resolve(file, { data: blob, fileName: file }, null);
-    }
-
     fireDetermineCommitVariant(result: client.UncommittedChangeResult) {
         return this.determineCommitVariantEventHandler.fire(result);
     }
 }
 
 export function addServices(services: di.ServiceCollection) {
-    edityClient.addServices(services);
     services.tryAddShared(GitService, GitService);
 }
