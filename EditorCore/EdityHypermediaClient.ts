@@ -599,6 +599,28 @@ export class EntryPointResult {
     public hasListHistoryDocs(): boolean {
         return this.client.HasLinkDoc("ListHistory");
     }
+
+    public getMergeInfo(query: MergeQuery): Promise<MergeInfoResult> {
+        return this.client.LoadLinkWithQuery("GetMergeInfo", query)
+            .then(r => {
+                return new MergeInfoResult(r);
+            });
+    }
+
+    public canGetMergeInfo(): boolean {
+        return this.client.HasLink("GetMergeInfo");
+    }
+
+    public getGetMergeInfoDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("GetMergeInfo")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasGetMergeInfoDocs(): boolean {
+        return this.client.HasLinkDoc("GetMergeInfo");
+    }
 }
 
 export class HistoryResult {
@@ -840,6 +862,64 @@ export class DiffInfoResult {
 
     public hasListPageHistoryDocs(): boolean {
         return this.client.HasLinkDoc("ListPageHistory");
+    }
+}
+
+export class MergeInfoResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: MergeInfo = undefined;
+    public get data(): MergeInfo {
+        this.strongData = this.strongData || this.client.GetData<MergeInfo>();
+        return this.strongData;
+    }
+
+    public refresh(): Promise<MergeInfoResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new MergeInfoResult(r);
+            });
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+
+    public resolve(data: ResolveMergeArgs) {
+        return this.client.LoadLinkWithForm("Resolve", data)
+            .then(r => {
+                return r;
+            });
+    }
+
+    public canResolve(): boolean {
+        return this.client.HasLink("Resolve");
+    }
+
+    public getResolveDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("Resolve")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasResolveDocs(): boolean {
+        return this.client.HasLinkDoc("Resolve");
     }
 }
 
@@ -1279,6 +1359,17 @@ export interface CompilerResult {
     elapsedSeconds?: number;
 }
 
+export interface MergeQuery {
+    file?: string;
+}
+
+export interface MergeInfo {
+    merged?: string;
+    theirs?: string;
+    mine?: string;
+    file?: string;
+}
+
 export interface History2 {
     message?: string;
     sha?: string;
@@ -1291,6 +1382,10 @@ export interface DiffInfo {
     filePath?: string;
     original?: string;
     changed?: string;
+}
+
+export interface ResolveMergeArgs {
+    content?: any;
 }
 
 /** A verision of FileStatus from git with ambiguity removed */

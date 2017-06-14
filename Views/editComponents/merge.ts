@@ -13,20 +13,28 @@ var CodeMirror = (<any>window).CodeMirror;
 
 class MergeRow {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService, MergeController, controller.InjectControllerData];
+        return [controller.BindingCollection, MergeController, controller.InjectControllerData, client.EntryPointInjector];
     }
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService, private mergeController: MergeController, private result: client.UncommittedChangeResult) {
+    constructor(bindings: controller.BindingCollection, private mergeController: MergeController, private result: client.UncommittedChangeResult, private entryInjector: client.EntryPointInjector) {
         bindings.setListener(this);
     }
 
-    merge(evt) {
+    public async merge(evt: Event): Promise<void> {
         evt.preventDefault();
         this.mergeController.startUi();
 
-        this.GitService.mergeInfo(this.result.data.filePath)
-            .then((successData) => this.mergeController.initUI(this.result.data.filePath, successData))
-            .catch((failData) => alert("Cannot read merge data, please try again later"));
+        try {
+            var entry = await this.entryInjector.load();
+            var successData = await entry.getMergeInfo({
+                file: this.result.data.filePath
+            });
+            this.mergeController.initUI(successData);
+        }
+        catch (err) {
+            console.log(err.message);
+            alert("Cannot read merge data, please try again later");
+        }
     }
 }
 
@@ -35,14 +43,13 @@ class MergeController {
         return [controller.BindingCollection, git.GitService];
     }
 
-    private dialog;
-    private mergeModel;
-    private dv;
-    private savePath;
+    private dialog: controller.OnOffToggle;
+    private dv: any;
+    private savePath: string;
+    private currentMergeInfo: client.MergeInfoResult;
 
-    constructor(bindings: controller.BindingCollection, private GitService: git.GitService) {
+    constructor(bindings: controller.BindingCollection, GitService: git.GitService) {
         this.dialog = bindings.getToggle('dialog');
-        this.mergeModel = bindings.getModel('merge');
 
         GitService.determineCommitVariantEvent.add((d) => this.mergeVariant(d));
     }
@@ -57,12 +64,14 @@ class MergeController {
         }
     }
 
-    startUi() {
+    public startUi(): void {
         this.dialog.on();
     }
 
-    initUI(path, data) {
-        this.savePath = path;
+    public initUI(result: client.MergeInfoResult): void {
+        this.currentMergeInfo = result;
+        var data = result.data;
+        this.savePath = data.file;
         var target = document.getElementById("mergeViewArea");
         target.innerHTML = "";
         this.dv = CodeMirror.MergeView(target, {
@@ -89,13 +98,21 @@ class MergeController {
         }, 500);
     }
 
-    save(evt) {
+    public async save(evt: Event): Promise<void> {
         evt.preventDefault();
 
         var content = this.dv.editor().getValue();
-        this.GitService.resolve(this.savePath, content)
-            .then((data) => this.dialog.off())
-            .catch((data) => alert("Error saving merge. Please try again later."));
+        try {
+            var blob = new Blob([content], { type: "text/html" });
+            var data = await this.currentMergeInfo.resolve({
+                content: blob
+            }); //Needs a file passed in
+            this.dialog.off();
+        }
+        catch (err) {
+            console.log(err.message);
+            alert("Error saving merge. Please try again later.");
+        }
     }
 }
 
