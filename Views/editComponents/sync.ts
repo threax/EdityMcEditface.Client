@@ -155,9 +155,10 @@ abstract class SyncController {
     }
 
     private static formatRow(row: HistoryDisplay): HistoryDisplay {
+        var result: HistoryDisplay = Object.create(row);
         var date = new Date(row.when);
-        row.whenStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-        return row;
+        result.whenStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        return result;
     }
 }
 
