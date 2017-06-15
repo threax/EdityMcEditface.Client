@@ -62,7 +62,7 @@ export class PageService {
                 }
 
                 var content = this.getHtml();
-                this.currentPageInfo.savePage({
+                await this.currentPageInfo.savePage({
                     content: new Blob([content], { type: "text/html" })
                 });
             }

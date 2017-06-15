@@ -7,37 +7,55 @@ import * as uploader from "edity.editorcore.uploader";
 import * as component from "hr.components";
 import * as domQuery from "hr.domquery";
 import * as controller from "hr.controller";
-import { TemplateClient, Template, PageClient } from "edity.editorcore.EdityClient";
+import { TemplateClient, Template } from "edity.editorcore.EdityClient";
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
 import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 import * as edityClient from 'edity.editorcore.EdityClient';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as uri from 'hr.uri';
 
 class TemplateItemController {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [controller.BindingCollection, controller.InjectControllerData, PageClient, TemplateClient];
+        return [controller.BindingCollection, controller.InjectControllerData, client.EntryPointInjector, TemplateClient];
     }
 
-    constructor(bindings: controller.BindingCollection, private data: Template, private pageClient: PageClient, private templateClient: TemplateClient) {
+    constructor(bindings: controller.BindingCollection, private data: Template, private entryInjector: client.EntryPointInjector, private templateClient: TemplateClient) {
         this.data = data;
     }
 
-    create(evt) {
+    public async create(evt: Event): Promise<void> {
         evt.preventDefault();
-        this.templateClient.getContent(this.data.path, null)
-            .then((templateData) => {
-                //Make a blob
-                var blob = new Blob([templateData], { type: "text/html" });
-                return this.pageClient.save(window.location.pathname, { data: blob, fileName: 'file.html' }, null);
-            })
-            .then(function (data) {
-                window.location.href = window.location.href;
-            })
-            .catch(function (data) {
-                alert('Could not create new page. Please try again later');
+        try {
+            var entry = await this.entryInjector.load();
+            if (!entry.canListPages()) {
+                throw new Error("Cannot list pages");
+            }
+            var url = new uri.Uri();
+            var pages = await entry.listPages({
+                file: url.path
+            });
+            if (pages.data.total === 0) {
+                throw new Error("Cannot find page " + url.path);
+            }
+            var page = pages.items[0];
+            if (!page.canSavePage()) {
+                throw new Error("Cannot save page " + url.path);
+            }
+
+            var templateData = await this.templateClient.getContent(this.data.path, null);
+
+            await page.savePage({
+                content: new Blob([templateData], { type: "text/html" })
             });
 
+            window.location.href = window.location.href; //Reload page
+        }
+        catch (err) {
+            console.log("Error saving new page\nMessage: " + err.message);
+            alert('Could not create new page. Please try again later');
+        }
     }
 }
 
@@ -68,11 +86,6 @@ var builder = editorServices.createBaseBuilder();
 
 edityClient.addServices(builder.Services);
 
-builder.Services.tryAddShared(PageClient, s => {
-    var fetcher = s.getRequiredService(Fetcher);
-    var shim = s.getRequiredService(IBaseUrlInjector);
-    return new PageClient(shim.BaseUrl, fetcher);
-});
 builder.Services.tryAddShared(TemplateClient, s => {
     var fetcher = s.getRequiredService(Fetcher);
     var shim = s.getRequiredService(IBaseUrlInjector);
