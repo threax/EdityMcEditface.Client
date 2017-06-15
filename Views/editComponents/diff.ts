@@ -129,13 +129,13 @@ class DiffController {
 
         try {
             var entry = await this.entryInjector.load();
-            if (!entry.canUpload()) {
+            if (!entry.canUploadFile()) {
                 throw new Error("No upload link returned from entry point.");
             }
 
             var content = this.dv.editor().getValue();
 
-            await entry.upload({
+            await entry.uploadFile({
                 content: new Blob([content], { type: "text/html" }),
                 file: this.savePath
             });

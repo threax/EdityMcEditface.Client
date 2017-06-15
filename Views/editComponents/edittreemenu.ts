@@ -35,10 +35,10 @@ export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
             this.hasChanges = false;
             try {
                 var entry = await this.entryInjector.load();
-                if (!entry.canUpload()) {
+                if (!entry.canUploadFile()) {
                     throw new Error("Cannot upload tree menu, no upload link returned from entry point");
                 }
-                await entry.upload({
+                await entry.uploadFile({
                     file: this.saveUrl,
                     content: new Blob([JSON.stringify(this.RootNode, this.menuJsonSerializeReplacer, 2)], { type: "application/json" })
                 });
