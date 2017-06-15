@@ -34,8 +34,8 @@ class CommitHandler implements git.ICommitHandler {
 
     }
 
-    public commit(): Promise<git.CommitResult> {
-        return this.controller.startCommit();
+    public commit(message: string): Promise<git.CommitResult> {
+        return this.controller.startCommit(message);
     }
 }
 
@@ -55,6 +55,8 @@ class CommitController {
     private changedFiles: ResultModel<client.UncommittedChange, client.UncommittedChangeResult>;
     private currentRowCreatedCallback: any;
     private currentPromise: ExternalPromise<git.CommitResult> = null;
+    private messageModel: controller.Model<string>;
+    private messageToggle: controller.OnOffToggle;
 
     constructor(bindings: controller.BindingCollection, private entry: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder, private GitService: git.GitService) {
         this.commitModel = bindings.getModel('commit');
@@ -66,6 +68,8 @@ class CommitController {
         this.noChanges = bindings.getToggle('noChanges');
         this.toggleGroup = new toggles.Group(this.main, this.load, this.error, this.noChanges);
         this.changedFiles = new ResultModel(bindings.getModel<client.UncommittedChange>('changedFiles'));
+        this.messageModel = bindings.getModel<string>("message");
+        this.messageToggle = bindings.getToggle("message");
 
         GitService.revertStarted.add(() => this.toggleGroup.activate(this.load));
         GitService.setCommitHandler(new CommitHandler(this));
@@ -126,7 +130,16 @@ class CommitController {
         }
     }
 
-    public startCommit(): Promise<git.CommitResult> {
+    public startCommit(message?: string): Promise<git.CommitResult> {
+        if (message) {
+            this.messageModel.setData(message);
+            this.messageToggle.on();
+        }
+        else {
+            this.messageModel.clear();
+            this.messageToggle.off();
+        }
+
         //If we had an old promise hanging around we never completed the commit, send a negative result to whoever is waiting
         if (this.currentPromise !== null) {
             this.currentPromise.resolve(new git.CommitResult(false));

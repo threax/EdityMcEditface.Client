@@ -25,7 +25,7 @@ export class CommitResult {
 }
 
 export interface ICommitHandler {
-    commit(): Promise<CommitResult>;
+    commit(message: string): Promise<CommitResult>;
 }
 
 export class SyncResult {
@@ -71,9 +71,9 @@ export class GitService {
      * Perform a commit, will return a CommitResult promise with
      * the results of trying to commit.
      */
-    public commit(): Promise<CommitResult> {
+    public commit(message: string): Promise<CommitResult> {
         if (this.commitHandler) {
-            return this.commitHandler.commit();
+            return this.commitHandler.commit(message);
         }
         else {
             return Promise.resolve(new CommitResult(false));

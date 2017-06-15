@@ -50,7 +50,7 @@ class SyncManager implements git.ISyncHandler {
             var syncInfo = await entry.beginSync();
 
             if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
-                var commitResult = await this.gitService.commit();
+                var commitResult = await this.gitService.commit("Before syncing you must commit any outstanding changes.");
                 if (commitResult.Success) {
                     syncResult = await this.sync();
                 }

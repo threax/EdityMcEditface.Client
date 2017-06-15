@@ -35,7 +35,7 @@ class NavButtonController {
         var entry = await this.entryInjector.load();
         var beginDraft = await entry.beginDraft();
         if (beginDraft.canCommit()) {
-            var commitResult = await this.gitService.commit();
+            var commitResult = await this.gitService.commit("Before drafting you must commit any outstanding changes.");
             if (commitResult.Success) {
                 this.handleDraft();
             }
