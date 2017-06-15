@@ -3,7 +3,6 @@
 "use strict";
 
 import * as storage from "hr.storage";
-import * as EdityClient from 'edity.editorcore.EdityClient';
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
 import * as git from "edity.editorcore.GitService";
@@ -73,14 +72,14 @@ class DiffRow {
 
 class DiffController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder, EdityClient.UploadClient];
+        return [controller.BindingCollection, git.GitService, controller.InjectedControllerBuilder, client.EntryPointInjector];
     }
 
     private dialog: controller.OnOffToggle;
     private dv: any;
     private savePath: string;
 
-    constructor(bindings, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder, private uploadClient: EdityClient.UploadClient) {
+    constructor(bindings, private GitService: git.GitService, private builder: controller.InjectedControllerBuilder, private entryInjector: client.EntryPointInjector) {
         GitService.determineCommitVariantEvent.add((d) => this.diffVariant(d))
 
         this.dialog = bindings.getToggle('dialog');
@@ -128,14 +127,22 @@ class DiffController {
     public async save(evt): Promise<void> {
         evt.preventDefault();
 
-        var content = this.dv.editor().getValue();
-        var blob = new Blob([content], { type: "text/html" });
-
         try {
-            await this.uploadClient.upload(this.savePath, { data: blob, fileName: this.savePath }, null);
+            var entry = await this.entryInjector.load();
+            if (!entry.canUpload()) {
+                throw new Error("No upload link returned from entry point.");
+            }
+
+            var content = this.dv.editor().getValue();
+
+            await entry.upload({
+                content: new Blob([content], { type: "text/html" }),
+                file: this.savePath
+            });
             this.dialog.off();
         }
         catch (err) {
+            console.log("Error uploading diff " + err.message);
             alert("Error saving merge. Please try again later.");
         }
     }
@@ -143,7 +150,6 @@ class DiffController {
 
 var builder = editorServices.createBaseBuilder();
 git.addServices(builder.Services);
-EdityClient.addServices(builder.Services);
 builder.Services.tryAddTransient(DiffRow, DiffRow);
 builder.Services.tryAddShared(ConfirmRevertController, ConfirmRevertController);
 builder.Services.tryAddShared(DiffController, DiffController);

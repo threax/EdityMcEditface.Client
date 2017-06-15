@@ -11,7 +11,6 @@ import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
 import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
-import * as edityClient from 'edity.editorcore.EdityClient';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as uri from 'hr.uri';
 import { ResultModel } from 'hr.halcyon.ResultModel';
@@ -92,9 +91,6 @@ class NewPageController {
 }
 
 var builder = editorServices.createBaseBuilder();
-
-edityClient.addServices(builder.Services);
-
 builder.Services.tryAddTransient(TemplateItemController, TemplateItemController);
 builder.Services.tryAddTransient(NewPageController, NewPageController);
 builder.create("new", NewPageController);

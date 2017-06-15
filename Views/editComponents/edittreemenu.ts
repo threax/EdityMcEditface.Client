@@ -6,21 +6,21 @@ import * as controller from "hr.controller";
 import * as toggles from "hr.toggles";
 import * as http from "hr.http";
 import * as saveService from "edity.editorcore.SaveService";
-import * as EdityClient from 'edity.editorcore.EdityClient';
 import * as Iter from 'hr.iterable';
 import * as TreeMenu from 'hr.treemenu.TreeMenu';
 import * as TreeMenuEditor from 'hr.treemenu.TreeMenuEditor';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
 
 export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [Fetcher, TreeMenu.TreeMenuStorage, EdityClient.UploadClient];
+        return [Fetcher, TreeMenu.TreeMenuStorage, client.EntryPointInjector];
     }
 
     private hasChanges = false;
 
-    constructor(fetcher: Fetcher, menuStorage: TreeMenu.TreeMenuStorage, private uploadClient: EdityClient.UploadClient) {
+    constructor(fetcher: Fetcher, menuStorage: TreeMenu.TreeMenuStorage, private entryInjector: client.EntryPointInjector) {
         super(fetcher, menuStorage);
         saveService.saveEvent.add(a => this.save());
     }
@@ -30,12 +30,18 @@ export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
         saveService.requestSave();
     }
 
-    private async save() {
+    private async save(): Promise<void> {
         if (this.hasChanges) {
             this.hasChanges = false;
-            var blob = new Blob([JSON.stringify(this.RootNode, this.menuJsonSerializeReplacer, 2)], { type: "application/json" });
             try {
-                await this.uploadClient.upload(this.saveUrl, { data: blob, fileName: this.saveUrl }, null);
+                var entry = await this.entryInjector.load();
+                if (!entry.canUpload()) {
+                    throw new Error("Cannot upload tree menu, no upload link returned from entry point");
+                }
+                await entry.upload({
+                    file: this.saveUrl,
+                    content: new Blob([JSON.stringify(this.RootNode, this.menuJsonSerializeReplacer, 2)], { type: "application/json" })
+                });
             }
             catch (err) {
                 this.hasChanges = true;
@@ -52,7 +58,6 @@ export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
 }
 
 var builder = editorServices.createBaseBuilder();
-EdityClient.addServices(builder.Services);
 builder.Services.addTransient(TreeMenu.TreeMenuProvider, TreeMenuEditProvider);
 TreeMenuEditor.addServices(builder.Services);
 

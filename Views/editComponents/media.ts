@@ -8,24 +8,29 @@ import * as toggles from "hr.toggles";
 import * as Iterable from "hr.iterable";
 import * as controller from "hr.controller";
 import * as navmenu from "edity.editorcore.navmenu";
-import * as EdityClient from 'edity.editorcore.EdityClient';
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
 
 function getFileName(path) {
     return path.replace(/^.*?([^\\\/]*)$/, '$1');
 }
 
+interface FileBrowserItem {
+    name: string;
+    link?: string;
+}
+
 /**
  * Create a file browser
  */
-function FileBrowser(bindings, uploadClient: EdityClient.UploadClient) {
+function FileBrowser(bindings: controller.BindingCollection, entryInjector: client.EntryPointInjector) {
     var parentFolders = [];
     var currentFolder = undefined;
 
-    var directoryModel = bindings.getModel('directories');
-    var fileModel = bindings.getModel('files');
+    var directoryModel: controller.Model<FileBrowserItem> = bindings.getModel<FileBrowserItem>('directories');
+    var fileModel: controller.Model<FileBrowserItem> = bindings.getModel<FileBrowserItem>('files');
     var listFilesUrl = directoryModel.getSrc();
 
     var upDir = bindings.getToggle('upDir');
@@ -60,23 +65,33 @@ function FileBrowser(bindings, uploadClient: EdityClient.UploadClient) {
         loadCurrentFolder();
     }
 
-    function loadCurrentFolder() {
+    async function loadCurrentFolder(): Promise<void> {
         toggleGroup.activate(load);
-        uploadClient.listFiles(currentFolder, null)
-            .then(getFilesSuccess)
-            .catch(getFilesFail);
+        try {
+            var entry = await entryInjector.load();
+            if (!entry.canListUploadedFiles()) {
+                throw new Error("Cannot list uploaded files.");
+            }
+            var files = await entry.listUploadedFiles({
+                dir: currentFolder
+            });
+            getFilesSuccess(files);
+        }
+        catch (err) {
+            getFilesFail(err);
+        }
     }
 
-    function getFilesSuccess(data) {
+    function getFilesSuccess(result: client.FileListResult) {
         toggleGroup.activate(main);
 
-        var iter = new Iterable.Iterable(data.directories)
+        var iter = new Iterable.Iterable(result.data.directories)
             .select(function (i) {
                 return { name: getFileName(i), link: i };
             });
 
         directoryModel.setData(iter,
-            function (created, data) {
+            function (created: controller.BindingCollection, data) {
                 var link = data.link;
                 created.setListener({
                     changeDirectory: function (evt) {
@@ -86,7 +101,7 @@ function FileBrowser(bindings, uploadClient: EdityClient.UploadClient) {
                 });
             });
 
-        iter = new Iterable.Iterable(data.files)
+        iter = new Iterable.Iterable(result.data.files)
             .select(function (i) {
                 return { name: getFileName(i), link: i };
             });
@@ -125,37 +140,46 @@ class NavButtonController {
 
 class MediaController {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [controller.BindingCollection, EdityClient.UploadClient, controller.InjectedControllerBuilder];
+        return [controller.BindingCollection, controller.InjectedControllerBuilder, client.EntryPointInjector];
     }
 
     private fileBrowser;
     private uploadModel;
     private dialog;
 
-    constructor(bindings: controller.BindingCollection, private uploadClient: EdityClient.UploadClient, builder: controller.InjectedControllerBuilder) {
+    constructor(bindings: controller.BindingCollection, builder: controller.InjectedControllerBuilder, private entryInjector: client.EntryPointInjector) {
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(MediaController, this);
         editMenu.addInjected("MediaNavItem", builder.createOnCallback(NavButtonController));
 
-        this.fileBrowser = new FileBrowser(bindings, uploadClient);
+        this.fileBrowser = new FileBrowser(bindings, entryInjector);
         this.uploadModel = bindings.getModel('upload');
         this.dialog = bindings.getToggle('dialog');
     }
 
-    upload(evt) {
+    public async upload(evt: Event): Promise<void> {
         evt.preventDefault();
 
         var formData = new FormData();
         var file = this.uploadModel.getData()["file"][0];
         var filename = file.name;
         filename = getFileName(filename);
-        this.uploadClient.upload(this.fileBrowser.getCurrentDirectory() + '/' + filename, { data: file, fileName: filename }, null)
-            .then((data) => {
-                this.fileBrowser.refresh();
-            })
-            .catch((data) => {
-                alert("File Upload Failed");
+        try {
+            var entry = await this.entryInjector.load();
+            if (!entry.canUploadFile()) {
+                throw new Error("Cannot upload files");
+            }
+            await entry.uploadFile({
+                file: this.fileBrowser.getCurrentDirectory() + '/' + filename,
+                content: file
             });
+
+            this.fileBrowser.refresh();
+        }
+        catch (err) {
+            console.log("Uploading file failed.\nMessage: " + err.message);
+            alert("File Upload Failed");
+        }
     }
 
     loadMedia(source) {
@@ -165,7 +189,6 @@ class MediaController {
 }
 
 var builder = editorServices.createBaseBuilder();
-EdityClient.addServices(builder.Services);
 builder.Services.tryAddTransient(MediaController, MediaController);
 builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 builder.create("media", MediaController);
