@@ -103,10 +103,6 @@ class PageSettingsController {
             if (entry.canListPages()) {
                 var url = new uri.Uri();
                 var path = url.path;
-                if (path.length > 0) {
-                    path = path.substr(1);
-                }
-
                 var pages = await entry.listPages({
                     file: path
                 });

@@ -97,9 +97,6 @@ class DraftController {
             if (entry.canListDrafts()) {
                 var url = new uri.Uri();
                 var path = url.path;
-                if (path.length > 0) {
-                    path = path.substr(1);
-                }
                 var collection = await entry.listDrafts({
                     file: path
                 });
