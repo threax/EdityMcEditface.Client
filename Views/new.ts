@@ -7,7 +7,6 @@ import * as uploader from "edity.editorcore.uploader";
 import * as component from "hr.components";
 import * as domQuery from "hr.domquery";
 import * as controller from "hr.controller";
-import { TemplateClient, Template } from "edity.editorcore.EdityClient";
 import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
@@ -15,13 +14,14 @@ import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 import * as edityClient from 'edity.editorcore.EdityClient';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as uri from 'hr.uri';
+import { ResultModel } from 'hr.halcyon.ResultModel';
 
 class TemplateItemController {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [controller.BindingCollection, controller.InjectControllerData, client.EntryPointInjector, TemplateClient];
+        return [controller.BindingCollection, controller.InjectControllerData, client.EntryPointInjector];
     }
 
-    constructor(bindings: controller.BindingCollection, private data: Template, private entryInjector: client.EntryPointInjector, private templateClient: TemplateClient) {
+    constructor(bindings: controller.BindingCollection, private data: client.TemplateViewResult, private entryInjector: client.EntryPointInjector) {
         this.data = data;
     }
 
@@ -44,7 +44,12 @@ class TemplateItemController {
                 throw new Error("Cannot save page " + url.path);
             }
 
-            var templateData = await this.templateClient.getContent(this.data.path, null);
+            var contentResponse = await this.data.getContent();
+            if (contentResponse.status !== 200) {
+                throw new Error("Could not get content, response was not 200 instead got " + contentResponse.status);
+            }
+
+            var templateData = await contentResponse.text();
 
             await page.savePage({
                 content: new Blob([templateData], { type: "text/html" })
@@ -61,20 +66,24 @@ class TemplateItemController {
 
 class NewPageController {
     public static get InjectorArgs(): di.DiFunction<any>[] {
-        return [controller.BindingCollection, TemplateClient, controller.InjectedControllerBuilder];
+        return [controller.BindingCollection, controller.InjectedControllerBuilder, client.EntryPointInjector];
     }
 
-    private templatesModel;
+    private templatesModel: ResultModel<client.TemplateView, client.TemplateViewResult>;
 
-    constructor(bindings: controller.BindingCollection, private templateClient: TemplateClient, private builder: controller.InjectedControllerBuilder) {
-        this.templatesModel = bindings.getModel<Template>('templates');
+    constructor(bindings: controller.BindingCollection, private builder: controller.InjectedControllerBuilder, private entryInjector: client.EntryPointInjector) {
+        this.templatesModel = new ResultModel<client.TemplateView, client.TemplateViewResult>(bindings.getModel<client.TemplateViewResult>('templates'));
         this.setup();
     }
 
-    private async setup() {
+    private async setup(): Promise<void> {
         try {
-            var data = await this.templateClient.listAll(null);
-            this.templatesModel.setData(data, this.builder.createOnCallback(TemplateItemController));
+            var entry = await this.entryInjector.load();
+            if (!entry.canListTemplates()) {
+                throw new Error("Error creating page: cannot list templates");
+            }
+            var templates = await entry.listTemplates();
+            this.templatesModel.setData(templates.items, this.builder.createOnCallback(TemplateItemController));
         }
         catch (err) {
             alert('Cannot load templates, please try again later');
@@ -86,11 +95,6 @@ var builder = editorServices.createBaseBuilder();
 
 edityClient.addServices(builder.Services);
 
-builder.Services.tryAddShared(TemplateClient, s => {
-    var fetcher = s.getRequiredService(Fetcher);
-    var shim = s.getRequiredService(IBaseUrlInjector);
-    return new TemplateClient(shim.BaseUrl, fetcher);
-});
 builder.Services.tryAddTransient(TemplateItemController, TemplateItemController);
 builder.Services.tryAddTransient(NewPageController, NewPageController);
 builder.create("new", NewPageController);
