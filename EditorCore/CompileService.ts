@@ -81,7 +81,7 @@ export class CompilerService {
         this.startedEvent.fire(new CompilerServiceEventArgs(this));
         try {
             for (let i = 0; i < this.phases.length; ++i) {
-                await this.phases[i++].execute(new CompilerServiceEventArgs(this));
+                await this.phases[i].execute(new CompilerServiceEventArgs(this));
             }
             this.successEvent.fire(new CompilerServiceEventArgs(this));
         }
