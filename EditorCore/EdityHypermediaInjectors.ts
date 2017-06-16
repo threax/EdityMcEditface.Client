@@ -12,7 +12,7 @@ export class DraftCrudInjector implements hyperCrud.HypermediaPageInjector {
 
     }
 
-    async list(query: any): Promise<hyperCrud.HypermediaCrudCollection> {
+    async list(query: client.DraftQuery): Promise<hyperCrud.HypermediaCrudCollection> {
         var entry = await this.injector.load();
         return entry.listDrafts(query);
     }

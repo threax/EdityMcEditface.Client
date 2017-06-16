@@ -107,6 +107,7 @@ class DraftController {
 
                     if (this.firstDisplay) {
                         this.firstDisplay = false;
+                        this.builder.create("draftSearch", hyperCrudPage.CrudSearch);
                         this.builder.create("draftPageNumbers", hyperCrudPage.CrudPageNumbers);
                         this.builder.create("draftTable", hyperCrudPage.CrudTableController);
                     }

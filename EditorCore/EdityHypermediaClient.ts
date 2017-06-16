@@ -125,6 +125,17 @@ export class DraftCollectionResult {
         return this.client.HasLinkDoc("self");
     }
 
+    public getListDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("List")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasListDocs(): boolean {
+        return this.client.HasLinkDoc("List");
+    }
+
     public next(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("next")
             .then(r => {
@@ -1886,7 +1897,10 @@ export interface DraftCollection {
 }
 
 export interface DraftQuery {
+    /** Set this to a specific file to load only the draft info for that file. */
     file?: string;
+    /** Set this to true to show only changed files. */
+    showChangedOnly?: boolean;
     /** The number of pages (item number = Offset * Limit) into the collection to query. */
     offset?: number;
     /** The limit of the number of items to return. */
