@@ -742,6 +742,29 @@ export class EntryPointResult {
     public hasListUploadedFilesDocs(): boolean {
         return this.client.HasLinkDoc("ListUploadedFiles");
     }
+
+    public addAsset(data: ImageUploadInput): Promise<ImageUploadResponseResult> {
+        return this.client.LoadLinkWithForm("AddAsset", data)
+               .then(r => {
+                    return new ImageUploadResponseResult(r);
+                });
+
+    }
+
+    public canAddAsset(): boolean {
+        return this.client.HasLink("AddAsset");
+    }
+
+    public getAddAssetDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("AddAsset")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasAddAssetDocs(): boolean {
+        return this.client.HasLinkDoc("AddAsset");
+    }
 }
 
 export class HistoryResult {
@@ -1172,29 +1195,6 @@ export class PageInfoResult {
 
     public hasUpdateSettingsDocs(): boolean {
         return this.client.HasLinkDoc("UpdateSettings");
-    }
-
-    public addPageAsset(data: ImageUploadInput): Promise<ImageUploadResponseResult> {
-        return this.client.LoadLinkWithForm("AddPageAsset", data)
-               .then(r => {
-                    return new ImageUploadResponseResult(r);
-                });
-
-    }
-
-    public canAddPageAsset(): boolean {
-        return this.client.HasLink("AddPageAsset");
-    }
-
-    public getAddPageAssetDocs(): Promise<hal.HalEndpointDoc> {
-        return this.client.LoadLinkDoc("AddPageAsset")
-            .then(r => {
-                return r.GetData<hal.HalEndpointDoc>();
-            });
-    }
-
-    public hasAddPageAssetDocs(): boolean {
-        return this.client.HasLinkDoc("AddPageAsset");
     }
 }
 
@@ -2044,6 +2044,21 @@ export interface FileList {
     path?: string;
 }
 
+export interface ImageUploadInput {
+    upload?: any;
+}
+
+export interface ImageUploadResponse {
+    /** Set to 1 for uploaded or 0 for not uploaded */
+    uploaded?: number;
+    /** The name of the saved file */
+    fileName?: string;
+    /** The url to the saved file */
+    url?: string;
+    /** A message to display */
+    message?: string;
+}
+
 export interface History2 {
     message?: string;
     sha?: string;
@@ -2067,21 +2082,6 @@ export interface SavePageInput {
 export interface PageSettings {
     title: string;
     visible?: boolean;
-}
-
-export interface ImageUploadInput {
-    upload?: any;
-}
-
-export interface ImageUploadResponse {
-    /** Set to 1 for uploaded or 0 for not uploaded */
-    uploaded?: number;
-    /** The name of the saved file */
-    fileName?: string;
-    /** The url to the saved file */
-    url?: string;
-    /** A message to display */
-    message?: string;
 }
 
 export interface DiffInfo {
