@@ -15,9 +15,9 @@ export class DraftResult {
 
     public refresh(): Promise<DraftResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new DraftResult(r);
-            });
+               .then(r => {
+                    return new DraftResult(r);
+                });
 
     }
 
@@ -54,9 +54,9 @@ export class DraftResult {
 
     public listPageHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
         return this.client.LoadLinkWithQuery("ListPageHistory", query)
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -104,9 +104,9 @@ export class DraftCollectionResult {
 
     public refresh(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new DraftCollectionResult(r);
-            });
+               .then(r => {
+                    return new DraftCollectionResult(r);
+                });
 
     }
 
@@ -138,9 +138,9 @@ export class DraftCollectionResult {
 
     public next(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("next")
-            .then(r => {
-                return new DraftCollectionResult(r);
-            });
+               .then(r => {
+                    return new DraftCollectionResult(r);
+                });
 
     }
 
@@ -161,9 +161,9 @@ export class DraftCollectionResult {
 
     public previous(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("previous")
-            .then(r => {
-                return new DraftCollectionResult(r);
-            });
+               .then(r => {
+                    return new DraftCollectionResult(r);
+                });
 
     }
 
@@ -184,9 +184,9 @@ export class DraftCollectionResult {
 
     public first(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("first")
-            .then(r => {
-                return new DraftCollectionResult(r);
-            });
+               .then(r => {
+                    return new DraftCollectionResult(r);
+                });
 
     }
 
@@ -207,9 +207,9 @@ export class DraftCollectionResult {
 
     public last(): Promise<DraftCollectionResult> {
         return this.client.LoadLink("last")
-            .then(r => {
-                return new DraftCollectionResult(r);
-            });
+               .then(r => {
+                    return new DraftCollectionResult(r);
+                });
 
     }
 
@@ -257,9 +257,9 @@ export class DraftEntryPointResult {
             method: "GET"
         }, fetcher)
             .then(c => {
-                return new DraftEntryPointResult(c);
-            });
-    }
+                 return new DraftEntryPointResult(c);
+             });
+            }
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
@@ -273,9 +273,9 @@ export class DraftEntryPointResult {
 
     public refresh(): Promise<DraftEntryPointResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new DraftEntryPointResult(r);
-            });
+               .then(r => {
+                    return new DraftEntryPointResult(r);
+                });
 
     }
 
@@ -315,9 +315,9 @@ export class DraftEntryPointResult {
 
     public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
         return this.client.LoadLinkWithQuery("ListDrafts", query)
-            .then(r => {
-                return new DraftCollectionResult(r);
-            });
+               .then(r => {
+                    return new DraftCollectionResult(r);
+                });
 
     }
 
@@ -365,9 +365,9 @@ export class EntryPointResult {
             method: "GET"
         }, fetcher)
             .then(c => {
-                return new EntryPointResult(c);
-            });
-    }
+                 return new EntryPointResult(c);
+             });
+            }
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
@@ -381,9 +381,9 @@ export class EntryPointResult {
 
     public refresh(): Promise<EntryPointResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new EntryPointResult(r);
-            });
+               .then(r => {
+                    return new EntryPointResult(r);
+                });
 
     }
 
@@ -404,9 +404,9 @@ export class EntryPointResult {
 
     public listPhases(): Promise<PhaseCollectionResult> {
         return this.client.LoadLink("ListPhases")
-            .then(r => {
-                return new PhaseCollectionResult(r);
-            });
+               .then(r => {
+                    return new PhaseCollectionResult(r);
+                });
 
     }
 
@@ -427,9 +427,9 @@ export class EntryPointResult {
 
     public beginDraft(): Promise<DraftEntryPointResult> {
         return this.client.LoadLink("BeginDraft")
-            .then(r => {
-                return new DraftEntryPointResult(r);
-            });
+               .then(r => {
+                    return new DraftEntryPointResult(r);
+                });
 
     }
 
@@ -450,9 +450,9 @@ export class EntryPointResult {
 
     public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
         return this.client.LoadLinkWithQuery("ListDrafts", query)
-            .then(r => {
-                return new DraftCollectionResult(r);
-            });
+               .then(r => {
+                    return new DraftCollectionResult(r);
+                });
 
     }
 
@@ -500,9 +500,9 @@ export class EntryPointResult {
 
     public getUncommittedChanges(): Promise<UncommittedChangeCollectionResult> {
         return this.client.LoadLink("GetUncommittedChanges")
-            .then(r => {
-                return new UncommittedChangeCollectionResult(r);
-            });
+               .then(r => {
+                    return new UncommittedChangeCollectionResult(r);
+                });
 
     }
 
@@ -523,9 +523,9 @@ export class EntryPointResult {
 
     public beginSync(): Promise<SyncInfoResult> {
         return this.client.LoadLink("BeginSync")
-            .then(r => {
-                return new SyncInfoResult(r);
-            });
+               .then(r => {
+                    return new SyncInfoResult(r);
+                });
 
     }
 
@@ -546,9 +546,9 @@ export class EntryPointResult {
 
     public publishStatus(): Promise<CompilerStatusResult> {
         return this.client.LoadLink("PublishStatus")
-            .then(r => {
-                return new CompilerStatusResult(r);
-            });
+               .then(r => {
+                    return new CompilerStatusResult(r);
+                });
 
     }
 
@@ -569,9 +569,9 @@ export class EntryPointResult {
 
     public compile(): Promise<CompilerResultResult> {
         return this.client.LoadLink("Compile")
-            .then(r => {
-                return new CompilerResultResult(r);
-            });
+               .then(r => {
+                    return new CompilerResultResult(r);
+                });
 
     }
 
@@ -592,9 +592,9 @@ export class EntryPointResult {
 
     public listHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
         return this.client.LoadLinkWithQuery("ListHistory", query)
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -615,9 +615,9 @@ export class EntryPointResult {
 
     public getMergeInfo(query: MergeQuery): Promise<MergeInfoResult> {
         return this.client.LoadLinkWithQuery("GetMergeInfo", query)
-            .then(r => {
-                return new MergeInfoResult(r);
-            });
+               .then(r => {
+                    return new MergeInfoResult(r);
+                });
 
     }
 
@@ -638,9 +638,9 @@ export class EntryPointResult {
 
     public listPages(query: PageQuery): Promise<PageInfoCollectionResult> {
         return this.client.LoadLinkWithQuery("ListPages", query)
-            .then(r => {
-                return new PageInfoCollectionResult(r);
-            });
+               .then(r => {
+                    return new PageInfoCollectionResult(r);
+                });
 
     }
 
@@ -661,9 +661,9 @@ export class EntryPointResult {
 
     public listTemplates(): Promise<TemplateCollectionResult> {
         return this.client.LoadLink("ListTemplates")
-            .then(r => {
-                return new TemplateCollectionResult(r);
-            });
+               .then(r => {
+                    return new TemplateCollectionResult(r);
+                });
 
     }
 
@@ -722,9 +722,9 @@ export class EntryPointResult {
 
     public listUploadedFiles(query: ListFileQuery): Promise<FileListResult> {
         return this.client.LoadLinkWithQuery("ListUploadedFiles", query)
-            .then(r => {
-                return new FileListResult(r);
-            });
+               .then(r => {
+                    return new FileListResult(r);
+                });
 
     }
 
@@ -759,9 +759,9 @@ export class HistoryResult {
 
     public getEntryPoint(): Promise<EntryPointResult> {
         return this.client.LoadLink("GetEntryPoint")
-            .then(r => {
-                return new EntryPointResult(r);
-            });
+               .then(r => {
+                    return new EntryPointResult(r);
+                });
 
     }
 
@@ -809,9 +809,9 @@ export class HistoryCollectionResult {
 
     public refresh(): Promise<HistoryCollectionResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -843,9 +843,9 @@ export class HistoryCollectionResult {
 
     public next(): Promise<HistoryCollectionResult> {
         return this.client.LoadLink("next")
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -866,9 +866,9 @@ export class HistoryCollectionResult {
 
     public previous(): Promise<HistoryCollectionResult> {
         return this.client.LoadLink("previous")
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -889,9 +889,9 @@ export class HistoryCollectionResult {
 
     public first(): Promise<HistoryCollectionResult> {
         return this.client.LoadLink("first")
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -912,9 +912,9 @@ export class HistoryCollectionResult {
 
     public last(): Promise<HistoryCollectionResult> {
         return this.client.LoadLink("last")
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -949,9 +949,9 @@ export class FileListResult {
 
     public listUploadedFiles(query: ListFileQuery): Promise<FileListResult> {
         return this.client.LoadLinkWithQuery("ListUploadedFiles", query)
-            .then(r => {
-                return new FileListResult(r);
-            });
+               .then(r => {
+                    return new FileListResult(r);
+                });
 
     }
 
@@ -1037,9 +1037,9 @@ export class TemplateCollectionResult {
 
     public refresh(): Promise<TemplateCollectionResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new TemplateCollectionResult(r);
-            });
+               .then(r => {
+                    return new TemplateCollectionResult(r);
+                });
 
     }
 
@@ -1134,9 +1134,9 @@ export class PageInfoResult {
 
     public getSettings(): Promise<PageSettingsResult> {
         return this.client.LoadLink("GetSettings")
-            .then(r => {
-                return new PageSettingsResult(r);
-            });
+               .then(r => {
+                    return new PageSettingsResult(r);
+                });
 
     }
 
@@ -1173,6 +1173,29 @@ export class PageInfoResult {
     public hasUpdateSettingsDocs(): boolean {
         return this.client.HasLinkDoc("UpdateSettings");
     }
+
+    public addPageAsset(data: ImageUploadInput): Promise<ImageUploadResponseResult> {
+        return this.client.LoadLinkWithForm("AddPageAsset", data)
+               .then(r => {
+                    return new ImageUploadResponseResult(r);
+                });
+
+    }
+
+    public canAddPageAsset(): boolean {
+        return this.client.HasLink("AddPageAsset");
+    }
+
+    public getAddPageAssetDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("AddPageAsset")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasAddPageAssetDocs(): boolean {
+        return this.client.HasLinkDoc("AddPageAsset");
+    }
 }
 
 export class PageInfoCollectionResult {
@@ -1203,9 +1226,9 @@ export class PageInfoCollectionResult {
 
     public refresh(): Promise<PageInfoCollectionResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new PageInfoCollectionResult(r);
-            });
+               .then(r => {
+                    return new PageInfoCollectionResult(r);
+                });
 
     }
 
@@ -1226,9 +1249,9 @@ export class PageInfoCollectionResult {
 
     public next(): Promise<PageInfoCollectionResult> {
         return this.client.LoadLink("next")
-            .then(r => {
-                return new PageInfoCollectionResult(r);
-            });
+               .then(r => {
+                    return new PageInfoCollectionResult(r);
+                });
 
     }
 
@@ -1249,9 +1272,9 @@ export class PageInfoCollectionResult {
 
     public previous(): Promise<PageInfoCollectionResult> {
         return this.client.LoadLink("previous")
-            .then(r => {
-                return new PageInfoCollectionResult(r);
-            });
+               .then(r => {
+                    return new PageInfoCollectionResult(r);
+                });
 
     }
 
@@ -1272,9 +1295,9 @@ export class PageInfoCollectionResult {
 
     public first(): Promise<PageInfoCollectionResult> {
         return this.client.LoadLink("first")
-            .then(r => {
-                return new PageInfoCollectionResult(r);
-            });
+               .then(r => {
+                    return new PageInfoCollectionResult(r);
+                });
 
     }
 
@@ -1295,9 +1318,9 @@ export class PageInfoCollectionResult {
 
     public last(): Promise<PageInfoCollectionResult> {
         return this.client.LoadLink("last")
-            .then(r => {
-                return new PageInfoCollectionResult(r);
-            });
+               .then(r => {
+                    return new PageInfoCollectionResult(r);
+                });
 
     }
 
@@ -1332,9 +1355,9 @@ export class PageSettingsResult {
 
     public refresh(): Promise<PageSettingsResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new PageSettingsResult(r);
-            });
+               .then(r => {
+                    return new PageSettingsResult(r);
+                });
 
     }
 
@@ -1415,9 +1438,9 @@ export class DiffInfoResult {
 
     public refresh(): Promise<DiffInfoResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new DiffInfoResult(r);
-            });
+               .then(r => {
+                    return new DiffInfoResult(r);
+                });
 
     }
 
@@ -1438,9 +1461,9 @@ export class DiffInfoResult {
 
     public listPageHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
         return this.client.LoadLinkWithQuery("ListPageHistory", query)
-            .then(r => {
-                return new HistoryCollectionResult(r);
-            });
+               .then(r => {
+                    return new HistoryCollectionResult(r);
+                });
 
     }
 
@@ -1475,9 +1498,9 @@ export class MergeInfoResult {
 
     public refresh(): Promise<MergeInfoResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new MergeInfoResult(r);
-            });
+               .then(r => {
+                    return new MergeInfoResult(r);
+                });
 
     }
 
@@ -1531,9 +1554,9 @@ export class SyncInfoResult {
 
     public refresh(): Promise<SyncInfoResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new SyncInfoResult(r);
-            });
+               .then(r => {
+                    return new SyncInfoResult(r);
+                });
 
     }
 
@@ -1603,9 +1626,9 @@ export class UncommittedChangeResult {
 
     public getUncommittedDiff(): Promise<DiffInfoResult> {
         return this.client.LoadLink("GetUncommittedDiff")
-            .then(r => {
-                return new DiffInfoResult(r);
-            });
+               .then(r => {
+                    return new DiffInfoResult(r);
+                });
 
     }
 
@@ -1661,9 +1684,9 @@ export class UncommittedChangeCollectionResult {
 
     public refresh(): Promise<UncommittedChangeCollectionResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new UncommittedChangeCollectionResult(r);
-            });
+               .then(r => {
+                    return new UncommittedChangeCollectionResult(r);
+                });
 
     }
 
@@ -1698,9 +1721,9 @@ export class CompilerResultResult {
 
     public publishStatus(): Promise<CompilerStatusResult> {
         return this.client.LoadLink("PublishStatus")
-            .then(r => {
-                return new CompilerStatusResult(r);
-            });
+               .then(r => {
+                    return new CompilerStatusResult(r);
+                });
 
     }
 
@@ -1735,9 +1758,9 @@ export class CompilerStatusResult {
 
     public refresh(): Promise<CompilerStatusResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new CompilerStatusResult(r);
-            });
+               .then(r => {
+                    return new CompilerStatusResult(r);
+                });
 
     }
 
@@ -1758,9 +1781,9 @@ export class CompilerStatusResult {
 
     public compile(): Promise<CompilerResultResult> {
         return this.client.LoadLink("Compile")
-            .then(r => {
-                return new CompilerResultResult(r);
-            });
+               .then(r => {
+                    return new CompilerResultResult(r);
+                });
 
     }
 
@@ -1830,9 +1853,9 @@ export class PhaseCollectionResult {
 
     public refresh(): Promise<PhaseCollectionResult> {
         return this.client.LoadLink("self")
-            .then(r => {
-                return new PhaseCollectionResult(r);
-            });
+               .then(r => {
+                    return new PhaseCollectionResult(r);
+                });
 
     }
 
@@ -1851,6 +1874,28 @@ export class PhaseCollectionResult {
         return this.client.HasLinkDoc("self");
     }
 }
+
+export class ImageUploadResponseResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: ImageUploadResponse = undefined;
+    public get data(): ImageUploadResponse {
+        this.strongData = this.strongData || this.client.GetData<ImageUploadResponse>();
+        return this.strongData;
+    }
+
+    public getEntryPoint(): Promise<void> {
+        return this.client.LoadLink("GetEntryPoint").then(hal.makeVoid);
+    }
+
+    public canGetEntryPoint(): boolean {
+        return this.client.HasLink("GetEntryPoint");
+    }
+}
 //----------------------
 // <auto-generated>
 //     Generated using the NSwag toolchain v9.1.0.0 (http://NJsonSchema.org)
@@ -1863,9 +1908,9 @@ export class PhaseCollectionResult {
 
 /** This enum captures the current status of a draft. */
 export enum DraftStatus {
-    UndraftedEdits = <any>"UndraftedEdits",
-    NeverDrafted = <any>"NeverDrafted",
-    UpToDate = <any>"UpToDate",
+    UndraftedEdits = <any>"UndraftedEdits", 
+    NeverDrafted = <any>"NeverDrafted", 
+    UpToDate = <any>"UpToDate", 
 }
 
 export interface Draft {
@@ -1891,6 +1936,7 @@ export interface HistoryCollection {
 }
 
 export interface DraftCollection {
+    showChangedOnly?: boolean;
     offset?: number;
     limit?: number;
     total?: number;
@@ -2023,6 +2069,21 @@ export interface PageSettings {
     visible?: boolean;
 }
 
+export interface ImageUploadInput {
+    upload?: any;
+}
+
+export interface ImageUploadResponse {
+    /** Set to 1 for uploaded or 0 for not uploaded */
+    uploaded?: number;
+    /** The name of the saved file */
+    fileName?: string;
+    /** The url to the saved file */
+    url?: string;
+    /** A message to display */
+    message?: string;
+}
+
 export interface DiffInfo {
     filePath?: string;
     original?: string;
@@ -2035,15 +2096,15 @@ export interface ResolveMergeArgs {
 
 /** A verision of FileStatus from git with ambiguity removed */
 export enum GitFileStatus {
-    Nonexistent = <any>"Nonexistent",
-    Unaltered = <any>"Unaltered",
-    Added = <any>"Added",
-    Removed = <any>"Removed",
-    Renamed = <any>"Renamed",
-    Modified = <any>"Modified",
-    Unreadable = <any>"Unreadable",
-    Ignored = <any>"Ignored",
-    Conflicted = <any>"Conflicted",
+    Nonexistent = <any>"Nonexistent", 
+    Unaltered = <any>"Unaltered", 
+    Added = <any>"Added", 
+    Removed = <any>"Removed", 
+    Renamed = <any>"Renamed", 
+    Modified = <any>"Modified", 
+    Unreadable = <any>"Unreadable", 
+    Ignored = <any>"Ignored", 
+    Conflicted = <any>"Conflicted", 
 }
 
 export interface UncommittedChange {

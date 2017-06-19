@@ -41,7 +41,7 @@ class CkEditorManager {
 
             config.allowedContent = true;
             config.extraPlugins = 'colorbutton,youtube,edityimageupload,widgetbootstrap,tableresize';
-            config.imageUploadUrl = baseUrlInjector.BaseUrl + '/edity/Page/AddAsset?page=' + window.location.pathname;
+            config.imageUploadUrl = baseUrlInjector.BaseUrl + '/edity/Asset/' + window.location.pathname; //Unfortunately ckeditor does not make it easy to use halcyon for this (although we could lookup the url somehow from the client, future enhancement)
         };
 
         CKEDITOR.on('instanceReady', (ev) => {
