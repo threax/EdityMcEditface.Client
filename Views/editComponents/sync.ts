@@ -19,14 +19,14 @@ class NavButtonController {
     }
 
     constructor(private syncManager: SyncManager, private pull: PullController) {
-        
+
     }
 
     public async sync(evt: Event): Promise<void> {
         evt.preventDefault();
         try {
             await saveService.saveNow();
-            await this.syncManager.sync();
+            await this.syncManager.sync(true);
         }
         catch (err) {
             this.pull.showError(err);
@@ -34,16 +34,26 @@ class NavButtonController {
     }
 }
 
-class SyncManager implements git.ISyncHandler {
+class SyncManagerHandler implements git.ISyncHandler {
+    constructor (private syncManager: SyncManager){
+
+    }
+
+    public sync(): Promise<git.SyncResult> {
+        return this.syncManager.sync(false);
+    }
+}
+
+class SyncManager {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
         return [client.EntryPointInjector, PushController, PullController, git.GitService];
     }
 
     constructor(private entryInjector: client.EntryPointInjector, private push: PushController, private pull: PullController, private gitService: git.GitService) {
-        this.gitService.setSyncHandler(this);
+        this.gitService.setSyncHandler(new SyncManagerHandler(this));
     }
 
-    public async sync(): Promise<git.SyncResult> {
+    public async sync(showNoSync: boolean): Promise<git.SyncResult> {
         var entry = await this.entryInjector.load();
         var syncResult = new git.SyncResult(false);
         if (entry.canBeginSync()) {
@@ -52,14 +62,14 @@ class SyncManager implements git.ISyncHandler {
             if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
                 var commitResult = await this.gitService.commit("Before syncing you must commit any outstanding changes.");
                 if (commitResult.Success) {
-                    syncResult = await this.sync();
+                    syncResult = await this.sync(showNoSync);
                 }
             }
 
             else if (syncInfo.canPull()) {
                 var syncResult = await this.pull.show(syncInfo);
                 if (syncResult.Success) {
-                    syncResult = await this.sync();
+                    syncResult = await this.sync(showNoSync);
                 }
             }
 
@@ -67,7 +77,7 @@ class SyncManager implements git.ISyncHandler {
                 syncResult = await this.push.show(syncInfo);
             }
 
-            else {
+            else if (showNoSync) {
                 this.pull.showNoSync();
             }
         }

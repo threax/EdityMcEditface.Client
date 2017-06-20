@@ -40,6 +40,12 @@ class NavButtonController {
                 this.handleDraft();
             }
         }
+        else if (beginDraft.canBeginSync()) {
+            var syncResult = await this.gitService.sync();
+            if (syncResult.Success) {
+                this.handleDraft();
+            }
+        }
         else {
             this.controller.show();
         }
