@@ -55,7 +55,25 @@ class PrimaryCompilePhase implements CompilerPhase {
             throw new Error("Cannot compile website.");
         }
         var compileResult = await entry.compile();
-        arg.service.setStatus({ message: "Website compiled in " + compileResult.data.elapsedSeconds + " seconds." });
+        await this.updateStatus(compileResult, arg);
+    }
+
+    private updateStatus(compileResult: client.CompileProgressResult, arg: CompilerServiceEventArgs): Promise<void> {
+        var ep = new ExternalPromise<void>();
+        var worker = async () => {
+            if (compileResult.canRefresh()) {
+                compileResult = await compileResult.refresh();
+                arg.service.setStatus({ message: "Compiled " + compileResult.data.currentFile + " files of " + compileResult.data.totalFiles });
+                if (compileResult.data.completed) {
+                    ep.resolve();
+                }
+                else {
+                    window.setTimeout(worker, 2000);
+                }
+            }
+        };
+        window.setTimeout(worker, 2000);
+        return ep.Promise;
     }
 }
 

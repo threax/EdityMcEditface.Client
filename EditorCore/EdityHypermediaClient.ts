@@ -561,10 +561,10 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("BeginPublish");
     }
 
-    public compile(): Promise<CompileResultResult> {
+    public compile(): Promise<CompileProgressResult> {
         return this.client.LoadLink("Compile")
             .then(r => {
-                return new CompileResultResult(r);
+                return new CompileProgressResult(r);
             });
 
     }
@@ -1700,6 +1700,43 @@ export class UncommittedChangeCollectionResult {
     }
 }
 
+export class CompileProgressResult {
+    private client: hal.HalEndpointClient;
+
+    constructor(client: hal.HalEndpointClient) {
+        this.client = client;
+    }
+
+    private strongData: CompileProgress = undefined;
+    public get data(): CompileProgress {
+        this.strongData = this.strongData || this.client.GetData<CompileProgress>();
+        return this.strongData;
+    }
+
+    public refresh(): Promise<CompileProgressResult> {
+        return this.client.LoadLink("self")
+            .then(r => {
+                return new CompileProgressResult(r);
+            });
+
+    }
+
+    public canRefresh(): boolean {
+        return this.client.HasLink("self");
+    }
+
+    public getRefreshDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("self")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasRefreshDocs(): boolean {
+        return this.client.HasLinkDoc("self");
+    }
+}
+
 export class CompileResultResult {
     private client: hal.HalEndpointClient;
 
@@ -1773,10 +1810,10 @@ export class PublishEntryPointResult {
         return this.client.HasLinkDoc("self");
     }
 
-    public compile(): Promise<CompileResultResult> {
+    public compile(): Promise<CompileProgressResult> {
         return this.client.LoadLink("Compile")
             .then(r => {
-                return new CompileResultResult(r);
+                return new CompileProgressResult(r);
             });
 
     }
@@ -2033,8 +2070,10 @@ export interface PublishEntryPoint {
     behindHistory?: History2[];
 }
 
-export interface CompileResult {
-    elapsedSeconds?: number;
+export interface CompileProgress {
+    completed?: boolean;
+    currentFile?: number;
+    totalFiles?: number;
 }
 
 export interface MergeQuery {
@@ -2154,6 +2193,10 @@ export enum GitFileStatus {
 export interface UncommittedChange {
     filePath?: string;
     state?: string;
+}
+
+export interface CompileResult {
+    elapsedSeconds?: number;
 }
 
 export interface Phase {
