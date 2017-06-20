@@ -39,7 +39,7 @@ export class SyncResult {
 }
 
 export interface ISyncHandler {
-    sync(): Promise<SyncResult>;
+    sync(message: string): Promise<SyncResult>;
 }
 
 export class GitService {
@@ -92,9 +92,9 @@ export class GitService {
      * Perform a sync, will return a SyncResult promise with
      * the results of trying to sync.
      */
-    public sync(): Promise<SyncResult> {
+    public sync(message: string): Promise<SyncResult> {
         if (this.syncHandler) {
-            return this.syncHandler.sync();
+            return this.syncHandler.sync(message);
         }
         else {
             return Promise.resolve(new SyncResult(false));

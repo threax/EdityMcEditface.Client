@@ -229,37 +229,8 @@ export class DraftCollectionResult {
     }
 }
 
-export class DraftEntryPointInjector {
-    private url: string;
-    private fetcher: hal.Fetcher;
-    private instance: Promise<DraftEntryPointResult>;
-
-    constructor(url: string, fetcher: hal.Fetcher) {
-        this.url = url;
-        this.fetcher = fetcher;
-    }
-
-    public load(): Promise<DraftEntryPointResult> {
-        if (!this.instance) {
-            this.instance = DraftEntryPointResult.Load(this.url, this.fetcher);
-        }
-
-        return this.instance;
-    }
-}
-
 export class DraftEntryPointResult {
     private client: hal.HalEndpointClient;
-
-    public static Load(url: string, fetcher: hal.Fetcher): Promise<DraftEntryPointResult> {
-        return hal.HalEndpointClient.Load({
-            href: url,
-            method: "GET"
-        }, fetcher)
-            .then(c => {
-                return new DraftEntryPointResult(c);
-            });
-    }
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
@@ -567,33 +538,33 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("BeginSync");
     }
 
-    public publishStatus(): Promise<CompilerStatusResult> {
-        return this.client.LoadLink("PublishStatus")
+    public beginPublish(): Promise<PublishEntryPointResult> {
+        return this.client.LoadLink("BeginPublish")
             .then(r => {
-                return new CompilerStatusResult(r);
+                return new PublishEntryPointResult(r);
             });
 
     }
 
-    public canPublishStatus(): boolean {
-        return this.client.HasLink("PublishStatus");
+    public canBeginPublish(): boolean {
+        return this.client.HasLink("BeginPublish");
     }
 
-    public getPublishStatusDocs(): Promise<hal.HalEndpointDoc> {
-        return this.client.LoadLinkDoc("PublishStatus")
+    public getBeginPublishDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("BeginPublish")
             .then(r => {
                 return r.GetData<hal.HalEndpointDoc>();
             });
     }
 
-    public hasPublishStatusDocs(): boolean {
-        return this.client.HasLinkDoc("PublishStatus");
+    public hasBeginPublishDocs(): boolean {
+        return this.client.HasLinkDoc("BeginPublish");
     }
 
-    public compile(): Promise<CompilerResultResult> {
+    public compile(): Promise<CompileResultResult> {
         return this.client.LoadLink("Compile")
             .then(r => {
-                return new CompilerResultResult(r);
+                return new CompileResultResult(r);
             });
 
     }
@@ -1729,60 +1700,60 @@ export class UncommittedChangeCollectionResult {
     }
 }
 
-export class CompilerResultResult {
+export class CompileResultResult {
     private client: hal.HalEndpointClient;
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
     }
 
-    private strongData: CompilerResult = undefined;
-    public get data(): CompilerResult {
-        this.strongData = this.strongData || this.client.GetData<CompilerResult>();
+    private strongData: CompileResult = undefined;
+    public get data(): CompileResult {
+        this.strongData = this.strongData || this.client.GetData<CompileResult>();
         return this.strongData;
     }
 
-    public publishStatus(): Promise<CompilerStatusResult> {
-        return this.client.LoadLink("PublishStatus")
+    public beginPublish(): Promise<PublishEntryPointResult> {
+        return this.client.LoadLink("BeginPublish")
             .then(r => {
-                return new CompilerStatusResult(r);
+                return new PublishEntryPointResult(r);
             });
 
     }
 
-    public canPublishStatus(): boolean {
-        return this.client.HasLink("PublishStatus");
+    public canBeginPublish(): boolean {
+        return this.client.HasLink("BeginPublish");
     }
 
-    public getPublishStatusDocs(): Promise<hal.HalEndpointDoc> {
-        return this.client.LoadLinkDoc("PublishStatus")
+    public getBeginPublishDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("BeginPublish")
             .then(r => {
                 return r.GetData<hal.HalEndpointDoc>();
             });
     }
 
-    public hasPublishStatusDocs(): boolean {
-        return this.client.HasLinkDoc("PublishStatus");
+    public hasBeginPublishDocs(): boolean {
+        return this.client.HasLinkDoc("BeginPublish");
     }
 }
 
-export class CompilerStatusResult {
+export class PublishEntryPointResult {
     private client: hal.HalEndpointClient;
 
     constructor(client: hal.HalEndpointClient) {
         this.client = client;
     }
 
-    private strongData: CompilerStatus = undefined;
-    public get data(): CompilerStatus {
-        this.strongData = this.strongData || this.client.GetData<CompilerStatus>();
+    private strongData: PublishEntryPoint = undefined;
+    public get data(): PublishEntryPoint {
+        this.strongData = this.strongData || this.client.GetData<PublishEntryPoint>();
         return this.strongData;
     }
 
-    public refresh(): Promise<CompilerStatusResult> {
+    public refresh(): Promise<PublishEntryPointResult> {
         return this.client.LoadLink("self")
             .then(r => {
-                return new CompilerStatusResult(r);
+                return new PublishEntryPointResult(r);
             });
 
     }
@@ -1802,10 +1773,10 @@ export class CompilerStatusResult {
         return this.client.HasLinkDoc("self");
     }
 
-    public compile(): Promise<CompilerResultResult> {
+    public compile(): Promise<CompileResultResult> {
         return this.client.LoadLink("Compile")
             .then(r => {
-                return new CompilerResultResult(r);
+                return new CompileResultResult(r);
             });
 
     }
@@ -1823,6 +1794,48 @@ export class CompilerStatusResult {
 
     public hasCompileDocs(): boolean {
         return this.client.HasLinkDoc("Compile");
+    }
+
+    public beginSync(): Promise<SyncInfoResult> {
+        return this.client.LoadLink("BeginSync")
+            .then(r => {
+                return new SyncInfoResult(r);
+            });
+
+    }
+
+    public canBeginSync(): boolean {
+        return this.client.HasLink("BeginSync");
+    }
+
+    public getBeginSyncDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("BeginSync")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasBeginSyncDocs(): boolean {
+        return this.client.HasLinkDoc("BeginSync");
+    }
+
+    public commit(data: NewCommit): Promise<void> {
+        return this.client.LoadLinkWithBody("Commit", data).then(hal.makeVoid);
+    }
+
+    public canCommit(): boolean {
+        return this.client.HasLink("Commit");
+    }
+
+    public getCommitDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("Commit")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasCommitDocs(): boolean {
+        return this.client.HasLinkDoc("Commit");
     }
 }
 
@@ -2007,12 +2020,20 @@ export interface PhaseCollection {
 export interface UncommittedChangeCollection {
 }
 
-export interface CompilerStatus {
-    behindBy?: number;
-    behindHistory?: any;
+export interface History2 {
+    message?: string;
+    sha?: string;
+    name?: string;
+    email?: string;
+    when?: Date;
 }
 
-export interface CompilerResult {
+export interface PublishEntryPoint {
+    behindBy?: number;
+    behindHistory?: History2[];
+}
+
+export interface CompileResult {
     elapsedSeconds?: number;
 }
 
@@ -2082,7 +2103,7 @@ export interface ImageUploadResponse {
     message?: string;
 }
 
-export interface History2 {
+export interface History3 {
     message?: string;
     sha?: string;
     name?: string;

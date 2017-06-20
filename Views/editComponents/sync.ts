@@ -26,7 +26,7 @@ class NavButtonController {
         evt.preventDefault();
         try {
             await saveService.saveNow();
-            await this.syncManager.sync(true);
+            await this.syncManager.sync(true, null);
         }
         catch (err) {
             this.pull.showError(err);
@@ -39,8 +39,8 @@ class SyncManagerHandler implements git.ISyncHandler {
 
     }
 
-    public sync(): Promise<git.SyncResult> {
-        return this.syncManager.sync(false);
+    public sync(message: string): Promise<git.SyncResult> {
+        return this.syncManager.sync(false, message);
     }
 }
 
@@ -53,7 +53,7 @@ class SyncManager {
         this.gitService.setSyncHandler(new SyncManagerHandler(this));
     }
 
-    public async sync(showNoSync: boolean): Promise<git.SyncResult> {
+    public async sync(showNoSync: boolean, message: string): Promise<git.SyncResult> {
         var entry = await this.entryInjector.load();
         var syncResult = new git.SyncResult(false);
         if (entry.canBeginSync()) {
@@ -62,19 +62,19 @@ class SyncManager {
             if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
                 var commitResult = await this.gitService.commit("Before syncing you must commit any outstanding changes.");
                 if (commitResult.Success) {
-                    syncResult = await this.sync(showNoSync);
+                    syncResult = await this.sync(showNoSync, message);
                 }
             }
 
             else if (syncInfo.canPull()) {
-                var syncResult = await this.pull.show(syncInfo);
+                var syncResult = await this.pull.show(syncInfo, message);
                 if (syncResult.Success) {
-                    syncResult = await this.sync(showNoSync);
+                    syncResult = await this.sync(showNoSync, message);
                 }
             }
 
             else if (syncInfo.canPush()) {
-                syncResult = await this.push.show(syncInfo);
+                syncResult = await this.push.show(syncInfo, message);
             }
 
             else if (showNoSync) {
@@ -106,6 +106,7 @@ abstract class SyncController {
 
     protected changesModel: controller.Model<client.SyncInfo>;
     protected history: controller.Model<HistoryDisplay>;
+    private messageToggle: controller.OnOffToggle;
 
     protected currentSyncInfo: client.SyncInfoResult;
     private currentPromise: ExternalPromise<git.SyncResult> = null;
@@ -122,13 +123,14 @@ abstract class SyncController {
 
         this.changesModel = bindings.getModel<client.SyncInfo>('changes');
         this.history = bindings.getModel<HistoryDisplay>('history');
+        this.messageToggle = bindings.getToggle('message');
     }
 
     public abstract performAction(evt: Event): Promise<void>;
 
     protected abstract get CurrentHistory(): client.History[];
 
-    public show(syncInfo: client.SyncInfoResult): Promise<git.SyncResult> {
+    public show(syncInfo: client.SyncInfoResult, message: String): Promise<git.SyncResult> {
         if (this.currentPromise !== null) {
             this.currentPromise.resolve(new git.SyncResult(false));
         }
@@ -136,7 +138,14 @@ abstract class SyncController {
         this.currentPromise = new ExternalPromise<git.SyncResult>();
 
         this.currentSyncInfo = syncInfo;
-        var data = this.currentSyncInfo.data;
+        var data = Object.create(this.currentSyncInfo.data);
+        data.message = message;
+        if (message) {
+            this.messageToggle.on();
+        }
+        else {
+            this.messageToggle.off();
+        }
 
         this.group.activate(this.main);
         this.changesModel.setData(data);

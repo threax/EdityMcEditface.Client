@@ -9,19 +9,42 @@ import * as navmenu from "edity.editorcore.navmenu";
 import * as CompileService from 'edity.editorcore.CompileService';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as git from "edity.editorcore.GitService";
+import * as saveService from "edity.editorcore.SaveService";
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [CompileController];
+        return [CompileController, client.EntryPointInjector, git.GitService];
     }
 
-    constructor(private controller: CompileController) {
+    constructor(private controller: CompileController, private entryInjector: client.EntryPointInjector, private gitService: git.GitService) {
 
     }
 
-    compile(evt) {
+    public async compile(evt: Event): Promise<void> {
         evt.preventDefault();
-        this.controller.openDialog();
+        await saveService.saveNow();
+        this.handleCompile();
+    }
+
+    private async handleCompile(): Promise<void> {
+        var entry = await this.entryInjector.load();
+        var beginPublish = await entry.beginPublish();
+        if (beginPublish.canCommit()) {
+            var commitResult = await this.gitService.commit("Before publishing you must commit any outstanding changes.");
+            if (commitResult.Success) {
+                this.handleCompile();
+            }
+        }
+        else if (beginPublish.canBeginSync()) {
+            var syncResult = await this.gitService.sync("Before publishing you must sync changes.");
+            if (syncResult.Success) {
+                this.handleCompile();
+            }
+        }
+        else {
+            this.controller.openDialog();
+        }
     }
 }
 
@@ -77,8 +100,8 @@ class CompileController {
         this.dialogToggle.on();
         try {
             var entry = await this.entryInjector.load();
-            if (entry.canPublishStatus()) {
-                var result = await entry.publishStatus();
+            if (entry.canBeginPublish()) {
+                var result = await entry.beginPublish();
                 var data = result.data;
                 this.infoModel.setData(data);
                 this.changesModel.setData(data.behindHistory);
@@ -101,9 +124,18 @@ class CompileController {
     }
 }
 
-var builder = editorServices.createBaseBuilder();
-CompileService.addServices(builder.Services);
-builder.Services.tryAddTransient(CompileController, CompileController);
-builder.Services.tryAddTransient(NavButtonController, NavButtonController);
+(async () => {
+    var builder = editorServices.createBaseBuilder();
+    CompileService.addServices(builder.Services);
+    builder.Services.tryAddTransient(CompileController, CompileController);
+    builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 
-builder.create("compile", CompileController);
+    //Check to see if we can publish
+    var scope = builder.Services.createScope();
+    var injector = scope.getRequiredService(client.EntryPointInjector);
+    var entry = await injector.load();
+
+    if (entry.canBeginPublish()) {
+        builder.create("compile", CompileController);
+    }
+})();

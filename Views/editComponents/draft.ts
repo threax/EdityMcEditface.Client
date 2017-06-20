@@ -41,7 +41,7 @@ class NavButtonController {
             }
         }
         else if (beginDraft.canBeginSync()) {
-            var syncResult = await this.gitService.sync();
+            var syncResult = await this.gitService.sync("Before drafting you must sync changes.");
             if (syncResult.Success) {
                 this.handleDraft();
             }
