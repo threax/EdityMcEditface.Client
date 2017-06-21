@@ -334,7 +334,7 @@ export class DraftEntryPointResult {
 export class EntryPointInjector {
     private url: string;
     private fetcher: hal.Fetcher;
-    private instance: Promise<EntryPointResult>;
+    private instance: EntryPointResult;
 
     constructor(url: string, fetcher: hal.Fetcher) {
         this.url = url;
@@ -343,10 +343,13 @@ export class EntryPointInjector {
 
     public load(): Promise<EntryPointResult> {
         if (!this.instance) {
-            this.instance = EntryPointResult.Load(this.url, this.fetcher);
+            return EntryPointResult.Load(this.url, this.fetcher).then((r) => {
+                this.instance = r;
+                return r;
+            });
         }
 
-        return this.instance;
+        return Promise.resolve(this.instance);
     }
 }
 
@@ -2203,4 +2206,3 @@ export interface Phase {
     name?: string;
     current?: boolean;
 }
-

@@ -30,31 +30,43 @@ class NavButtonController {
 
     public async open(evt: Event): Promise<void> {
         evt.preventDefault();
-        await saveService.saveNow();
-        this.handleDraft();
+        try {
+            await saveService.saveNow();
+            this.handleDraft();
+        }
+        catch (err) {
+            this.load.off();
+            console.log("General error drafting\nMessage:" + err.message);
+        }
     }
 
     private async handleDraft(): Promise<void> {
-        this.load.on();
-        var entry = await this.entryInjector.load();
-        var beginDraft = await entry.beginDraft();
-        if (beginDraft.canCommit()) {
-            var commitResult = await this.gitService.commit("Before drafting you must commit any outstanding changes.");
-            this.load.off();
-            if (commitResult.Success) {
-                this.handleDraft();
+        try {
+            this.load.on();
+            var entry = await this.entryInjector.load();
+            var beginDraft = await entry.beginDraft();
+            if (beginDraft.canCommit()) {
+                this.load.off();
+                var commitResult = await this.gitService.commit("Before drafting you must commit any outstanding changes.");
+                if (commitResult.Success) {
+                    await this.handleDraft();
+                }
+            }
+            else if (beginDraft.canBeginSync()) {
+                this.load.off();
+                var syncResult = await this.gitService.sync("Before drafting you must sync changes.");
+                if (syncResult.Success) {
+                    await this.handleDraft();
+                }
+            }
+            else {
+                this.load.off();
+                this.controller.show();
             }
         }
-        else if (beginDraft.canBeginSync()) {
-            var syncResult = await this.gitService.sync("Before drafting you must sync changes.");
+        catch (err) {
             this.load.off();
-            if (syncResult.Success) {
-                this.handleDraft();
-            }
-        }
-        else {
-            this.load.off();
-            this.controller.show();
+            throw err;
         }
     }
 }

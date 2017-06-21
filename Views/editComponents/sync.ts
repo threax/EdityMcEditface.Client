@@ -15,11 +15,15 @@ import { ExternalPromise } from 'hr.externalpromise';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [SyncManager, PullController, git.GitService];
+        return [controller.BindingCollection, SyncManager, PullController, git.GitService];
     }
 
-    constructor(private syncManager: SyncManager, private pull: PullController) {
+    private load: controller.OnOffToggle;
 
+    constructor(bindings: controller.BindingCollection, private syncManager: SyncManager, private pull: PullController) {
+        this.load = bindings.getToggle("load");
+        this.load.off();
+        this.syncManager.setLoadToggle(this.load);
     }
 
     public async sync(evt: Event): Promise<void> {
@@ -29,6 +33,7 @@ class NavButtonController {
             await this.syncManager.sync(true, null);
         }
         catch (err) {
+            this.load.off();
             this.pull.showError(err);
         }
     }
@@ -49,40 +54,69 @@ class SyncManager {
         return [client.EntryPointInjector, PushController, PullController, git.GitService];
     }
 
+    private loadToggle: controller.OnOffToggle;
+
     constructor(private entryInjector: client.EntryPointInjector, private push: PushController, private pull: PullController, private gitService: git.GitService) {
         this.gitService.setSyncHandler(new SyncManagerHandler(this));
     }
 
     public async sync(showNoSync: boolean, message: string): Promise<git.SyncResult> {
-        var entry = await this.entryInjector.load();
-        var syncResult = new git.SyncResult(false);
-        if (entry.canBeginSync()) {
-            var syncInfo = await entry.beginSync();
+        try {
+            if (this.loadToggle) {
+                this.loadToggle.on();
+            }
+            var entry = await this.entryInjector.load();
+            var syncResult = new git.SyncResult(false);
+            if (entry.canBeginSync()) {
+                var syncInfo = await entry.beginSync();
 
-            if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
-                var commitResult = await this.gitService.commit("Before syncing you must commit any outstanding changes.");
-                if (commitResult.Success) {
-                    syncResult = await this.sync(showNoSync, message);
+                if (syncInfo.canCommit()) { //If we can commit, we can't sync, so show that dialog
+                    if (this.loadToggle) {
+                        this.loadToggle.off();
+                    }
+                    var commitResult = await this.gitService.commit("Before syncing you must commit any outstanding changes.");
+                    if (commitResult.Success) {
+                        syncResult = await this.sync(showNoSync, message);
+                    }
+                }
+
+                else if (syncInfo.canPull()) {
+                    if (this.loadToggle) {
+                        this.loadToggle.off();
+                    }
+                    var syncResult = await this.pull.show(syncInfo, message);
+                    if (syncResult.Success) {
+                        syncResult = await this.sync(showNoSync, message);
+                    }
+                }
+
+                else if (syncInfo.canPush()) {
+                    if (this.loadToggle) {
+                        this.loadToggle.off();
+                    }
+                    syncResult = await this.push.show(syncInfo, message);
+                }
+
+                else if (showNoSync) {
+                    if (this.loadToggle) {
+                        this.loadToggle.off();
+                    }
+                    this.pull.showNoSync();
                 }
             }
 
-            else if (syncInfo.canPull()) {
-                var syncResult = await this.pull.show(syncInfo, message);
-                if (syncResult.Success) {
-                    syncResult = await this.sync(showNoSync, message);
-                }
-            }
-
-            else if (syncInfo.canPush()) {
-                syncResult = await this.push.show(syncInfo, message);
-            }
-
-            else if (showNoSync) {
-                this.pull.showNoSync();
-            }
+            return syncResult;
         }
+        catch (err) {
+            if (this.loadToggle) {
+                this.loadToggle.off();
+            }
+            throw err;
+        }
+    }
 
-        return syncResult;
+    public setLoadToggle(loadToggle: controller.OnOffToggle) {
+        this.loadToggle = loadToggle;
     }
 }
 

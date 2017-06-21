@@ -26,31 +26,43 @@ class NavButtonController {
 
     public async compile(evt: Event): Promise<void> {
         evt.preventDefault();
-        await saveService.saveNow();
-        this.handleCompile();
+        try {
+            await saveService.saveNow();
+            this.handleCompile();
+        }
+        catch (err) {
+            this.load.off();
+            console.log("General error compiling\nMessage:" + err.message);
+        }
     }
 
     private async handleCompile(): Promise<void> {
-        this.load.on();
-        var entry = await this.entryInjector.load();
-        var beginPublish = await entry.beginPublish();
-        if (beginPublish.canCommit()) {
-            var commitResult = await this.gitService.commit("Before publishing you must commit any outstanding changes.");
-            this.load.off();
-            if (commitResult.Success) {
-                this.handleCompile();
+        try {
+            this.load.on();
+            var entry = await this.entryInjector.load();
+            var beginPublish = await entry.beginPublish();
+            if (beginPublish.canCommit()) {
+                this.load.off();
+                var commitResult = await this.gitService.commit("Before publishing you must commit any outstanding changes.");
+                if (commitResult.Success) {
+                    await this.handleCompile();
+                }
+            }
+            else if (beginPublish.canBeginSync()) {
+                this.load.off();
+                var syncResult = await this.gitService.sync("Before publishing you must sync changes.");
+                if (syncResult.Success) {
+                    await this.handleCompile();
+                }
+            }
+            else {
+                this.load.off();
+                this.controller.openDialog();
             }
         }
-        else if (beginPublish.canBeginSync()) {
-            var syncResult = await this.gitService.sync("Before publishing you must sync changes.");
+        catch (err) {
             this.load.off();
-            if (syncResult.Success) {
-                this.handleCompile();
-            }
-        }
-        else {
-            this.load.off();
-            this.controller.openDialog();
+            throw err;
         }
     }
 }
