@@ -18,11 +18,14 @@ import * as git from "edity.editorcore.GitService";
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [DraftController, client.EntryPointInjector, git.GitService];
+        return [controller.BindingCollection, DraftController, client.EntryPointInjector, git.GitService];
     }
 
-    constructor(private controller: DraftController, private entryInjector: client.EntryPointInjector, private gitService: git.GitService) {
+    private load: controller.OnOffToggle;
 
+    constructor(bindings: controller.BindingCollection, private controller: DraftController, private entryInjector: client.EntryPointInjector, private gitService: git.GitService) {
+        this.load = bindings.getToggle("load");
+        this.load.off();
     }
 
     public async open(evt: Event): Promise<void> {
@@ -32,21 +35,25 @@ class NavButtonController {
     }
 
     private async handleDraft(): Promise<void> {
+        this.load.on();
         var entry = await this.entryInjector.load();
         var beginDraft = await entry.beginDraft();
         if (beginDraft.canCommit()) {
             var commitResult = await this.gitService.commit("Before drafting you must commit any outstanding changes.");
+            this.load.off();
             if (commitResult.Success) {
                 this.handleDraft();
             }
         }
         else if (beginDraft.canBeginSync()) {
             var syncResult = await this.gitService.sync("Before drafting you must sync changes.");
+            this.load.off();
             if (syncResult.Success) {
                 this.handleDraft();
             }
         }
         else {
+            this.load.off();
             this.controller.show();
         }
     }

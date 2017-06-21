@@ -2,6 +2,13 @@
 <template data-hr-component="DraftNavItem">
     <li>
         <a data-toggle="modal" data-hr-on-click="open" href="#Draft">Set Draft</a>
+        <div class="load-linebar load-linebar-inverse startHidden" data-hr-toggle="load" data-hr-style-on="display:block" data-hr-class-on="fadeIn" data-hr-class-off="fadeOut" data-hr-class-idle="idle">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+        </div>
     </li>
 </template>
 <div class="modal fade" data-hr-controller="draft" tabindex="-1" role="dialog" aria-labelledby="DraftModalLabel" data-hr-toggle="dialog" data-hr-run="edity.core.edit.components.draft">

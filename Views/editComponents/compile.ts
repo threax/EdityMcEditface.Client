@@ -14,11 +14,14 @@ import * as saveService from "edity.editorcore.SaveService";
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [CompileController, client.EntryPointInjector, git.GitService];
+        return [controller.BindingCollection, CompileController, client.EntryPointInjector, git.GitService];
     }
 
-    constructor(private controller: CompileController, private entryInjector: client.EntryPointInjector, private gitService: git.GitService) {
+    private load: controller.OnOffToggle;
 
+    constructor(bindings: controller.BindingCollection, private controller: CompileController, private entryInjector: client.EntryPointInjector, private gitService: git.GitService) {
+        this.load = bindings.getToggle("load");
+        this.load.off();
     }
 
     public async compile(evt: Event): Promise<void> {
@@ -28,21 +31,25 @@ class NavButtonController {
     }
 
     private async handleCompile(): Promise<void> {
+        this.load.on();
         var entry = await this.entryInjector.load();
         var beginPublish = await entry.beginPublish();
         if (beginPublish.canCommit()) {
             var commitResult = await this.gitService.commit("Before publishing you must commit any outstanding changes.");
+            this.load.off();
             if (commitResult.Success) {
                 this.handleCompile();
             }
         }
         else if (beginPublish.canBeginSync()) {
             var syncResult = await this.gitService.sync("Before publishing you must sync changes.");
+            this.load.off();
             if (syncResult.Success) {
                 this.handleCompile();
             }
         }
         else {
+            this.load.off();
             this.controller.openDialog();
         }
     }
