@@ -37,4 +37,4 @@ class SaveController {
 var builder = editorServices.createBaseBuilder();
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
 builder.Services.tryAddTransient(SaveController, SaveController);
-editMenu.addInjected("SaveButton", builder.createOnCallback(SaveController));
+editMenu.addInjected("SaveButton", navmenu.StatusStart + 0, builder.createOnCallback(SaveController));

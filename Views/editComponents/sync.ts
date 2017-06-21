@@ -246,4 +246,4 @@ builder.create("syncpush", PushController);
 builder.create("syncpull", PullController);
 
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.addInjected("SyncNavItem", builder.createOnCallback(NavButtonController));
+editMenu.addInjected("SyncNavItem", navmenu.GitStart + 10, builder.createOnCallback(NavButtonController));

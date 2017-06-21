@@ -41,7 +41,7 @@ class HistoryController {
         //Add to nav menu
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(HistoryController, this);
-        editMenu.addInjected("HistoryNavItem", builder.createOnCallback(NavButtonController));
+        editMenu.addInjected("HistoryNavItem", navmenu.PageInfoStart + 90, builder.createOnCallback(NavButtonController));
     }
 
     public showHistory(): void {

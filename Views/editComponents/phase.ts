@@ -91,4 +91,4 @@ childBuilder.Services.addShared(NavButtonController, NavButtonController);
 childBuilder.Services.addTransient(PhaseItem, PhaseItem);
 
 var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-editMenu.addInjected("PhaseNavItem", childBuilder.createOnCallback(NavButtonController));
+editMenu.addInjected("PhaseNavItem", navmenu.PublishStart + 20, childBuilder.createOnCallback(NavButtonController));

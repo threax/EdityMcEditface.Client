@@ -150,7 +150,7 @@ class MediaController {
     constructor(bindings: controller.BindingCollection, builder: controller.InjectedControllerBuilder, private entryInjector: client.EntryPointInjector) {
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(MediaController, this);
-        editMenu.addInjected("MediaNavItem", builder.createOnCallback(NavButtonController));
+        editMenu.addInjected("MediaNavItem", navmenu.EditStart + 99, builder.createOnCallback(NavButtonController));
 
         this.fileBrowser = new FileBrowser(bindings, entryInjector);
         this.uploadModel = bindings.getModel('upload');

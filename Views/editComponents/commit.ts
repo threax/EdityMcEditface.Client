@@ -85,7 +85,7 @@ class CommitController {
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         this.builder.Services.addSharedInstance(CommitController, this);
-        editMenu.addInjected("CommitNavItem", this.builder.createOnCallback(NavButtonController));
+        editMenu.addInjected("CommitNavItem", navmenu.GitStart + 0, this.builder.createOnCallback(NavButtonController));
     }
 
     private async updateUncommittedFiles(): Promise<void> {

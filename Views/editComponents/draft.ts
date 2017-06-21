@@ -195,6 +195,6 @@ class DraftController {
 
         childBuilder.create("draft", DraftController);
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
-        editMenu.addInjected("DraftNavItem", childBuilder.createOnCallback(NavButtonController));
+        editMenu.addInjected("DraftNavItem", navmenu.PublishStart + 0, childBuilder.createOnCallback(NavButtonController));
     }
 })();

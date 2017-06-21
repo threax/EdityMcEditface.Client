@@ -46,7 +46,7 @@ class EditSourceController {
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(EditSourceController, this);
-        editMenu.addInjected("EditSourceNavItem", builder.createOnCallback(NavItemController));
+        editMenu.addInjected("EditSourceNavItem", navmenu.EditStart + 90, builder.createOnCallback(NavItemController));
     }
 
     apply(evt) {

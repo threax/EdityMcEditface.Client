@@ -93,7 +93,7 @@ class CompileController {
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(CompileController, this);
-        editMenu.addInjected("CompileNavItem", builder.createOnCallback(NavButtonController));
+        editMenu.addInjected("CompileNavItem", navmenu.PublishStart + 10, builder.createOnCallback(NavButtonController));
     }
 
     runCompiler(evt) {

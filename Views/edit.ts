@@ -52,12 +52,19 @@ export class ToolsViewStorage extends storage.JsonStorage<ToolsViewSessionData> 
 
 var navMenu = domQuery.first('[data-editor-navmenu]');
 
-function itemAdded(item: navmenu.INavMenuItem) {
-    component.single(item.name, navMenu, null, item.created);
+function itemAdded(args: navmenu.INavMenuItemAddedArgs) {
+    var item = args.added;
+    var insert = args.insertBefore ? args.insertBefore.rootNode : null;
+    component.one(item.name, null, navMenu, insert, item.created);
 }
 
 var menu = navmenu.getNavMenu("edit-nav-menu-items");
-menu.getItems().forEach(itemAdded);
+menu.getItems().forEach((value) => {
+    itemAdded({
+        added: value,
+        insertBefore: null
+    });
+});
 menu.itemAdded.add(itemAdded);
 
 var builder = new controller.InjectedControllerBuilder();

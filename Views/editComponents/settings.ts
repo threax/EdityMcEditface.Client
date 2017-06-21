@@ -85,7 +85,7 @@ class PageSettingsController {
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(PageSettingsController, this);
-        editMenu.addInjected("SettingsNavItem", builder.createOnCallback(NavButtonController));
+        editMenu.addInjected("SettingsNavItem", navmenu.PageInfoStart + 10, builder.createOnCallback(NavButtonController));
     }
 
     public deletePage(evt: Event): void {
