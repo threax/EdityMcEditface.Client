@@ -1,6 +1,6 @@
 {
   "name": "editymceditface.client",
-  "version": "9.2.5",
+  "version": "9.2.6",
   "private": false,
   "types": "./types/fetch.d.ts",
   "devDependencies": {
@@ -8,7 +8,7 @@
     "@types/node": "^6.0.69"
   },
   "dependencies": {
-    "jsns": ">=4.2.0",
+    "jsns": ">=4.2.3",
     "bootstrap": "~3.3.6",
     "ckeditor": "~4.6.0",
     "ckeditor-youtube-plugin": "^2.1.5",
