@@ -71,7 +71,7 @@ class NewPageController {
     private templatesModel: ResultModel<client.TemplateView, client.TemplateViewResult>;
 
     constructor(bindings: controller.BindingCollection, private builder: controller.InjectedControllerBuilder, private entryInjector: client.EntryPointInjector) {
-        this.templatesModel = new ResultModel<client.TemplateView, client.TemplateViewResult>(bindings.getModel<client.TemplateViewResult>('templates'));
+        this.templatesModel = new ResultModel<client.TemplateView, client.TemplateViewResult>(bindings.getModel<client.TemplateView>('templates'));
         this.setup();
     }
 
