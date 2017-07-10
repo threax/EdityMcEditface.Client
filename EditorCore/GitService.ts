@@ -101,6 +101,14 @@ export class GitService {
         }
     }
 
+    public fireRevertStarted() {
+        this.revertStartedHandler.fire(undefined);
+    }
+
+    public fireRevertCompleted(success: boolean) {
+        this.revertCompletedHandler.fire(success);
+    }
+
     get revertStarted() { return this.revertStartedHandler.modifier; }
     get revertCompleted() { return this.revertCompletedHandler.modifier; };
     get determineCommitVariantEvent() { return this.determineCommitVariantEventHandler.modifier };

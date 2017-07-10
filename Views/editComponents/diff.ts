@@ -13,23 +13,31 @@ var CodeMirror = (<any>window).CodeMirror;
 
 class ConfirmRevertController{
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection];
+        return [controller.BindingCollection, git.GitService];
     }
 
     private reverter: client.UncommittedChangeResult;
     private dialog: controller.OnOffToggle;
     private info: controller.Model<string>;
 
-    constructor(bindings: controller.BindingCollection) {
+    constructor(bindings: controller.BindingCollection, private gitService: git.GitService) {
         this.dialog = bindings.getToggle('dialog');
         this.info = bindings.getModel<string>('info');
     }
 
     async revert(evt: Event): Promise<void> {
         if (this.reverter && this.reverter.canRevert()) {
-            await this.reverter.revert();
-            this.dialog.off();
-            this.reverter = null;
+            var success = false;
+            try {
+                this.gitService.fireRevertStarted();
+                await this.reverter.revert();
+                success = true;
+            }
+            finally {
+                this.gitService.fireRevertCompleted(success);
+                this.dialog.off();
+                this.reverter = null;
+            }
         }
     }
 
