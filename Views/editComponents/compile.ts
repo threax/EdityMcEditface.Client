@@ -150,8 +150,7 @@ class CompileController {
     builder.Services.tryAddTransient(NavButtonController, NavButtonController);
 
     //Check to see if we can publish
-    var scope = builder.Services.createScope();
-    var injector = scope.getRequiredService(client.EntryPointInjector);
+    var injector = builder.createUnbound(client.EntryPointInjector);
     var entry = await injector.load();
 
     if (entry.canBeginPublish()) {
