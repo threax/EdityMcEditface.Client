@@ -3,18 +3,23 @@
   "contentMap": {
     "tsBin": {
       "js": [
-        {
-          "file": "~/lib/tsbin.js",
-          "async": false
-        }
+        { "file": "~/lib/tsbin.js" }
+      ],
+      "dependencies": [
+        "bootstrapScripts"
       ]
     },
     "tsBinProd": {
       "js": [
-        {
-          "file": "~/lib/tsbin.prod.js",
-          "async": false
-        }
+        { "file": "~/lib/tsbin.prod.js" }
+      ],
+      "dependencies": [
+        "bootstrapScripts"
+      ]
+    },
+    "hr-run": {
+      "js": [
+        { "file": "~/lib/hr-run.js" }
       ]
     },
     "simple-sidebar": {
@@ -34,6 +39,12 @@
     },
     "bootstrap": {
       "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
+    },
+    "bootstrapScripts": {
+      "js": [
+        { "file": "~/lib/jquery/dist/jquery.min.js" },
+        { "file": "~/lib/bootstrap/dist/js/bootstrap.min.js" }
+      ]
     },
     "transitions": {
       "css": [ "~/lib/edity/css/fade.css" ]
