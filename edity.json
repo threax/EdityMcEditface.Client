@@ -1,12 +1,19 @@
 ﻿{
   "$schema": "../../../SchemaGenerator/Schema/EdityProject.json",
   "contentMap": {
+    "polyfill": {
+      "js": [
+        { "file": "~/lib/polyfill.js" },
+        { "file": "~/lib/tslib.js" }
+      ]
+    },
     "tsBin": {
       "js": [
         { "file": "~/lib/tsbin.js" }
       ],
       "dependencies": [
-        "bootstrapScripts"
+        "bootstrapScripts",
+        "polyfill"
       ]
     },
     "tsBinProd": {
@@ -14,7 +21,8 @@
         { "file": "~/lib/tsbin.prod.js" }
       ],
       "dependencies": [
-        "bootstrapScripts"
+        "bootstrapScripts",
+        "polyfill"
       ]
     },
     "hr-run": {
