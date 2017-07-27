@@ -17,6 +17,7 @@
       "../ckeditor/plugins/clipboard/**/*",
       "../ckeditor/plugins/link/**/*",
       "../ckeditor/plugins/table/**/*",
+      "../ckeditor/plugins/tableselection/**/*",
       "../ckeditor/plugins/tableresize/**/*",
       "../ckeditor/plugins/tabletools/**/*",
       "../ckeditor/plugins/pastefromword/**/*",
