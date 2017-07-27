@@ -1,6 +1,6 @@
 {
   "name": "editymceditface.client",
-  "version": "11.0.1",
+  "version": "11.0.2",
   "private": false,
   "types": "./types/fetch.d.ts",
   "devDependencies": {
@@ -8,16 +8,22 @@
     "@types/node": "^6.0.69"
   },
   "dependencies": {
-    "jsns": ">=4.2.3",
-    "bootstrap": "~3.3.6",
-    "ckeditor": "~4.6.0",
+    "jsns": ">=5.0.0",
+    "bootstrap": "~3.3.7",
+    "ckeditor": "~4.7.1",
     "ckeditor-youtube-plugin": "^2.1.5",
-    "codemirror": "~5.25.2",
-    "htmlrapier": ">=9.0.0",
-    "htmlrapier.bootstrap": ">=5.0.0",
-    "htmlrapier.widgets": ">=6.1.2",
+    "codemirror": "~5.28.0",
+    "htmlrapier": ">=10.0.1",
+    "htmlrapier.bootstrap": ">=6.0.1",
+    "htmlrapier.widgets": ">=8.0.1",
     "htmlrapier.treemenu": ">=6.0.1",
-    "htmlrapier.sidebar": ">=2.1.1",
+    "htmlrapier.sidebar": ">=3.0.0",
     "htmlrapier.halcyon": ">=6.0.1"
-  }
+  },
+  "files":[
+    "*/**/*",
+    "edity-artifacts.json",
+    "edity.json",
+    "tsimport.json"
+  ]
 }
