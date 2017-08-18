@@ -3,13 +3,13 @@ import * as hyperCrud from 'hr.widgets.HypermediaCrudService';
 import * as di from 'hr.di';
 import * as uri from 'hr.uri';
 
-export class DraftCrudInjector implements hyperCrud.HypermediaPageInjector {
+export class DraftCrudInjector extends hyperCrud.AbstractHypermediaPageInjector {
     public static get InjectorArgs(): di.DiFunction<any>[] {
         return [client.EntryPointInjector];
     }
 
     constructor(private injector: client.EntryPointInjector) {
-
+        super();
     }
 
     async list(query: client.DraftQuery): Promise<hyperCrud.HypermediaCrudCollection> {
@@ -27,13 +27,13 @@ export class DraftCrudInjector implements hyperCrud.HypermediaPageInjector {
     }
 }
 
-export class PageHistoryCrudInjector implements hyperCrud.HypermediaPageInjector {
+export class PageHistoryCrudInjector extends hyperCrud.AbstractHypermediaPageInjector {
     public static get InjectorArgs(): di.DiFunction<any>[] {
         return [client.EntryPointInjector];
     }
 
     constructor(private injector: client.EntryPointInjector) {
-
+        super();
     }
 
     async list(query: client.HistoryQuery): Promise<hyperCrud.HypermediaCrudCollection> {
