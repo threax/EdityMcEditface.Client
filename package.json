@@ -1,6 +1,6 @@
 {
   "name": "editymceditface.client",
-  "version": "12.1.1",
+  "version": "12.1.2",
   "private": false,
   "types": "./types/fetch.d.ts",
   "devDependencies": {
@@ -12,7 +12,7 @@
     "ckeditor": "~4.7.1",
     "ckeditor-youtube-plugin": "^2.1.5",
     "codemirror": "~5.28.0",
-    "htmlrapier": ">=12.1.0",
+    "htmlrapier": ">=12.2.0",
     "htmlrapier.bootstrap": ">=6.0.4",
     "htmlrapier.halcyon": ">=6.0.2",
     "htmlrapier.sidebar": ">=3.0.2",
