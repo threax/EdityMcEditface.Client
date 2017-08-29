@@ -154,13 +154,13 @@ class CommitController {
         return this.currentPromise.Promise;
     }
 
-    private determineCommitVariant(result: client.UncommittedChangeResult) {
+    private determineCommitVariant(result: client.UncommittedChangeResult): string {
         var listenerVariant = this.GitService.fireDetermineCommitVariant(result);
         if (listenerVariant) {
             this.currentRowCreatedCallback = listenerVariant[0].rowCreated;
             return listenerVariant[0].variant;
         }
-        return result.data.state;
+        return String(result.data.state);
     }
 
     private commitRowCreated(bindings: controller.BindingCollection, data: client.UncommittedChangeResult) {

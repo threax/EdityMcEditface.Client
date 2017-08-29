@@ -55,7 +55,7 @@ class MergeController {
     }
 
     private mergeVariant(result: client.UncommittedChangeResult): git.CommitVariant {
-        if (result.data.state === "Conflicted") {
+        if (result.data.state === client.UncommittedChangeState.Conflicted) {
             var creator = builder.createOnCallback(MergeRow);
             return {
                 variant: "Conflicted",
