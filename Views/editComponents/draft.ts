@@ -76,14 +76,17 @@ class DraftRowController {
         return [controller.BindingCollection, crudPage.ICrudService, controller.InjectControllerData];
     }
 
-    constructor(bindings: controller.BindingCollection, private crudService: crudPage.ICrudService, private data: client.DraftResult) {
+    private view: controller.IView<client.Draft>;
 
+    constructor(bindings: controller.BindingCollection, private crudService: crudPage.ICrudService, private data: client.DraftResult) {
+        this.view = bindings.getView("draftStatus");
+        this.view.setData(data.data);
     }
 
     public async draft(evt: Event): Promise<void> {
         if (this.data.canSubmitLatestDraft()) {
-            await this.data.submitLatestDraft();
-            this.crudService.refreshPage();
+            var result = await this.data.submitLatestDraft();
+            this.view.setData(result.data);
         }
     }
 }
