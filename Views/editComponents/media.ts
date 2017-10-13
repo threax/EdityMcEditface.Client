@@ -178,7 +178,7 @@ class MediaController {
         }
         catch (err) {
             console.log("Uploading file failed.\nMessage: " + err.message);
-            alert("File Upload Failed");
+            alert("File Upload Failed\n" + err.message);
         }
     }
 
