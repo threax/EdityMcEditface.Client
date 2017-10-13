@@ -86,6 +86,7 @@ class CompileController {
     private infoModel;
     private dialogToggle;
     private statusModel: controller.Model<StatusMessage>;
+    private progressBar: controller.IView<number>;
 
     constructor(bindings: controller.BindingCollection, private compileService: CompileService.CompilerService, private entryInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
         this.start = bindings.getToggle("start");
@@ -102,6 +103,7 @@ class CompileController {
         this.compileService.onFailed.add(a => this.toggleGroup.activate(this.fail));
         this.compileService.onSuccess.add(a => this.toggleGroup.activate(this.success));
         this.statusModel = bindings.getModel<StatusMessage>("status");
+        this.progressBar = bindings.getView<number>("progress");
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(CompileController, this);
@@ -139,7 +141,16 @@ class CompileController {
     }
 
     private statusUpdated(arg: CompileService.CompilerServiceStatusEventArgs) {
-        this.statusModel.appendData(arg.status);
+        if (arg.service.isPrimaryPhase) {
+            this.progressBar.setData(arg.status.percentComplete, (b: controller.BindingCollection, w) => {
+                var widthHandle = b.getHandle("width"); //Have to cheat to use handles, since we can't set the style any other way, and progress bars need to use style.
+                widthHandle.setAttribute("style", "width:" + w + "%");
+            });
+            this.statusModel.setData(arg.status);
+        }
+        else {
+            this.statusModel.appendData(arg.status);
+        }
     }
 }
 

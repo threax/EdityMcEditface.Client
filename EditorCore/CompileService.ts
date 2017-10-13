@@ -33,6 +33,7 @@ export class CompilerServiceStatusEventArgs extends CompilerServiceEventArgs {
 
 export interface CompilerStatus {
     message: string;
+    percentComplete?: number;
 }
 
 export interface CompilerPhase {
@@ -49,7 +50,7 @@ class PrimaryCompilePhase implements CompilerPhase {
     }
 
     public async execute(arg: CompilerServiceEventArgs): Promise<void> {
-        arg.service.setStatus({ message: "Publishing Website" })
+        arg.service.setStatus({ message: "Beginning Publish", percentComplete: 0 })
         var entry = await this.entryInjector.load();
         if (!entry.canCompile()) {
             throw new Error("Cannot compile website.");
@@ -63,7 +64,13 @@ class PrimaryCompilePhase implements CompilerPhase {
         var worker = async () => {
             if (compileResult.canRefresh()) {
                 compileResult = await compileResult.refresh();
-                arg.service.setStatus({ message: "Compiled " + compileResult.data.currentFile + " files of " + compileResult.data.totalFiles });
+
+                var percentage = 0;
+                if (compileResult.data.totalFiles != 0) {
+                    percentage = compileResult.data.currentFile / compileResult.data.totalFiles * 100;
+                }
+
+                arg.service.setStatus({ message: "Compiled " + compileResult.data.currentFile + " files of " + compileResult.data.totalFiles, percentComplete: percentage });
                 if (compileResult.data.completed) {
                     ep.resolve();
                 }
@@ -86,6 +93,7 @@ export class CompilerService {
     private statusUpdatedEvent = new event.ActionEventDispatcher<CompilerServiceStatusEventArgs>();
     private successEvent = new event.ActionEventDispatcher<CompilerServiceEventArgs>();
     private failedEvent = new event.ActionEventDispatcher<CompilerServiceErrorEventArgs>();
+    private inPrimaryPhase: boolean = true;
 
     private status: CompilerStatus;
 
@@ -99,6 +107,7 @@ export class CompilerService {
         this.startedEvent.fire(new CompilerServiceEventArgs(this));
         try {
             for (let i = 0; i < this.phases.length; ++i) {
+                this.inPrimaryPhase = i === 0;
                 await this.phases[i].execute(new CompilerServiceEventArgs(this));
             }
             this.successEvent.fire(new CompilerServiceEventArgs(this));
@@ -132,6 +141,10 @@ export class CompilerService {
 
     public get onFailed() {
         return this.failedEvent.modifier;
+    }
+
+    public get isPrimaryPhase() {
+        return this.inPrimaryPhase;
     }
 }
 

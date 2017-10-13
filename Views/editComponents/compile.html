@@ -49,6 +49,14 @@
             </div>
             <div data-hr-toggle="compiling" data-hr-style-off="display:none;">
                 <div class="modal-body">
+                    <div class="progress" data-hr-view="progress">
+                        <template>
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{this}}" aria-valuemin="0" aria-valuemax="100" data-hr-handle="width">
+                                <span class="sr-only">{{this}}% Complete</span>
+                            </div>
+                        </template>
+                    </div>
+                    <br />
                     <div class="center">
                         <div class="load-linebar center-block">
                             <div class="rect1"></div>
@@ -60,6 +68,7 @@
                     </div>
                 </div>
             </div>
+
             <div data-hr-model="status" class="modal-body">
                 <template>
                     <p>{{message}}</p>
