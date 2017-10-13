@@ -161,7 +161,7 @@ class MediaController {
         evt.preventDefault();
 
         var formData = new FormData();
-        var file = this.uploadModel.getData()["file"][0];
+        var file = this.uploadModel.getData()["file"];
         var filename = file.name;
         filename = getFileName(filename);
         try {
