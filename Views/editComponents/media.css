@@ -1,0 +1,14 @@
+﻿ol.filebrowser-directory-list {
+    list-style-type: none;
+    padding-left: 0px;
+}
+
+ol.filebrowser-directory-list > li {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    cursor: pointer;
+}
+
+ol.filebrowser-directory-list > li:hover {
+    background-color: darkgray;
+}

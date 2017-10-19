@@ -30,7 +30,7 @@ function FileBrowser(bindings: controller.BindingCollection, entryInjector: clie
     var currentFolder = undefined;
 
     var directoryModel: controller.Model<FileBrowserItem> = bindings.getModel<FileBrowserItem>('directories');
-    var fileModel: controller.Model<FileBrowserItem> = bindings.getModel<FileBrowserItem>('files');
+    var fileModel: controller.IView<FileBrowserItem> = bindings.getView<FileBrowserItem>('files');
     var listFilesUrl = directoryModel.getSrc();
 
     var upDir = bindings.getToggle('upDir');
