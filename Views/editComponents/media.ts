@@ -103,7 +103,7 @@ function FileBrowser(bindings: controller.BindingCollection, entryInjector: clie
 
         iter = new Iterable.Iterable(result.data.files)
             .select(function (i) {
-                return { name: getFileName(i), link: i };
+                return { name: getFileName(i), link: encodeURI(i) };
             });
 
         fileModel.setData(iter);
