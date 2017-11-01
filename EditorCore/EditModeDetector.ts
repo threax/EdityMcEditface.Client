@@ -1,3 +1,14 @@
+import * as pageConfig from 'hr.pageconfig';
+
+interface Config {
+    editSettings?: {};
+}
+
+var config = undefined;
+
 export function IsEditMode(): boolean {
-    return (<any>window).editPageSettings !== undefined;
+    if(config === undefined){
+        var config = pageConfig.read<Config>();
+    }
+    return config.editSettings !== undefined;
 }
