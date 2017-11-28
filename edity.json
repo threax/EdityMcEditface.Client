@@ -80,7 +80,10 @@
       "dependencies": [ "diff_match_patch" ]
     },
     "ckeditor": {
-      "js": [ { "file": "~/lib/ckeditor/ckeditor.js" } ]
+      "js": [
+        { "file": "~/lib/ckeditor/ckeditor.js" },
+        { "file": "~/ckeditor.plugins.bundle.min.js" }
+      ]
     },
     "editorCore": {
       "dependencies": [ "tsBin", "transitions", "edityLoading", "codemirror" ]
