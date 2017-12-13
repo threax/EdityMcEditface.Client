@@ -8,15 +8,16 @@ import * as navmenu from "edity.editorcore.navmenu";
 import * as page from "edity.editorcore.PageService";
 import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 import * as editorServices from 'edity.editorcore.EditorServices';
+import * as client from 'edity.editorcore.EdityHypermediaClient';
 
 class CkEditorManager {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [IBaseUrlInjector, page.PageService];
+        return [IBaseUrlInjector, page.PageService, client.EntryPointInjector];
     }
 
     private editor = undefined;
 
-    constructor(private baseUrlInjector: IBaseUrlInjector, private pageService: page.PageService) {
+    constructor(private baseUrlInjector: IBaseUrlInjector, private pageService: page.PageService, private entryInjector: client.EntryPointInjector) {
         var CKEDITOR = (<any>window).CKEDITOR;
 
         CKEDITOR.editorConfig = (config) => {
@@ -64,6 +65,31 @@ class CkEditorManager {
             this.editor.on('change', () => {
                 this.pageService.sourceUpdated();
             });
+
+            this.editor.on('fileUploadRequest', async (evt) => {
+                // Prevented the default behavior. This completely bypasses ckeditor's xhr based uploads
+                evt.stop();
+                var loader = evt.data.fileLoader;
+                var file = CkEditorManager.dataURItoFile(loader.data, loader.fileName);
+                var entryPoint = await this.entryInjector.load();
+                try {
+                    var result = await entryPoint.addAsset({
+                        upload: file
+                    });
+                    if (result.data.uploaded) {
+                        loader.url = result.data.url;
+                        loader.changeStatus('uploaded');
+                    }
+                    else {
+                        loader.message = result.data.message;
+                        loader.changeStatus('error');
+                    }
+                }
+                catch (err) {
+                    loader.message = err.message ? err.message : err;
+                    loader.changeStatus('error');
+                }
+            });
         });
 
         this.pageService.setSourceAccessor({
@@ -74,6 +100,37 @@ class CkEditorManager {
                 this.editor.setData(value);
             }
         });
+    }
+
+    static dataURItoBlob(dataURI: string) {
+        //Thanks to john locke at https://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata, added semicolins
+        var byteString, mimestring;
+
+        if (dataURI.split(',')[0].indexOf('base64') !== -1) {
+            byteString = atob(dataURI.split(',')[1]);
+        } else {
+            byteString = decodeURI(dataURI.split(',')[1]);
+        }
+
+        mimestring = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+        var content = new Array();
+        for (var i = 0; i < byteString.length; i++) {
+            content[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([new Uint8Array(content)], { type: mimestring });
+    }
+
+    static dataURItoFile(dataURI: string, fileName: string) {
+        var blob = CkEditorManager.dataURItoBlob(dataURI);
+        try {
+            return new File([blob], fileName);
+        }
+        catch (e) {
+            (<any>blob).fileName = fileName;
+            return blob;
+        }
     }
 }
 
