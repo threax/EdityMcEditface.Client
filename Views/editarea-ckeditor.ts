@@ -123,14 +123,10 @@ class CkEditorManager {
     }
 
     static dataURItoFile(dataURI: string, fileName: string) {
+        //Always send blobs, supported in all browsers correctly
         var blob = CkEditorManager.dataURItoBlob(dataURI);
-        try {
-            return new File([blob], fileName);
-        }
-        catch (e) {
-            (<any>blob).fileName = fileName;
-            return blob;
-        }
+        (<any>blob).fileName = fileName;
+        return blob;
     }
 }
 
