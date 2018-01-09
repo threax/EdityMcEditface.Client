@@ -22,9 +22,15 @@ class NavButtonController {
     private toggleGroup: toggles.Group;
     private branchModel: controller.Model<client.BranchView>;
     private firstOpen: boolean = true;
+    private currentBranchModel: controller.IView<client.BranchView>;
 
     constructor(bindings: controller.BindingCollection, private entryPointInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
         this.branchDropToggle = bindings.getToggle("branchDropToggle");
+
+        this.currentBranchModel = bindings.getView<client.BranchView>("currentBranch");
+        this.currentBranchModel.setData({
+            friendlyName: "Loading"
+        });
 
         this.mainToggle = bindings.getToggle("main");
         this.loadToggle = bindings.getToggle("load");
