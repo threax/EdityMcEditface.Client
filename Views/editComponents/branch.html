@@ -1,0 +1,40 @@
+﻿<!-- Branch Modal -->
+<span data-hr-run="edity.core.edit.components.branch"></span>
+<template data-hr-component="BranchNavItem">
+    <li>
+        <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle" style="text-align:left;padding-left:0px;" type="button" id="branchDropDownMenu" data-hr-toggle="branchDropToggle" data-hr-on-click="openBranchDropdown" aria-haspopup="true" aria-expanded="true">
+                Branch&nbsp;<span class="caret"></span>
+            </button>
+            <div class="dropdown-menu branchDropdown" aria-labelledby="branchDropDownMenu" data-toggle="dropdown">
+                <div data-hr-toggle="load" data-hr-style-off="display:none;">
+                    <div class="center">
+                        <div class="load-linebar center-block">
+                            <div class="rect1"></div>
+                            <div class="rect2"></div>
+                            <div class="rect3"></div>
+                            <div class="rect4"></div>
+                            <div class="rect5"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-hr-toggle="main" data-hr-style-off="display:none;">
+                    <div data-hr-model="branch">
+                        <template>
+                            <button type="button" class="btn btn-primary btn-lg btn-block" data-hr-on-click="setMode">{{friendlyName}}</button>
+                        </template>
+                    </div>
+                </div>
+
+                <div data-hr-toggle="error" data-hr-style-off="display:none;">
+                    <p class="center">
+                        An error occured processsing branchs. Please try again later.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </li>
+</template>
+
+{{mainContent}}
