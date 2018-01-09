@@ -9,6 +9,7 @@ import * as editorServices from 'edity.editorcore.EditorServices';
 import * as storage from 'hr.storage';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as iter from 'hr.iterable';
+import { IAlert, BrowserAlert } from 'hr.widgets.alert';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
@@ -96,22 +97,33 @@ interface BranchModelData {
 
 class BranchItem {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
-        return [controller.BindingCollection, controller.InjectControllerData];
+        return [controller.BindingCollection, controller.InjectControllerData, IAlert];
     }
 
-    constructor(bindings: controller.BindingCollection, private data: BranchModelData) {
+    constructor(bindings: controller.BindingCollection, private data: BranchModelData, private alert: IAlert) {
 
     }
 
     public async setMode(evt: Event): Promise<void> {
         evt.preventDefault();
-        await this.data.result.checkoutBranch();
-        window.location.href = window.location.href;
+        try {
+            await this.data.result.checkoutBranch();
+            window.location.href = window.location.href;
+        }
+        catch (err) {
+            if (err.message) {
+                this.alert.alert(err.message);
+            }
+            else {
+                this.alert.alert("An unknown error occured changing branches.");
+            }
+        }
     }
 }
 
 var builder = editorServices.createBaseBuilder();
 var childBuilder = builder.createChildBuilder();
+childBuilder.Services.addShared(IAlert, s => new BrowserAlert());
 childBuilder.Services.addShared(NavButtonController, NavButtonController);
 childBuilder.Services.addTransient(BranchItem, BranchItem);
 
