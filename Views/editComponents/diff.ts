@@ -94,7 +94,7 @@ class DiffController {
     }
 
     private diffVariant(result: client.UncommittedChangeResult): git.CommitVariant {
-        if (result.data.state === client.UncommittedChangeState.Modified) {
+        if (result.data.state === client.GitFileStatus.Modified) {
             var creator = this.builder.createOnCallback(DiffRow);
             return {
                 variant: "ModifiedWithDiff",
