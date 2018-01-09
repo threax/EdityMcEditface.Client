@@ -940,6 +940,33 @@ export class EntryPointResult {
     public linkForAddBranch(): hal.HalLink {
         return this.client.GetLink("AddBranch");
     }
+
+    public getCurrentBranch(): Promise<BranchViewResult> {
+        return this.client.LoadLink("GetCurrentBranch")
+               .then(r => {
+                    return new BranchViewResult(r);
+                });
+
+    }
+
+    public canGetCurrentBranch(): boolean {
+        return this.client.HasLink("GetCurrentBranch");
+    }
+
+    public linkForGetCurrentBranch(): hal.HalLink {
+        return this.client.GetLink("GetCurrentBranch");
+    }
+
+    public getGetCurrentBranchDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("GetCurrentBranch")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasGetCurrentBranchDocs(): boolean {
+        return this.client.HasLinkDoc("GetCurrentBranch");
+    }
 }
 
 export class HistoryResult {
@@ -2365,6 +2392,33 @@ export class BranchCollectionResult {
     public linkForAddBranch(): hal.HalLink {
         return this.client.GetLink("AddBranch");
     }
+
+    public getCurrentBranch(): Promise<BranchViewResult> {
+        return this.client.LoadLink("GetCurrentBranch")
+               .then(r => {
+                    return new BranchViewResult(r);
+                });
+
+    }
+
+    public canGetCurrentBranch(): boolean {
+        return this.client.HasLink("GetCurrentBranch");
+    }
+
+    public linkForGetCurrentBranch(): hal.HalLink {
+        return this.client.GetLink("GetCurrentBranch");
+    }
+
+    public getGetCurrentBranchDocs(): Promise<hal.HalEndpointDoc> {
+        return this.client.LoadLinkDoc("GetCurrentBranch")
+            .then(r => {
+                return r.GetData<hal.HalEndpointDoc>();
+            });
+    }
+
+    public hasGetCurrentBranchDocs(): boolean {
+        return this.client.HasLinkDoc("GetCurrentBranch");
+    }
 }
 
 export class BranchViewResult {
@@ -2595,6 +2649,11 @@ export interface ImageUploadResponse {
 export interface BranchCollection {
 }
 
+export interface BranchView {
+    canonicalName?: string;
+    friendlyName?: string;
+}
+
 export interface History3 {
     message?: string;
     sha?: string;
@@ -2657,9 +2716,4 @@ export interface UncommittedChange {
 
 export interface CompileResult {
     elapsedSeconds?: number;
-}
-
-export interface BranchView {
-    canonicalName?: string;
-    friendlyName?: string;
 }

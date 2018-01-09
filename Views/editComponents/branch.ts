@@ -29,7 +29,7 @@ class NavButtonController {
 
         this.currentBranchModel = bindings.getView<client.BranchView>("currentBranch");
         this.currentBranchModel.setData({
-            friendlyName: "Loading"
+            friendlyName: "Loading..."
         });
 
         this.mainToggle = bindings.getToggle("main");
@@ -38,6 +38,23 @@ class NavButtonController {
         this.toggleGroup = new toggles.Group(this.mainToggle, this.loadToggle, this.errorToggle);
 
         this.branchModel = bindings.getModel<BranchModelData>("branch");
+
+        this.loadCurrentBranch();
+    }
+
+    public async loadCurrentBranch(): Promise<void> {
+        try {
+            var entry = await this.entryPointInjector.load();
+            if (entry.canGetCurrentBranch()) {
+                var branch = await entry.getCurrentBranch();
+                this.currentBranchModel.setData(branch.data);
+            }
+        }
+        catch (err) {
+            this.currentBranchModel.setData({
+                friendlyName: "Error loading current branch."
+            });
+        }
     }
 
     public async openBranchDropdown(evt: Event): Promise<void> {
