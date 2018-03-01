@@ -6,7 +6,7 @@ import * as di from 'hr.di';
 
 export interface INavMenuItem {
     name: string;
-    created: controller.CreateCallback;
+    created: controller.CreateCallback<any>;
     rootNode: Node;
     order: number;
 }
@@ -37,7 +37,7 @@ class NavMenu {
         return this.itemAddedEvent.modifier;
     }
 
-    public addInjected(name: string, order: number, createOnCallback: controller.CreateCallback) {
+    public addInjected(name: string, order: number, createOnCallback: controller.CreateCallback<any>) {
         //Add item
         var item: INavMenuItem = {
             name: name,

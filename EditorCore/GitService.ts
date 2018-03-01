@@ -11,7 +11,7 @@ import * as controller from 'hr.controller';
 
 export interface CommitVariant {
     variant: string;
-    rowCreated: controller.CreateCallback;
+    rowCreated: controller.CreateCallback<any>;
 }
 
 export class CommitResult {
