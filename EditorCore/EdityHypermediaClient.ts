@@ -79,8 +79,8 @@ export class DraftResult {
         return this.client.GetLink("SubmitAllDrafts");
     }
 
-    public listPageHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
-        return this.client.LoadLinkWithQuery("ListPageHistory", query)
+    public listPageHistory(data: HistoryQuery): Promise<HistoryCollectionResult> {
+        return this.client.LoadLinkWithData("ListPageHistory", data)
                .then(r => {
                     return new HistoryCollectionResult(r);
                 });
@@ -321,7 +321,7 @@ export class DraftEntryPointResult {
     }
 
     public commit(data: NewCommit): Promise<void> {
-        return this.client.LoadLinkWithBody("Commit", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("Commit", data).then(hal.makeVoid);
     }
 
     public canCommit(): boolean {
@@ -343,8 +343,8 @@ export class DraftEntryPointResult {
         return this.client.HasLinkDoc("Commit");
     }
 
-    public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
-        return this.client.LoadLinkWithQuery("ListDrafts", query)
+    public listDrafts(data: DraftQuery): Promise<DraftCollectionResult> {
+        return this.client.LoadLinkWithData("ListDrafts", data)
                .then(r => {
                     return new DraftCollectionResult(r);
                 });
@@ -524,8 +524,8 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("BeginDraft");
     }
 
-    public listDrafts(query: DraftQuery): Promise<DraftCollectionResult> {
-        return this.client.LoadLinkWithQuery("ListDrafts", query)
+    public listDrafts(data: DraftQuery): Promise<DraftCollectionResult> {
+        return this.client.LoadLinkWithData("ListDrafts", data)
                .then(r => {
                     return new DraftCollectionResult(r);
                 });
@@ -564,7 +564,7 @@ export class EntryPointResult {
     }
 
     public commit(data: NewCommit): Promise<void> {
-        return this.client.LoadLinkWithBody("Commit", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("Commit", data).then(hal.makeVoid);
     }
 
     public canCommit(): boolean {
@@ -694,8 +694,8 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("Compile");
     }
 
-    public listHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
-        return this.client.LoadLinkWithQuery("ListHistory", query)
+    public listHistory(data: HistoryQuery): Promise<HistoryCollectionResult> {
+        return this.client.LoadLinkWithData("ListHistory", data)
                .then(r => {
                     return new HistoryCollectionResult(r);
                 });
@@ -721,8 +721,8 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("ListHistory");
     }
 
-    public getMergeInfo(query: MergeQuery): Promise<MergeInfoResult> {
-        return this.client.LoadLinkWithQuery("GetMergeInfo", query)
+    public getMergeInfo(data: MergeQuery): Promise<MergeInfoResult> {
+        return this.client.LoadLinkWithData("GetMergeInfo", data)
                .then(r => {
                     return new MergeInfoResult(r);
                 });
@@ -748,8 +748,8 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("GetMergeInfo");
     }
 
-    public listPages(query: PageQuery): Promise<PageInfoCollectionResult> {
-        return this.client.LoadLinkWithQuery("ListPages", query)
+    public listPages(data: PageQuery): Promise<PageInfoCollectionResult> {
+        return this.client.LoadLinkWithData("ListPages", data)
                .then(r => {
                     return new PageInfoCollectionResult(r);
                 });
@@ -803,7 +803,7 @@ export class EntryPointResult {
     }
 
     public uploadFile(data: UploadInput): Promise<void> {
-        return this.client.LoadLinkWithForm("UploadFile", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("UploadFile", data).then(hal.makeVoid);
     }
 
     public canUploadFile(): boolean {
@@ -825,8 +825,8 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("UploadFile");
     }
 
-    public deleteFile(query: DeleteFileQuery): Promise<void> {
-        return this.client.LoadLinkWithQuery("DeleteFile", query).then(hal.makeVoid);
+    public deleteFile(data: DeleteFileQuery): Promise<void> {
+        return this.client.LoadLinkWithData("DeleteFile", data).then(hal.makeVoid);
     }
 
     public canDeleteFile(): boolean {
@@ -848,8 +848,8 @@ export class EntryPointResult {
         return this.client.HasLinkDoc("DeleteFile");
     }
 
-    public listUploadedFiles(query: ListFileQuery): Promise<FileListResult> {
-        return this.client.LoadLinkWithQuery("ListUploadedFiles", query)
+    public listUploadedFiles(data: ListFileQuery): Promise<FileListResult> {
+        return this.client.LoadLinkWithData("ListUploadedFiles", data)
                .then(r => {
                     return new FileListResult(r);
                 });
@@ -876,7 +876,7 @@ export class EntryPointResult {
     }
 
     public addAsset(data: ImageUploadInput): Promise<ImageUploadResponseResult> {
-        return this.client.LoadLinkWithForm("AddAsset", data)
+        return this.client.LoadLinkWithData("AddAsset", data)
                .then(r => {
                     return new ImageUploadResponseResult(r);
                 });
@@ -1196,8 +1196,8 @@ export class FileListResult {
         return this.strongData;
     }
 
-    public listUploadedFiles(query: ListFileQuery): Promise<FileListResult> {
-        return this.client.LoadLinkWithQuery("ListUploadedFiles", query)
+    public listUploadedFiles(data: ListFileQuery): Promise<FileListResult> {
+        return this.client.LoadLinkWithData("ListUploadedFiles", data)
                .then(r => {
                     return new FileListResult(r);
                 });
@@ -1224,7 +1224,7 @@ export class FileListResult {
     }
 
     public uploadFile(data: UploadInput): Promise<void> {
-        return this.client.LoadLinkWithForm("UploadFile", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("UploadFile", data).then(hal.makeVoid);
     }
 
     public canUploadFile(): boolean {
@@ -1246,8 +1246,8 @@ export class FileListResult {
         return this.client.HasLinkDoc("UploadFile");
     }
 
-    public deleteFile(query: DeleteFileQuery): Promise<void> {
-        return this.client.LoadLinkWithQuery("DeleteFile", query).then(hal.makeVoid);
+    public deleteFile(data: DeleteFileQuery): Promise<void> {
+        return this.client.LoadLinkWithData("DeleteFile", data).then(hal.makeVoid);
     }
 
     public canDeleteFile(): boolean {
@@ -1455,7 +1455,7 @@ export class PageInfoResult {
     }
 
     public savePage(data: SavePageInput): Promise<void> {
-        return this.client.LoadLinkWithForm("SavePage", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("SavePage", data).then(hal.makeVoid);
     }
 
     public canSavePage(): boolean {
@@ -1517,7 +1517,7 @@ export class PageInfoResult {
     }
 
     public updateSettings(data: PageSettings): Promise<void> {
-        return this.client.LoadLinkWithBody("UpdateSettings", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("UpdateSettings", data).then(hal.makeVoid);
     }
 
     public canUpdateSettings(): boolean {
@@ -1743,7 +1743,7 @@ export class PageSettingsResult {
     }
 
     public updateSettings(data: PageSettings): Promise<void> {
-        return this.client.LoadLinkWithBody("UpdateSettings", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("UpdateSettings", data).then(hal.makeVoid);
     }
 
     public canUpdateSettings(): boolean {
@@ -1766,7 +1766,7 @@ export class PageSettingsResult {
     }
 
     public savePage(data: SavePageInput): Promise<void> {
-        return this.client.LoadLinkWithForm("SavePage", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("SavePage", data).then(hal.makeVoid);
     }
 
     public canSavePage(): boolean {
@@ -1841,8 +1841,8 @@ export class DiffInfoResult {
         return this.client.HasLinkDoc("self");
     }
 
-    public listPageHistory(query: HistoryQuery): Promise<HistoryCollectionResult> {
-        return this.client.LoadLinkWithQuery("ListPageHistory", query)
+    public listPageHistory(data: HistoryQuery): Promise<HistoryCollectionResult> {
+        return this.client.LoadLinkWithData("ListPageHistory", data)
                .then(r => {
                     return new HistoryCollectionResult(r);
                 });
@@ -1910,7 +1910,7 @@ export class MergeInfoResult {
     }
 
     public resolve(data: ResolveMergeArgs): Promise<void> {
-        return this.client.LoadLinkWithForm("Resolve", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("Resolve", data).then(hal.makeVoid);
     }
 
     public canResolve(): boolean {
@@ -1998,7 +1998,7 @@ export class SyncInfoResult {
     }
 
     public commit(data: NewCommit): Promise<void> {
-        return this.client.LoadLinkWithBody("Commit", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("Commit", data).then(hal.makeVoid);
     }
 
     public canCommit(): boolean {
@@ -2305,7 +2305,7 @@ export class PublishEntryPointResult {
     }
 
     public commit(data: NewCommit): Promise<void> {
-        return this.client.LoadLinkWithBody("Commit", data).then(hal.makeVoid);
+        return this.client.LoadLinkWithData("Commit", data).then(hal.makeVoid);
     }
 
     public canCommit(): boolean {
@@ -2474,7 +2474,7 @@ export class ImageUploadResponseResult {
 }
 //----------------------
 // <auto-generated>
-//     Generated using the NSwag toolchain v9.10.10.0 (Newtonsoft.Json v11.0.0.0) (http://NJsonSchema.org)
+//     Generated using the NSwag toolchain v9.10.49.0 (Newtonsoft.Json v11.0.0.0) (http://NJsonSchema.org)
 // </auto-generated>
 //----------------------
 
@@ -2560,17 +2560,9 @@ export interface PhaseCollection {
 export interface UncommittedChangeCollection {
 }
 
-export interface History2 {
-    message?: string;
-    sha?: string;
-    name?: string;
-    email?: string;
-    when?: string;
-}
-
 export interface PublishEntryPoint {
     behindBy?: number;
-    behindHistory?: History2[];
+    behindHistory?: History[];
 }
 
 export interface CompileProgress {
@@ -2652,14 +2644,6 @@ export interface BranchCollection {
 export interface BranchView {
     canonicalName?: string;
     friendlyName?: string;
-}
-
-export interface History3 {
-    message?: string;
-    sha?: string;
-    name?: string;
-    email?: string;
-    when?: string;
 }
 
 export interface TemplateView {
