@@ -72,7 +72,13 @@ class PrimaryCompilePhase implements CompilerPhase {
 
                 arg.service.setStatus({ message: "Compiled " + compileResult.data.currentFile + " files of " + compileResult.data.totalFiles, percentComplete: percentage });
                 if (compileResult.data.completed) {
-                    ep.resolve();
+                    if (compileResult.data.success) {
+                        ep.resolve();
+                    }
+                    else {
+                        arg.service.setStatus({ message: compileResult.data.errorMessage });
+                        ep.reject(compileResult.data.errorMessage);
+                    }
                 }
                 else {
                     window.setTimeout(worker, 2000);
@@ -93,9 +99,9 @@ export class CompilerService {
     private statusUpdatedEvent = new event.ActionEventDispatcher<CompilerServiceStatusEventArgs>();
     private successEvent = new event.ActionEventDispatcher<CompilerServiceEventArgs>();
     private failedEvent = new event.ActionEventDispatcher<CompilerServiceErrorEventArgs>();
-    private inPrimaryPhase: boolean = true;
 
     private status: CompilerStatus;
+    private running: boolean = false;
 
     private phases: CompilerPhase[] = [];
 
@@ -104,10 +110,10 @@ export class CompilerService {
     }
 
     public async compile(): Promise<void> {
+        this.running = true;
         this.startedEvent.fire(new CompilerServiceEventArgs(this));
         try {
             for (let i = 0; i < this.phases.length; ++i) {
-                this.inPrimaryPhase = i === 0;
                 await this.phases[i].execute(new CompilerServiceEventArgs(this));
             }
             this.successEvent.fire(new CompilerServiceEventArgs(this));
@@ -115,6 +121,9 @@ export class CompilerService {
         catch (err) {
             this.failedEvent.fire(new CompilerServiceErrorEventArgs(this, err));
             throw err;
+        }
+        finally {
+            this.running = false;
         }
     }
 
@@ -143,8 +152,8 @@ export class CompilerService {
         return this.failedEvent.modifier;
     }
 
-    public get isPrimaryPhase() {
-        return this.inPrimaryPhase;
+    public get isRunning(): boolean {
+        return this.running;
     }
 }
 

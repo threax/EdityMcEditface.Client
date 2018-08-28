@@ -2566,7 +2566,13 @@ export interface PublishEntryPoint {
 }
 
 export interface CompileProgress {
+    /** Is the compile process complete for this build. This does not indicate if the process was sucessful
+just that it is no longer running. */
     completed?: boolean;
+    /** True if the build was a success, false if it failed. Only valid if Completed is true. */
+    success?: boolean;
+    /** If success is false, this will be set to the error from the server. */
+    errorMessage?: string;
     currentFile?: number;
     totalFiles?: number;
 }

@@ -26,13 +26,18 @@ class NavButtonController {
 
     public async compile(evt: Event): Promise<void> {
         evt.preventDefault();
-        try {
-            await saveService.saveNow();
-            this.handleCompile();
+        if (this.controller.isRunning) {
+            this.controller.openDialog();
         }
-        catch (err) {
-            this.load.off();
-            console.log("General error compiling\nMessage:" + err.message);
+        else {
+            try {
+                await saveService.saveNow();
+                this.handleCompile();
+            }
+            catch (err) {
+                this.load.off();
+                console.log("General error compiling\nMessage:" + err.message);
+            }
         }
     }
 
@@ -116,22 +121,27 @@ class CompileController {
     }
 
     public async openDialog(): Promise<void> {
-        this.statusModel.clear();
-        this.toggleGroup.activate(this.compiling);
-        this.dialogToggle.on();
-        try {
-            var entry = await this.entryInjector.load();
-            if (entry.canBeginPublish()) {
-                var result = await entry.beginPublish();
-                var data = result.data;
-                this.infoModel.setData(data);
-                this.changesModel.setData(data.behindHistory);
-                this.toggleGroup.activate(this.start);
-            }
+        if (this.compileService.isRunning) {
+            this.dialogToggle.on();
         }
-        catch (err) {
-            console.log(err.message);
-            this.toggleGroup.activate(this.fail);
+        else {
+            this.statusModel.clear();
+            this.toggleGroup.activate(this.compiling);
+            this.dialogToggle.on();
+            try {
+                var entry = await this.entryInjector.load();
+                if (entry.canBeginPublish()) {
+                    var result = await entry.beginPublish();
+                    var data = result.data;
+                    this.infoModel.setData(data);
+                    this.changesModel.setData(data.behindHistory);
+                    this.toggleGroup.activate(this.start);
+                }
+            }
+            catch (err) {
+                console.log(err.message);
+                this.toggleGroup.activate(this.fail);
+            }
         }
     }
 
@@ -141,16 +151,20 @@ class CompileController {
     }
 
     private statusUpdated(arg: CompileService.CompilerServiceStatusEventArgs) {
-        if (arg.service.isPrimaryPhase) {
+        if (arg.status.percentComplete !== undefined) {
             this.progressBar.setData(arg.status.percentComplete, (b: controller.BindingCollection, w) => {
                 var widthHandle = b.getHandle("width"); //Have to cheat to use handles, since we can't set the style any other way, and progress bars need to use style.
-                widthHandle.setAttribute("style", "width:" + w + "%");
+                widthHandle.setAttribute("style", "width:" + Number(w) + "%");
             });
             this.statusModel.setData(arg.status);
         }
         else {
             this.statusModel.appendData(arg.status);
         }
+    }
+
+    public get isRunning(): boolean {
+        return this.compileService.isRunning;
     }
 }
 
