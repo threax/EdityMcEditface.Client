@@ -1,6 +1,6 @@
 {
   "name": "editymceditface.client",
-  "version": "12.11.0",
+  "version": "12.11.1",
   "private": false,
   "types": "./types/fetch.d.ts",
   "devDependencies": {
@@ -21,7 +21,14 @@
     "jsns": ">=5.0.0"
   },
   "files": [
-    "*/**/*",
+    "bootstrap/**/*",
+    "ckeditor/**/*",
+    "codemirror/**/*",
+    "diff_match_patch/**/*",
+    "EditorCore/**/*",
+    "edity/**/*",
+    "Templates/**/*",
+    "Views/**/*",
     "edity-artifacts.json",
     "edity.json",
     "tsimport.json"
