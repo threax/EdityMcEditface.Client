@@ -32,8 +32,10 @@ export class CompilerServiceStatusEventArgs extends CompilerServiceEventArgs {
 }
 
 export interface CompilerStatus {
-    message: string;
+    messages?: string[];
     percentComplete?: number;
+    currentFile?: number;
+    totalFiles?: number;
 }
 
 export interface CompilerPhase {
@@ -45,12 +47,14 @@ class PrimaryCompilePhase implements CompilerPhase {
         return [client.EntryPointInjector];
     }
 
+    private refreshTime = 300;
+
     constructor(private entryInjector: client.EntryPointInjector) {
         
     }
 
     public async execute(arg: CompilerServiceEventArgs): Promise<void> {
-        arg.service.setStatus({ message: "Beginning Publish", percentComplete: 0 })
+        arg.service.setStatus({ messages: ["Beginning Publish"], percentComplete: 0 });
         var entry = await this.entryInjector.load();
         if (!entry.canCompile()) {
             throw new Error("Cannot compile website.");
@@ -70,22 +74,23 @@ class PrimaryCompilePhase implements CompilerPhase {
                     percentage = compileResult.data.currentFile / compileResult.data.totalFiles * 100;
                 }
 
-                arg.service.setStatus({ message: "Compiled " + compileResult.data.currentFile + " files of " + compileResult.data.totalFiles, percentComplete: percentage });
+                var status: CompilerStatus = Object.create(compileResult.data);
+                status.percentComplete = percentage;
+                arg.service.setStatus(status);
                 if (compileResult.data.completed) {
                     if (compileResult.data.success) {
                         ep.resolve();
                     }
                     else {
-                        arg.service.setStatus({ message: compileResult.data.errorMessage });
                         ep.reject(compileResult.data.errorMessage);
                     }
                 }
                 else {
-                    window.setTimeout(worker, 2000);
+                    window.setTimeout(worker, this.refreshTime);
                 }
             }
         };
-        window.setTimeout(worker, 2000);
+        window.setTimeout(worker, this.refreshTime);
         return ep.Promise;
     }
 }
@@ -127,9 +132,29 @@ export class CompilerService {
         }
     }
 
+    /**
+     * Set the entire compiler status, this will replace everything being displayed.
+     * @param status
+     */
     public setStatus(status: CompilerStatus) {
         this.status = status;
         this.statusUpdatedEvent.fire(new CompilerServiceStatusEventArgs(this, status));
+    }
+
+    /**
+     * Add a single message to the current compiler status. This is the reccomended approach to outputting
+     * messages.
+     * @param message
+     */
+    public addMessage(message: string) {
+        if (this.status === undefined) {
+            this.status = {};
+        }
+        if (this.status.messages === undefined || this.status.messages === null) {
+            this.status.messages = [];
+        }
+        this.status.messages.push(message);
+        this.statusUpdatedEvent.fire(new CompilerServiceStatusEventArgs(this, this.status));
     }
 
     public addCompilationPhase(phase: CompilerPhase) {

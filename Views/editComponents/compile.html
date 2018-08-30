@@ -56,6 +56,9 @@
                             </div>
                         </template>
                     </div>
+                    <div data-hr-view="fileProgress" data-hr-toggle="fileProgress" style="display:none;" data-hr-style-on="display:block;">
+                        <p>Compiled {{currentFile}} files of {{totalFiles}}</p>
+                    </div>
                     <br />
                     <div class="center">
                         <div class="load-linebar center-block">
@@ -69,9 +72,9 @@
                 </div>
             </div>
 
-            <div data-hr-model="status" class="modal-body">
+            <div data-hr-view="messages" class="modal-body">
                 <template>
-                    <p>{{message}}</p>
+                    <p>{{this}}</p>
                 </template>
             </div>
             <div data-hr-toggle="success" data-hr-style-off="display:none;">

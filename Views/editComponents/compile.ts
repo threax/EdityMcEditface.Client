@@ -90,8 +90,10 @@ class CompileController {
     private changesModel;
     private infoModel;
     private dialogToggle;
-    private statusModel: controller.Model<StatusMessage>;
+    private messagesView: controller.IView<string>;
     private progressBar: controller.IView<number>;
+    private fileProgress: controller.IView<CompileService.CompilerStatus>;
+    private fileProgressToggle: controller.OnOffToggle;
 
     constructor(bindings: controller.BindingCollection, private compileService: CompileService.CompilerService, private entryInjector: client.EntryPointInjector, private builder: controller.InjectedControllerBuilder) {
         this.start = bindings.getToggle("start");
@@ -105,10 +107,18 @@ class CompileController {
         this.dialogToggle = bindings.getToggle('dialog');
         this.compileService.onStarted.add(a => this.compileStarted(a));
         this.compileService.onStatusUpdated.add(a => this.statusUpdated(a));
-        this.compileService.onFailed.add(a => this.toggleGroup.activate(this.fail));
+        this.compileService.onFailed.add(a => {
+            if (a.error) {
+                this.messagesView.appendData(a.error);
+            }
+            this.toggleGroup.activate(this.fail)
+        });
         this.compileService.onSuccess.add(a => this.toggleGroup.activate(this.success));
-        this.statusModel = bindings.getModel<StatusMessage>("status");
+        this.messagesView = bindings.getView<string>("messages");
         this.progressBar = bindings.getView<number>("progress");
+        this.fileProgress = bindings.getView<CompileService.CompilerStatus>("fileProgress");
+        this.fileProgressToggle = bindings.getToggle("fileProgress");
+        this.fileProgressToggle.off();
 
         var editMenu = navmenu.getNavMenu("edit-nav-menu-items");
         builder.Services.addSharedInstance(CompileController, this);
@@ -125,7 +135,7 @@ class CompileController {
             this.dialogToggle.on();
         }
         else {
-            this.statusModel.clear();
+            this.messagesView.clear();
             this.toggleGroup.activate(this.compiling);
             this.dialogToggle.on();
             try {
@@ -139,7 +149,10 @@ class CompileController {
                 }
             }
             catch (err) {
-                console.log(err.message);
+                if (err.message) {
+                    console.log(err.message);
+                    this.messagesView.appendData(err.message);
+                }
                 this.toggleGroup.activate(this.fail);
             }
         }
@@ -147,7 +160,7 @@ class CompileController {
 
     private compileStarted(arg: CompileService.CompilerServiceEventArgs) {
         this.toggleGroup.activate(this.compiling);
-        this.statusModel.clear();
+        this.messagesView.clear();
     }
 
     private statusUpdated(arg: CompileService.CompilerServiceStatusEventArgs) {
@@ -156,11 +169,15 @@ class CompileController {
                 var widthHandle = b.getHandle("width"); //Have to cheat to use handles, since we can't set the style any other way, and progress bars need to use style.
                 widthHandle.setAttribute("style", "width:" + Number(w) + "%");
             });
-            this.statusModel.setData(arg.status);
+        }
+        if (arg.status.currentFile !== undefined && arg.status.totalFiles !== undefined) {
+            this.fileProgress.setData(arg.status);
+            this.fileProgressToggle.on();
         }
         else {
-            this.statusModel.appendData(arg.status);
+            this.fileProgressToggle.off();
         }
+        this.messagesView.setData(arg.status.messages);
     }
 
     public get isRunning(): boolean {

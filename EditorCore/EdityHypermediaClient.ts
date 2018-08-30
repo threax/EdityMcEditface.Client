@@ -2575,6 +2575,7 @@ just that it is no longer running. */
     errorMessage?: string;
     currentFile?: number;
     totalFiles?: number;
+    messages?: string[];
 }
 
 export interface MergeQuery {
