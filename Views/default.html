@@ -36,9 +36,11 @@
                     </template>
                     <template data-hr-variant="link">
                         <li class="link">
-                            <div class="mainBlock" data-hr-toggle="current" data-hr-class-on="currentLink">
-                                <a href="{{urlRoot}}{{link}}" target="{{target}}">{{name}}</a>
-                            </div>
+                            <a href="{{urlRoot}}{{link}}" target="{{target}}">
+                                <div class="mainBlock" data-hr-toggle="current" data-hr-class-on="currentLink">
+                                    {{name}}
+                                </div>
+                            </a>
                         </li>
                     </template>
                     <template data-hr-variant="root">
