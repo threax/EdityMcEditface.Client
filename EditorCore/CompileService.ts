@@ -47,7 +47,7 @@ class PrimaryCompilePhase implements CompilerPhase {
         return [client.EntryPointInjector];
     }
 
-    private refreshTime = 300;
+    private refreshTime = 800;
 
     constructor(private entryInjector: client.EntryPointInjector) {
         

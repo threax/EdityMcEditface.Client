@@ -65,5 +65,6 @@ function finishSave() {
 window.addEventListener('beforeunload', function (evt) {
     if (outstandingSaveRequest) {
         doSave();
+        return 'Changes were saved before leaving the page.';
     }
 });
