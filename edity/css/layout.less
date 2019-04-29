@@ -12,6 +12,10 @@
     height: @navbar-expanded-height;
 }
 
+.navbar-spacer-short {
+    height: @navbar-height;
+}
+
 .navbar-shadow {
     position: fixed;
     right: 0px;
@@ -21,12 +25,25 @@
     box-shadow: 4px 4px 5px grey;
 }
 
+.navbar-shadow-short {
+    position: fixed;
+    right: 0px;
+    left: 0px;
+    top: 0px;
+    height: @navbar-height;
+    box-shadow: 4px 4px 5px grey;
+}
+
 .navbar-nomargin {
     margin-bottom: 0px;
 }
 
 #sidebar-wrapper.sidebar-with-navbar {
     height: calc(100% ~"-" @navbar-expanded-height);
+}
+
+#sidebar-wrapper.sidebar-with-navbar-short {
+    height: calc(100% ~"-" @navbar-height);
 }
 
 @media(min-width:1200px) {
