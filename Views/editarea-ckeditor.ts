@@ -78,6 +78,7 @@ class CkEditorManager {
                     });
                     if (result.data.uploaded) {
                         loader.url = result.data.url;
+                        loader.responseData = loader.data;
                         loader.changeStatus('uploaded');
                     }
                     else {
