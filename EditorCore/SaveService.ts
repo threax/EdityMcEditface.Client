@@ -50,7 +50,7 @@ export function saveNow() : Promise<void> {
     }
     else {
         saveAgainWhenSaveCompleted = true;
-        return Promise.resolve<void>();
+        return Promise.resolve<void>(undefined);
     }
 }
 
