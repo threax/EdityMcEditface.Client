@@ -3,10 +3,7 @@
 "use strict";
 
 import * as controller from "hr.controller";
-import * as toggles from "hr.toggles";
-import * as http from "hr.http";
 import * as saveService from "edity.editorcore.SaveService";
-import * as Iter from 'hr.iterable';
 import * as TreeMenu from 'hr.treemenu.TreeMenu';
 import * as TreeMenuEditor from 'hr.treemenu.TreeMenuEditor';
 import { Fetcher } from 'hr.fetcher';

@@ -1,10 +1,6 @@
 ﻿"use strict";
 
-import * as uploader from 'edity.editorcore.uploader';
 import { ActionEventDispatcher, FuncEventDispatcher } from 'hr.eventdispatcher';
-import { PagedClientData } from 'edity.editorcore.pageddata';
-import { Fetcher } from 'hr.fetcher';
-import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as controller from 'hr.controller';

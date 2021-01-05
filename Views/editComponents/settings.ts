@@ -3,12 +3,9 @@
 "use strict";
 
 import * as controller from "hr.controller";
-import * as FormLifecycle from "edity.editorcore.FormLifecycle";
-import * as storage from "hr.storage";
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as navmenu from "edity.editorcore.navmenu";
 import * as Toggles from 'hr.toggles';
-import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as uri from 'hr.uri';
 

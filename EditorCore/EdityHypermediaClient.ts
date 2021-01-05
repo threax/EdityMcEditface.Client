@@ -1,4 +1,5 @@
 import * as hal from 'hr.halcyon.EndpointClient';
+import { Fetcher } from 'hr.fetcher';
 
 export class DraftResult {
     private client: hal.HalEndpointClient;
@@ -400,10 +401,10 @@ export class DraftEntryPointResult {
 
 export class EntryPointInjector {
     private url: string;
-    private fetcher: hal.Fetcher;
+    private fetcher: Fetcher;
     private instancePromise: Promise<EntryPointResult>;
 
-    constructor(url: string, fetcher: hal.Fetcher) {
+    constructor(url: string, fetcher: Fetcher) {
         this.url = url;
         this.fetcher = fetcher;
     }
@@ -420,7 +421,7 @@ export class EntryPointInjector {
 export class EntryPointResult {
     private client: hal.HalEndpointClient;
 
-    public static Load(url: string, fetcher: hal.Fetcher): Promise<EntryPointResult> {
+    public static Load(url: string, fetcher: Fetcher): Promise<EntryPointResult> {
         return hal.HalEndpointClient.Load({
             href: url,
             method: "GET"
@@ -1334,7 +1335,7 @@ export class TemplateViewResult {
         return this.strongData;
     }
 
-    public getContent(): Promise<hal.Response> {
+    public getContent(): Promise<Response> {
         return this.client.LoadRawLink("GetContent");
     }
 

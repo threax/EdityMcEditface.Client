@@ -2,15 +2,9 @@
 
 "use strict";
 
-import * as http from "hr.http";
-import * as uploader from "edity.editorcore.uploader";
-import * as component from "hr.components";
-import * as domQuery from "hr.domquery";
 import * as controller from "hr.controller";
-import { Fetcher } from 'hr.fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as di from 'hr.di';
-import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as uri from 'hr.uri';
 import { ResultModel } from 'hr.halcyon.ResultModel';
