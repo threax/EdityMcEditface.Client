@@ -80,8 +80,7 @@
     },
     "ckeditor": {
       "js": [
-        { "file": "~/lib/ckeditor/ckeditor.js" },
-        { "file": "~/ckeditor.plugins.bundle.min.js" }
+        { "file": "~/lib/ckeditor/ckeditor.js" }
       ]
     },
     "editorCore": {
