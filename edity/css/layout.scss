@@ -1,7 +1,8 @@
-@import "variables.less";
-@import "theme.less";
+@import "functions";
+@import "variables";
 
-@navbar-expanded-height: 101px;
+$navbar-height: 101px;
+$navbar-expanded-height: 101px;
 
 .navbar-inverse {
     border-radius: 0px;
@@ -9,11 +10,11 @@
 }
 
 .navbar-spacer {
-    height: @navbar-expanded-height;
+    height: $navbar-expanded-height;
 }
 
 .navbar-spacer-short {
-    height: @navbar-height;
+    height: $navbar-height;
 }
 
 .navbar-shadow {
@@ -21,7 +22,7 @@
     right: 0px;
     left: 0px;
     top: 0px;
-    height: @navbar-expanded-height;
+    height: $navbar-expanded-height;
     box-shadow: 4px 4px 5px grey;
 }
 
@@ -30,7 +31,7 @@
     right: 0px;
     left: 0px;
     top: 0px;
-    height: @navbar-height;
+    height: $navbar-height;
     box-shadow: 4px 4px 5px grey;
 }
 
@@ -39,11 +40,11 @@
 }
 
 #sidebar-wrapper.sidebar-with-navbar {
-    height: calc(100% ~"-" @navbar-expanded-height);
+    height: calc(100% #{"-"} $navbar-expanded-height);
 }
 
 #sidebar-wrapper.sidebar-with-navbar-short {
-    height: calc(100% ~"-" @navbar-height);
+    height: calc(100% #{"-"} $navbar-height);
 }
 
 @media(min-width:1200px) {
@@ -63,15 +64,15 @@
 
 @media(min-width:768px) {
     .navbar-spacer {
-        height: @navbar-height;
+        height: $navbar-height;
     }
 
     .navbar-shadow {
-        height: @navbar-height;
+        height: $navbar-height;
     }
 
     #sidebar-wrapper.sidebar-with-navbar {
-        height: calc(100% ~"-" @navbar-height);
+        height: calc(100% #{"-"} $navbar-height);
     }
 }
 

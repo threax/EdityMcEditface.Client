@@ -73,9 +73,9 @@
   },
   {
     "outDir": "lib/edity",
-    "less": {
-      "importPaths": [ "../bootstrap/less" ],
-      "input": "edity/**/*.less",
+    "sass": {
+      "importPaths": [ "../bootstrap/scss" ],
+      "input": "edity/**/*.scss",
       "compress": true,
       "basePath": "edity"
     }
@@ -88,9 +88,9 @@
       "Views/**/*.html",
       "Views/**/*.json"
     ],
-    "less": {
-      "importPaths": [ "../bootstrap/less" ],
-      "input": "Views/**/*.less",
+    "sass": {
+      "importPaths": [ "../bootstrap/scss" ],
+      "input": "Views/**/*.scss",
       "compress": true
     }
   },
@@ -102,9 +102,9 @@
       "Templates/**/*.html",
       "Templates/**/*.json"
     ],
-    "less": {
-      "importPaths": [ "../bootstrap/less" ],
-      "input": "Templates/**/*.less",
+    "sass": {
+      "importPaths": [ "../bootstrap/scss" ],
+      "input": "Templates/**/*.scss",
       "compress": true
     }
   },
