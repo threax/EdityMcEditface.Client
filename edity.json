@@ -3,7 +3,6 @@
   "contentMap": {
     "polyfill": {
       "js": [
-        { "file": "~/lib/polyfill.js" },
         { "file": "~/lib/tslib.js" }
       ]
     },
