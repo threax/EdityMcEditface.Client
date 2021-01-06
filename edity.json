@@ -29,21 +29,6 @@
         { "file": "~/lib/hr-run.js" }
       ]
     },
-    "simple-sidebar": {
-      "css": [ "~/lib/sidebar/css/simple-sidebar.css" ]
-    },
-    "sidemenu": {
-      "css": [ "~/lib/sidebar/css/sidemenu.css" ],
-      "dependencies": [
-        "simple-sidebar"
-      ]
-    },
-    "layout": {
-      "css": [ "~/lib/edity/css/layout.css" ],
-      "dependencies": [
-        "sidemenu"
-      ]
-    },
     "bootstrap": {
       "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
     },
@@ -53,12 +38,6 @@
         { "file": "~/lib/popper.js/dist/popper.min.js" },
         { "file": "~/lib/bootstrap/dist/js/bootstrap.min.js" }
       ]
-    },
-    "transitions": {
-      "css": [ "~/lib/edity/css/fade.css" ]
-    },
-    "edityLoading": {
-      "css": [ "~/lib/edity/css/loading.css" ]
     },
     "diff_match_patch": {
       "js": [ { "file": "~/lib/diff_match_patch/diff_match_patch.js" } ]

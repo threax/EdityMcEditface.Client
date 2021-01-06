@@ -72,15 +72,6 @@
     ]
   },
   {
-    "outDir": "lib/edity",
-    "sass": {
-      "importPaths": [ "../bootstrap/scss" ],
-      "input": "edity/**/*.scss",
-      "compress": true,
-      "basePath": "edity"
-    }
-  },
-  {
     "outDir": "edity/layouts",
     "pathBase": "Views",
     "copy": [

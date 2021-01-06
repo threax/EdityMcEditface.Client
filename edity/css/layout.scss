@@ -1,8 +1,6 @@
-@import "functions";
-@import "variables";
-
-$navbar-height: 56px;
-$navbar-expanded-height: 101px;
+$navbar-height: 56px !default;
+$navbar-expanded-height: 101px !default;
+$navbar-box-shadow: $box-shadow !default;
 
 .navbar-inverse {
     border-radius: 0px;
@@ -23,7 +21,7 @@ $navbar-expanded-height: 101px;
     left: 0px;
     top: 0px;
     height: $navbar-expanded-height;
-    box-shadow: 4px 4px 5px grey;
+    box-shadow: $navbar-box-shadow;
 }
 
 .navbar-shadow-short {
@@ -32,7 +30,7 @@ $navbar-expanded-height: 101px;
     left: 0px;
     top: 0px;
     height: $navbar-height;
-    box-shadow: 4px 4px 5px grey;
+    box-shadow: $navbar-box-shadow;
 }
 
 .navbar-nomargin {
