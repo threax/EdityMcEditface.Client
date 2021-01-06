@@ -50,6 +50,7 @@
     "bootstrapScripts": {
       "js": [
         { "file": "~/lib/jquery/dist/jquery.min.js" },
+        { "file": "~/lib/popper.js/dist/popper.min.js" },
         { "file": "~/lib/bootstrap/dist/js/bootstrap.min.js" }
       ]
     },
