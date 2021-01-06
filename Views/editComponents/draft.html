@@ -15,8 +15,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="DraftModalLabel">Draft Page</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body" data-hr-toggle="draftLoad" data-hr-style-off="display:none;">
                 <div class="center">
@@ -30,7 +30,7 @@
                     <p>Working...</p>
                 </div>
             </div>
-            
+
             <div class="modal-body" data-hr-toggle="draftMain" data-hr-style-off="display:none;">
                 <div data-hr-model="currentPageInfo">
                     <h2>Current Page</h2>
@@ -85,37 +85,54 @@
 
                         <div data-hr-controller="draftPageNumbers" class="clearfix">
                             <div data-hr-model="totals">Items {{itemStart}} - {{itemEnd}} of {{total}}</div>
-                            <ul class="pagination pull-left">
-                                <li data-hr-toggle="first" aria-label="First" data-hr-on-click="pageFirst" data-hr-class-off="disabled">
-                                    <a href="#First">
-                                        <span aria-hidden="true" class="glyphicon glyphicon-backward"></span>
+                            <ul class="pagination float-left">
+                                <li data-hr-toggle="first" aria-label="First" data-hr-on-click="pageFirst"
+                                    data-hr-class-off="disabled" class="page-item">
+                                    <a href="#First" class="page-link">
+                                        &lt;&lt;
                                     </a>
                                 </li>
-                                <li data-hr-toggle="previous" aria-label="Previous" data-hr-on-click="pagePrevious" data-hr-class-off="disabled">
-                                    <a href="#Previous">
-                                        <span aria-hidden="true" class="glyphicon glyphicon-triangle-left"></span>
+                                <li data-hr-toggle="previous" aria-label="Previous" data-hr-on-click="pagePrevious"
+                                    data-hr-class-off="disabled" class="page-item">
+                                    <a href="#Previous" class="page-link">
+                                        &lt;
                                     </a>
                                 </li>
-                                <li data-hr-toggle="page0" data-hr-model="page0" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page0"><a href="#Page">{{pageNum}}</a></li>
-                                <li data-hr-toggle="page1" data-hr-model="page1" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page1"><a href="#Page">{{pageNum}}</a></li>
-                                <li data-hr-toggle="page2" data-hr-model="page2" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page2"><a href="#Page">{{pageNum}}</a></li>
-                                <li data-hr-toggle="page3" data-hr-model="page3" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page3"><a href="#Page">{{pageNum}}</a></li>
-                                <li data-hr-toggle="page4" data-hr-model="page4" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page4"><a href="#Page">{{pageNum}}</a></li>
-                                <li data-hr-toggle="page5" data-hr-model="page5" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page5"><a href="#Page">{{pageNum}}</a></li>
-                                <li data-hr-toggle="page6" data-hr-model="page6" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page6"><a href="#Page">{{pageNum}}</a></li>
-                                <li data-hr-toggle="next" aria-label="Next" data-hr-on-click="pageNext" data-hr-class-off="disabled">
-                                    <a href="#Next">
-                                        <span aria-hidden="true" class="glyphicon glyphicon-triangle-right"></span>
+                                <li data-hr-toggle="page0" data-hr-model="page0" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page0" class="page-item">
+                                    <a href="#Page" class="page-link">{{pageNum}}</a>
+                                </li>
+                                <li data-hr-toggle="page1" data-hr-model="page1" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page1" class="page-item">
+                                    <a href="#Page" class="page-link">{{pageNum}}</a>
+                                </li>
+                                <li data-hr-toggle="page2" data-hr-model="page2" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page2" class="page-item">
+                                    <a href="#Page" class="page-link">{{pageNum}}</a>
+                                </li>
+                                <li data-hr-toggle="page3" data-hr-model="page3" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page3" class="page-item">
+                                    <a href="#Page" class="page-link">{{pageNum}}</a>
+                                </li>
+                                <li data-hr-toggle="page4" data-hr-model="page4" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page4" class="page-item">
+                                    <a href="#Page" class="page-link">{{pageNum}}</a>
+                                </li>
+                                <li data-hr-toggle="page5" data-hr-model="page5" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page5" class="page-item">
+                                    <a href="#Page" class="page-link">{{pageNum}}</a>
+                                </li>
+                                <li data-hr-toggle="page6" data-hr-model="page6" data-hr-class-active="active" data-hr-style-off="display:none;" data-hr-on-click="page6" class="page-item">
+                                    <a href="#Page" class="page-link">{{pageNum}}</a>
+                                </li>
+                                <li data-hr-toggle="next" aria-label="Next" data-hr-on-click="pageNext" data-hr-class-off="disabled" class="page-item">
+                                    <a href="#Next" class="page-link">
+                                        &gt;
                                     </a>
                                 </li>
-                                <li data-hr-toggle="last" aria-label="Last" data-hr-on-click="pageLast" data-hr-class-off="disabled">
-                                    <a href="#Last">
-                                        <span aria-hidden="true" class="glyphicon glyphicon-forward"></span>
+                                <li data-hr-toggle="last" aria-label="Last" data-hr-on-click="pageLast" data-hr-class-off="disabled" class="page-item">
+                                    <a href="#Last" class="page-link">
+                                        &gt;&gt;
                                     </a>
                                 </li>
                             </ul>
                             <div class="clearfix"></div>
-                            <form class="form-inline pull-left" data-hr-model="itemsPerPage" data-hr-on-change="itemsPerPageChanged">
+                            <form class="form-inline float-left" data-hr-model="itemsPerPage"
+                                  data-hr-on-change="itemsPerPageChanged">
                                 <div class="form-group">
                                     <label for="itemsPerPage">Items per Page</label>
                                     <select name="itemsPerPage" class="form-control">
