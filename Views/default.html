@@ -9,20 +9,18 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark fixed-top" data-hr-run="edity.theme.layouts.default">
-        <button class="navbar-toggler" type="button" data-target="#wrapper" data-toggle="sidebar" aria-label="Toggle navigation">
+
+    <nav class="navbar navbar-dark bg-dark" data-hr-run="edity.theme.layouts.default">
+        <button class="navbar-toggler" type="button" data-target="#sidebar" data-toggle="sidebar" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <a class="navbar-brand" href="~/">{{siteTitle}}</a>
     </nav>
 
-    <div class="navbar-shadow-short"></div>
-    <div class="navbar-spacer-short"></div>
-
     <div id="wrapper">
         <!-- Sidebar -->
-        <div id="sidebar-wrapper" class="sidebar-with-navbar-short">
+        <div id="sidebar">
             <div class="mainTreeMenu" data-hr-controller="treeMenu" data-hr-config-urlroot="~/" data-hr-config-menu="~/menus/mainMenu.json" data-hr-config-scrollelement="#sidebar-wrapper" data-hr-model-component="sidebarMenuComponent">
                 <ul class="sidebarMenu" data-hr-model="childItems" data-hr-model-component="sidebarMenuComponent">
                     <template data-hr-component="sidebarMenuComponent">
@@ -48,8 +46,8 @@
         </div>
 
         <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <div class="container">
+        <div id="content">
+            <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12 pageContent">
                         {{mainContent}}
