@@ -30,7 +30,7 @@
       ]
     },
     "bootstrap": {
-      "css": [ "~/lib/bootstrap/dist/css/bootstrap-custom.css" ]
+      "css": [ "~/lib/bootstrap/dist/css/bootstrap-darkly.css" ]
     },
     "bootstrapScripts": {
       "js": [
