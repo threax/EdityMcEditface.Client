@@ -1,11 +1,4 @@
 {
-  "compilerOptions": {
-    "paths": {
-      "edity.editorcore.*": [
-        "EditorCore/*"
-      ]
-    }
-  },
   "include": [
     "EditorCore/**/*.ts",
     "Views/**/*.ts"

@@ -1,4 +1,4 @@
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as client from './EdityHypermediaClient';
 import * as hyperCrud from 'htmlrapier.widgets/src/HypermediaCrudService';
 import * as di from 'htmlrapier/src/di';
 import * as uri from 'htmlrapier/src/uri';

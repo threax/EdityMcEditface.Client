@@ -3,9 +3,9 @@
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';
-import * as editorServices from 'edity.editorcore.EditorServices';
+import * as editorServices from 'edity.services.EditorServices';
 import * as di from 'htmlrapier/src/di';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as client from '../EditorCore/EdityHypermediaClient';
 import * as uri from 'htmlrapier/src/uri';
 import { ResultModel } from 'htmlrapier.halcyon/src/ResultModel';
 

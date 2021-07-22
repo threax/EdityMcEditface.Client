@@ -1,7 +1,7 @@
 ///<amd-module name="edity.theme.layouts.default"/>
 
 import * as TreeMenu from 'htmlrapier.treemenu/src/TreeMenu';
-import * as EditModeDetector from 'edity.editorcore.EditModeDetector';
+import * as EditModeDetector from '../EditorCore/EditModeDetector';
 import * as controller from 'htmlrapier/src/controller';
 import * as bootstrap from 'htmlrapier.bootstrap/src/main';
 import * as SidebarToggle from 'htmlrapier.sidebar/src/sidebartoggle';

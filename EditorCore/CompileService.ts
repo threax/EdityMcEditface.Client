@@ -1,4 +1,4 @@
-﻿import * as client from 'edity.editorcore.EdityHypermediaClient';
+﻿import * as client from './EdityHypermediaClient';
 import * as event from 'htmlrapier/src/eventdispatcher';
 import { ExternalPromise } from 'htmlrapier/src/externalpromise';
 import * as di from 'htmlrapier/src/di';

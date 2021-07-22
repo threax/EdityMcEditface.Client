@@ -3,10 +3,10 @@
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';
-import * as navmenu from 'edity.editorcore.navmenu';
+import * as navmenu from '../../EditorCore/navmenu';
 import * as toggles from 'htmlrapier/src/toggles';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as editorServices from 'edity.services.EditorServices';
+import * as client from '../../EditorCore/EdityHypermediaClient';
 import * as iter from 'htmlrapier/src/iterable';
 
 class NavButtonController {

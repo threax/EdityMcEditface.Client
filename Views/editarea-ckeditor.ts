@@ -3,10 +3,10 @@
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';
-import * as page from 'edity.editorcore.PageService';
-import { IBaseUrlInjector } from 'edity.editorcore.BaseUrlInjector';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as page from '../EditorCore/PageService';
+import { IBaseUrlInjector } from '../EditorCore/BaseUrlInjector';
+import * as editorServices from 'edity.services.EditorServices';
+import * as client from '../EditorCore/EdityHypermediaClient';
 
 class CkEditorManager {
     public static get InjectorArgs(): controller.DiFunction<any>[] {

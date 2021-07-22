@@ -3,12 +3,12 @@
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';
-import * as saveService from 'edity.editorcore.SaveService';
+import * as saveService from '../../EditorCore/SaveService';
 import * as TreeMenu from 'htmlrapier.treemenu/src/TreeMenu';
 import * as TreeMenuEditor from 'htmlrapier.treemenu/src/TreeMenuEditor';
 import { Fetcher } from 'htmlrapier/src/fetcher';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as editorServices from 'edity.services.EditorServices';
+import * as client from '../../EditorCore/EdityHypermediaClient';
 
 export class TreeMenuEditProvider extends TreeMenu.TreeMenuProvider {
     public static get InjectorArgs(): controller.DiFunction<any>[] {

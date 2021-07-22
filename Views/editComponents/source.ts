@@ -5,9 +5,9 @@
 
 import * as domQuery from 'htmlrapier/src/domquery';
 import * as controller from 'htmlrapier/src/controller';
-import * as navmenu from 'edity.editorcore.navmenu';
-import * as page from 'edity.editorcore.PageService';
-import * as editorServices from 'edity.editorcore.EditorServices';
+import * as navmenu from '../../EditorCore/navmenu';
+import * as page from '../../EditorCore/PageService';
+import * as editorServices from 'edity.services.EditorServices';
 
 var CodeMirror = (<any>window).CodeMirror;
 

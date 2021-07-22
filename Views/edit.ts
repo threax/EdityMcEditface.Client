@@ -4,7 +4,7 @@
 
 import * as component from 'htmlrapier/src/components';
 import * as domQuery from 'htmlrapier/src/domquery';
-import * as navmenu from 'edity.editorcore.navmenu';
+import * as navmenu from '../EditorCore/navmenu';
 import * as controller from 'htmlrapier/src/controller';
 import * as storage from 'htmlrapier/src/storage';
 

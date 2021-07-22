@@ -3,12 +3,12 @@
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';
-import * as navmenu from 'edity.editorcore.navmenu';
+import * as navmenu from '../../EditorCore/navmenu';
 import * as toggles from 'htmlrapier/src/toggles';
-import * as saveService from 'edity.editorcore.SaveService';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as git from 'edity.editorcore.GitService';
+import * as saveService from '../../EditorCore/SaveService';
+import * as editorServices from 'edity.services.EditorServices';
+import * as client from '../../EditorCore/EdityHypermediaClient';
+import * as git from '../../EditorCore/GitService';
 import { ResultModel } from 'htmlrapier.halcyon/src/ResultModel';
 import { ExternalPromise } from 'htmlrapier/src/externalpromise';
 

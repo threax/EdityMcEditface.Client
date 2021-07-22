@@ -1,8 +1,8 @@
 ﻿"use strict";
 
-import * as saveService from 'edity.editorcore.SaveService';
+import * as saveService from './SaveService';
 import * as di from 'htmlrapier/src/di';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as client from './EdityHypermediaClient';
 import * as uri from 'htmlrapier/src/uri';
 
 export class PageService {

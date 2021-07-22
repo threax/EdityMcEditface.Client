@@ -5,10 +5,10 @@
 import * as toggles from 'htmlrapier/src/toggles';
 import * as Iterable from 'htmlrapier/src/iterable';
 import * as controller from 'htmlrapier/src/controller';
-import * as navmenu from 'edity.editorcore.navmenu';
-import * as editorServices from 'edity.editorcore.EditorServices';
+import * as navmenu from '../../EditorCore/navmenu';
+import * as editorServices from 'edity.services.EditorServices';
 import * as di from 'htmlrapier/src/di';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as client from '../../EditorCore/EdityHypermediaClient';
 
 function getFileName(path) {
     return path.replace(/^.*?([^\\\/]*)$/, '$1');

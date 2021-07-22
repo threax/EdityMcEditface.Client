@@ -3,9 +3,9 @@
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';
-import * as git from 'edity.editorcore.GitService';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
+import * as git from '../../EditorCore/GitService';
+import * as editorServices from 'edity.services.EditorServices';
+import * as client from '../../EditorCore/EdityHypermediaClient';
 
 var CodeMirror = (<any>window).CodeMirror;
 

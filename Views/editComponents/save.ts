@@ -2,10 +2,10 @@
 
 "use strict";
 
-import * as navmenu from 'edity.editorcore.navmenu';
-import * as saveService from 'edity.editorcore.SaveService';
+import * as navmenu from '../../EditorCore/navmenu';
+import * as saveService from '../../EditorCore/SaveService';
 import * as controller from 'htmlrapier/src/controller';
-import * as editorServices from 'edity.editorcore.EditorServices';
+import * as editorServices from 'edity.services.EditorServices';
 
 class SaveController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {

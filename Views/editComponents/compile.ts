@@ -4,12 +4,12 @@
 
 import * as controller from 'htmlrapier/src/controller';
 import * as toggles from 'htmlrapier/src/toggles';
-import * as navmenu from 'edity.editorcore.navmenu';
-import * as CompileService from 'edity.editorcore.CompileService';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as git from 'edity.editorcore.GitService';
-import * as saveService from 'edity.editorcore.SaveService';
+import * as navmenu from '../../EditorCore/navmenu';
+import * as CompileService from '../../EditorCore/CompileService';
+import * as editorServices from 'edity.services.EditorServices';
+import * as client from '../../EditorCore/EdityHypermediaClient';
+import * as git from '../../EditorCore/GitService';
+import * as saveService from '../../EditorCore/SaveService';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {

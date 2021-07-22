@@ -3,12 +3,12 @@
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';
-import * as navmenu from 'edity.editorcore.navmenu';
+import * as navmenu from '../../EditorCore/navmenu';
 import * as toggles from 'htmlrapier/src/toggles';
-import * as git from 'edity.editorcore.GitService';
-import * as editorServices from 'edity.editorcore.EditorServices';
+import * as git from '../../EditorCore/GitService';
+import * as editorServices from 'edity.services.EditorServices';
 import * as hyperCrudPage from 'htmlrapier.widgets/src/HypermediaCrudService';
-import * as injectors from 'edity.editorcore.EdityHypermediaInjectors';
+import * as injectors from '../../EditorCore/EdityHypermediaInjectors';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {
