@@ -1,6 +1,6 @@
 {
   "name": "editymceditface.client",
-  "version": "17.0.0-pre.2",
+  "version": "17.0.0",
   "private": false,
   "types": "./types/fetch.d.ts",
   "dependencies": {
@@ -12,8 +12,8 @@
     "htmlrapier.bootstrap": ">=9.0.0",
     "htmlrapier.form.bootstrap4": ">=4.0.0",
     "htmlrapier.halcyon": ">=10.0.0",
-    "htmlrapier.sidebar": ">=7.0.0-pre.0",
-    "htmlrapier.treemenu": ">=7.0.0-pre.0",
+    "htmlrapier.sidebar": ">=7.0.0",
+    "htmlrapier.treemenu": ">=7.0.0",
     "htmlrapier.widgets": ">=16.0.0",
     "jsns": ">=5.1.0"
   },
