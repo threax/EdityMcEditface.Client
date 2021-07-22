@@ -1,7 +1,7 @@
 ﻿"use strict";
 
-import { TimedTrigger } from 'hr.timedtrigger';
-import { ActionEventDispatcher, PromiseEventDispatcher } from 'hr.eventdispatcher';
+import { TimedTrigger } from 'htmlrapier/src/timedtrigger';
+import { ActionEventDispatcher, PromiseEventDispatcher } from 'htmlrapier/src/eventdispatcher';
 
 var allowSave = true;
 var saveAgainWhenSaveCompleted = false;

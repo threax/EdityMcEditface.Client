@@ -2,15 +2,12 @@
 
 "use strict";
 
-import * as storage from "hr.storage";
-import * as BindingCollection from "hr.bindingcollection";
-import * as toggles from "hr.toggles";
-import * as Iterable from "hr.iterable";
-import * as controller from "hr.controller";
-import * as navmenu from "edity.editorcore.navmenu";
-import { Fetcher } from 'hr.fetcher';
+import * as toggles from 'htmlrapier/src/toggles';
+import * as Iterable from 'htmlrapier/src/iterable';
+import * as controller from 'htmlrapier/src/controller';
+import * as navmenu from 'edity.editorcore.navmenu';
 import * as editorServices from 'edity.editorcore.EditorServices';
-import * as di from 'hr.di';
+import * as di from 'htmlrapier/src/di';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 
 function getFileName(path) {

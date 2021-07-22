@@ -2,10 +2,8 @@
 
 "use strict";
 
-import * as storage from "hr.storage";
-import * as controller from "hr.controller";
-import * as navmenu from "edity.editorcore.navmenu";
-import * as git from "edity.editorcore.GitService";
+import * as controller from 'htmlrapier/src/controller';
+import * as git from 'edity.editorcore.GitService';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 

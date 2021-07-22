@@ -2,14 +2,12 @@
 
 "use strict";
 
-import * as controller from "hr.controller";
-import * as navmenu from "edity.editorcore.navmenu";
-import * as toggles from "hr.toggles";
-import * as PageNumbers from "edity.editorcore.pagenumbers";
-import * as Iterable from "hr.iterable";
-import * as git from "edity.editorcore.GitService";
+import * as controller from 'htmlrapier/src/controller';
+import * as navmenu from 'edity.editorcore.navmenu';
+import * as toggles from 'htmlrapier/src/toggles';
+import * as git from 'edity.editorcore.GitService';
 import * as editorServices from 'edity.editorcore.EditorServices';
-import * as hyperCrudPage from 'hr.widgets.HypermediaCrudService';
+import * as hyperCrudPage from 'htmlrapier.widgets/src/HypermediaCrudService';
 import * as injectors from 'edity.editorcore.EdityHypermediaInjectors';
 
 class NavButtonController {

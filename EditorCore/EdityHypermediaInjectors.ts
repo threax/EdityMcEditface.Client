@@ -1,7 +1,7 @@
 import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as hyperCrud from 'hr.widgets.HypermediaCrudService';
-import * as di from 'hr.di';
-import * as uri from 'hr.uri';
+import * as hyperCrud from 'htmlrapier.widgets/src/HypermediaCrudService';
+import * as di from 'htmlrapier/src/di';
+import * as uri from 'htmlrapier/src/uri';
 
 export class DraftCrudInjector extends hyperCrud.AbstractHypermediaPageInjector {
     public static get InjectorArgs(): di.DiFunction<any>[] {

@@ -1,13 +1,13 @@
 ///<amd-module name="edity.theme.layouts.default"/>
 
-import * as TreeMenu from 'hr.treemenu.TreeMenu';
+import * as TreeMenu from 'htmlrapier.treemenu/src/TreeMenu';
 import * as EditModeDetector from 'edity.editorcore.EditModeDetector';
-import * as controller from 'hr.controller';
-import * as bootstrap from 'hr.bootstrap.main';
-import * as SidebarToggle from 'hr.sidebar.sidebartoggle';
-import * as fetcher from 'hr.fetcher';
-import * as hr from 'hr.main';
-import * as windowFetch from 'hr.windowfetch';
+import * as controller from 'htmlrapier/src/controller';
+import * as bootstrap from 'htmlrapier.bootstrap/src/main';
+import * as SidebarToggle from 'htmlrapier.sidebar/src/sidebartoggle';
+import * as fetcher from 'htmlrapier/src/fetcher';
+import * as hr from 'htmlrapier/src/main';
+import * as windowFetch from 'htmlrapier/src/windowfetch';
 
 //Activate htmlrapier
 hr.setup();

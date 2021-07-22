@@ -1,9 +1,9 @@
 ﻿"use strict";
 
-import { ActionEventDispatcher, FuncEventDispatcher } from 'hr.eventdispatcher';
-import * as di from 'hr.di';
+import { ActionEventDispatcher, FuncEventDispatcher } from 'htmlrapier/src/eventdispatcher';
+import * as di from 'htmlrapier/src/di';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as controller from 'hr.controller';
+import * as controller from 'htmlrapier/src/controller';
 
 export interface CommitVariant {
     variant: string;

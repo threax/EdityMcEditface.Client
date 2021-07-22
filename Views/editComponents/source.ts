@@ -3,11 +3,10 @@
 "use strict";
 
 
-import * as domQuery from "hr.domquery";
-import * as storage from "hr.storage";
-import * as controller from "hr.controller";
-import * as navmenu from "edity.editorcore.navmenu";
-import * as page from "edity.editorcore.PageService";
+import * as domQuery from 'htmlrapier/src/domquery';
+import * as controller from 'htmlrapier/src/controller';
+import * as navmenu from 'edity.editorcore.navmenu';
+import * as page from 'edity.editorcore.PageService';
 import * as editorServices from 'edity.editorcore.EditorServices';
 
 var CodeMirror = (<any>window).CodeMirror;

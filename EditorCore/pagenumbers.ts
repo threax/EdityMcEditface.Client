@@ -1,6 +1,6 @@
-﻿import * as toggles from 'hr.toggles';
-import { ActionEventDispatcher } from 'hr.eventdispatcher';
-import * as controller from 'hr.controller';
+﻿import * as toggles from 'htmlrapier/src/toggles';
+import { ActionEventDispatcher } from 'htmlrapier/src/eventdispatcher';
+import * as controller from 'htmlrapier/src/controller';
 
 class PageNumberToggle extends toggles.OnOffToggle{
     private static pageStates = ["on", "off", "active"];

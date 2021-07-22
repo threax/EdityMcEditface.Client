@@ -2,16 +2,15 @@
 
 "use strict";
 
-import * as storage from "hr.storage";
-import * as controller from "hr.controller";
-import * as navmenu from "edity.editorcore.navmenu";
-import * as toggles from "hr.toggles";
-import * as saveService from "edity.editorcore.SaveService";
+import * as controller from 'htmlrapier/src/controller';
+import * as navmenu from 'edity.editorcore.navmenu';
+import * as toggles from 'htmlrapier/src/toggles';
+import * as saveService from 'edity.editorcore.SaveService';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as git from "edity.editorcore.GitService";
-import { ResultModel } from 'hr.halcyon.ResultModel';
-import { ExternalPromise } from 'hr.externalpromise';
+import * as git from 'edity.editorcore.GitService';
+import { ResultModel } from 'htmlrapier.halcyon/src/ResultModel';
+import { ExternalPromise } from 'htmlrapier/src/externalpromise';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {

@@ -2,9 +2,9 @@
 
 "use strict";
 
-import * as navmenu from "edity.editorcore.navmenu";
-import * as saveService from "edity.editorcore.SaveService";
-import * as controller from 'hr.controller';
+import * as navmenu from 'edity.editorcore.navmenu';
+import * as saveService from 'edity.editorcore.SaveService';
+import * as controller from 'htmlrapier/src/controller';
 import * as editorServices from 'edity.editorcore.EditorServices';
 
 class SaveController {

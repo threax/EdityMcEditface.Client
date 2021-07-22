@@ -1,9 +1,7 @@
 ﻿import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as event from 'hr.eventdispatcher';
-import { ExternalPromise } from 'hr.externalpromise';
-import { Fetcher } from 'hr.fetcher';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as di from 'hr.di';
+import * as event from 'htmlrapier/src/eventdispatcher';
+import { ExternalPromise } from 'htmlrapier/src/externalpromise';
+import * as di from 'htmlrapier/src/di';
 
 export class CompilerServiceEventArgs {
     service: CompilerService;

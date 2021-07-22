@@ -2,12 +2,11 @@
 
 "use strict";
 
-import * as component from "hr.components";
-import * as domQuery from "hr.domquery";
-import * as navmenu from "edity.editorcore.navmenu";
-import * as controller from 'hr.controller';
-import * as toggle from 'hr.toggles';
-import * as storage from "hr.storage";
+import * as component from 'htmlrapier/src/components';
+import * as domQuery from 'htmlrapier/src/domquery';
+import * as navmenu from 'edity.editorcore.navmenu';
+import * as controller from 'htmlrapier/src/controller';
+import * as storage from 'htmlrapier/src/storage';
 
 class ToolsViewController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {

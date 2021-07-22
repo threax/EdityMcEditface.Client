@@ -1,8 +1,7 @@
 ﻿"use strict";
 
-import * as controller from 'hr.controller';
-import { ActionEventDispatcher } from 'hr.eventdispatcher';
-import * as di from 'hr.di';
+import * as controller from 'htmlrapier/src/controller';
+import { ActionEventDispatcher } from 'htmlrapier/src/eventdispatcher';
 
 export interface INavMenuItem {
     name: string;

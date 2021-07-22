@@ -2,19 +2,17 @@
 
 "use strict";
 
-import * as controller from "hr.controller";
-import * as navmenu from "edity.editorcore.navmenu";
-import * as toggles from "hr.toggles";
+import * as controller from 'htmlrapier/src/controller';
+import * as navmenu from 'edity.editorcore.navmenu';
+import * as toggles from 'htmlrapier/src/toggles';
 import * as editorServices from 'edity.editorcore.EditorServices';
-import * as storage from 'hr.storage';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 import * as injectors from 'edity.editorcore.EdityHypermediaInjectors';
-import * as iter from 'hr.iterable';
-import * as uri from 'hr.uri';
-import * as hyperCrudPage from 'hr.widgets.HypermediaCrudService';
-import * as crudPage from 'hr.widgets.CrudPage';
-import * as saveService from "edity.editorcore.SaveService";
-import * as git from "edity.editorcore.GitService";
+import * as uri from 'htmlrapier/src/uri';
+import * as hyperCrudPage from 'htmlrapier.widgets/src/HypermediaCrudService';
+import * as crudPage from 'htmlrapier.widgets/src/CrudPage';
+import * as saveService from 'edity.editorcore.SaveService';
+import * as git from 'edity.editorcore.GitService';
 
 class NavButtonController {
     public static get InjectorArgs(): controller.DiFunction<any>[] {

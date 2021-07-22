@@ -1,4 +1,4 @@
-import * as pageConfig from 'hr.pageconfig';
+import * as pageConfig from 'htmlrapier/src/pageconfig';
 
 interface Config {
     editSettings?: {};

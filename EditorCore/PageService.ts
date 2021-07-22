@@ -1,11 +1,9 @@
 ﻿"use strict";
 
 import * as saveService from 'edity.editorcore.SaveService';
-import { Fetcher } from 'hr.fetcher';
-import * as editorServices from 'edity.editorcore.EditorServices';
-import * as di from 'hr.di';
+import * as di from 'htmlrapier/src/di';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as uri from 'hr.uri';
+import * as uri from 'htmlrapier/src/uri';
 
 export class PageService {
     public static get InjectorArgs(): di.DiFunction<any>[] {

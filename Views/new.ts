@@ -2,12 +2,12 @@
 
 "use strict";
 
-import * as controller from "hr.controller";
+import * as controller from 'htmlrapier/src/controller';
 import * as editorServices from 'edity.editorcore.EditorServices';
-import * as di from 'hr.di';
+import * as di from 'htmlrapier/src/di';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
-import * as uri from 'hr.uri';
-import { ResultModel } from 'hr.halcyon.ResultModel';
+import * as uri from 'htmlrapier/src/uri';
+import { ResultModel } from 'htmlrapier.halcyon/src/ResultModel';
 
 class TemplateItemController {
     public static get InjectorArgs(): di.DiFunction<any>[] {

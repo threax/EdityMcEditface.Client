@@ -2,11 +2,11 @@
 
 "use strict";
 
-import * as controller from "hr.controller";
-import * as saveService from "edity.editorcore.SaveService";
-import * as TreeMenu from 'hr.treemenu.TreeMenu';
-import * as TreeMenuEditor from 'hr.treemenu.TreeMenuEditor';
-import { Fetcher } from 'hr.fetcher';
+import * as controller from 'htmlrapier/src/controller';
+import * as saveService from 'edity.editorcore.SaveService';
+import * as TreeMenu from 'htmlrapier.treemenu/src/TreeMenu';
+import * as TreeMenuEditor from 'htmlrapier.treemenu/src/TreeMenuEditor';
+import { Fetcher } from 'htmlrapier/src/fetcher';
 import * as editorServices from 'edity.editorcore.EditorServices';
 import * as client from 'edity.editorcore.EdityHypermediaClient';
 

@@ -1,4 +1,4 @@
-﻿import { Fetcher } from 'hr.fetcher';
+﻿import { Fetcher } from 'htmlrapier/src/fetcher';
 
 /**
  * A fetcher that adds credentials.
