@@ -1,5 +1,3 @@
-///<amd-module name="edity.theme.layouts.default"/>
-
 import * as TreeMenu from 'htmlrapier.treemenu/src/TreeMenu';
 import * as EditModeDetector from '../EditorCore/EditModeDetector';
 import * as controller from 'htmlrapier/src/controller';

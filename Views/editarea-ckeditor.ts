@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.editarea-ckeditor"/>
-
-"use strict";
+﻿"use strict";
 
 import * as controller from 'htmlrapier/src/controller';
 import * as page from '../EditorCore/PageService';

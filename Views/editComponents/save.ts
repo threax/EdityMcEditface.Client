@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.edit.components.save"/>
-
-"use strict";
+﻿"use strict";
 
 import * as navmenu from '../../EditorCore/navmenu';
 import * as saveService from '../../EditorCore/SaveService';

@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.new"/>
-
-"use strict";
+﻿"use strict";
 
 import * as controller from 'htmlrapier/src/controller';
 import * as editorServices from 'edity.services.EditorServices';

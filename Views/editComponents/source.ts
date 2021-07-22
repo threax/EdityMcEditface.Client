@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.edit.components.source"/>
-
-"use strict";
+﻿"use strict";
 
 
 import * as domQuery from 'htmlrapier/src/domquery';

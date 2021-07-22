@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.edit.components.media"/>
-
-"use strict";
+﻿"use strict";
 
 import * as toggles from 'htmlrapier/src/toggles';
 import * as Iterable from 'htmlrapier/src/iterable';

@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.edit.components.sync"/>
-
-"use strict";
+﻿"use strict";
 
 import * as controller from 'htmlrapier/src/controller';
 import * as navmenu from '../../EditorCore/navmenu';

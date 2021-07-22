@@ -1,5 +1,3 @@
-///<amd-module name="edity.core.edit.components.draft"/>
-
 "use strict";
 
 import * as controller from 'htmlrapier/src/controller';

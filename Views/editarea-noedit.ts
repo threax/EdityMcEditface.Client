@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.editarea-noedit"/>
-
-"use strict";
+﻿"use strict";
 
 import * as editorServices from 'edity.services.EditorServices';
 

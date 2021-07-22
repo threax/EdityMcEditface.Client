@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.edit.components.edittreemenu"/>
-
-"use strict";
+﻿"use strict";
 
 import * as controller from 'htmlrapier/src/controller';
 import * as saveService from '../../EditorCore/SaveService';

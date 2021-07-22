@@ -1,6 +1,4 @@
-﻿///<amd-module name="edity.core.edit.components.diff"/>
-
-"use strict";
+﻿"use strict";
 
 import * as controller from 'htmlrapier/src/controller';
 import * as git from '../../EditorCore/GitService';
