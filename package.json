@@ -4,7 +4,7 @@
   "private": false,
   "types": "./types/fetch.d.ts",
   "dependencies": {
-    "bootstrap": ">=4.5.3",
+    "bootstrap": ">=5.0.0",
     "ckeditor": ">=4.11.1",
     "ckeditor-youtube-plugin": ">=2.1.5",
     "codemirror": ">=5.28.0",
